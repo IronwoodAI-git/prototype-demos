@@ -1,0 +1,6 @@
+# Local sync helper (not part of the published site)
+push.bat
+
+# OS junk
+.DS_Store
+Thumbs.db
