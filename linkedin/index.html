@@ -19,16 +19,36 @@ body{margin:0;font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-s
 /* ---- top bar ---- */
 .top{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
 .topin{display:flex;align-items:center;gap:24px;padding:0 24px;max-width:1360px;margin:0 auto}
-.brand{font-weight:700;font-size:16px;letter-spacing:.2px;padding:14px 0 12px;display:flex;align-items:center;gap:9px}
-.brand .li{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand);color:#fff;font-weight:800;font-size:13px}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;padding:9px 0 7px;display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.brand .li{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:14px;flex:0 0 auto}
+.brand .bcol{display:flex;flex-direction:column;justify-content:center;line-height:1.08}
+.brand .bname{font-weight:700;font-size:15px;white-space:nowrap}
+.brand .pbadge{align-self:flex-start;background:#f59e0b;color:#111;font-size:8px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.6px;margin-top:2px;line-height:1.45}
 .brand small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:1px}
-.tabs{display:flex;gap:3px;align-self:stretch}
-.tab{display:flex;align-items:center;gap:7px;padding:0 14px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.tabs{display:flex;gap:2px;align-self:stretch}
+.tab{position:relative;display:flex;align-items:center;gap:5px;padding:0 15px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
 .tab:hover{color:var(--ink)}
 .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
-.tab .tc{font-size:11px;font-weight:700;background:#eef1f5;color:var(--muted);border-radius:999px;padding:1px 7px}
-.tab.active .tc{background:var(--purple-soft);color:var(--brand)}
-.tab .tc.due{background:var(--red);color:#fff}
+.tab .caret{font-size:9px;opacity:.55;margin-left:-1px}
+/* count badge floats in the item's top-right corner instead of sitting inline */
+.tab>.tc{position:absolute;top:5px;right:1px;font-size:9px;font-weight:800;line-height:1.55;min-width:15px;text-align:center;background:#e3e8ef;color:var(--muted);border-radius:999px;padding:0 4px;box-shadow:0 0 0 2px var(--panel);pointer-events:none}
+.tab.active>.tc{background:var(--purple-soft);color:var(--brand)}
+.tab>.tc.due{background:var(--red);color:#fff}
+.tab>.tc+.tc{right:19px}                 /* a rare second badge stacks left of the first */
+/* dropdown (Pipeline parent) + hamburger (More) menus */
+.tab.parent,.tab.hamburger{padding-right:12px}
+.tab.hamburger{font-size:17px;padding:0 13px}
+.navpop{position:absolute;top:100%;left:0;min-width:205px;background:var(--panel);border:1px solid var(--line);border-radius:11px;box-shadow:0 14px 34px rgba(15,20,30,.18);padding:6px;display:none;z-index:9600}
+.navpop.right{left:auto;right:0}
+.tab.parent:hover .navpop,.tab.hamburger:hover .navpop{display:block}
+.tab.parent:hover::after,.tab.hamburger:hover::after{content:"";position:absolute;left:0;right:0;top:calc(100% - 2px);height:10px}  /* hover bridge on the trigger */
+.navpop .mi{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 11px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap}
+.navpop .mi:hover{background:var(--purple-soft);color:var(--brand)}
+.navpop .mi.active{color:var(--brand);background:var(--purple-soft)}
+.mtc{font-size:10px;font-weight:800;background:#e3e8ef;color:var(--muted);border-radius:999px;padding:1px 7px;min-width:16px;text-align:center;flex:0 0 auto}
+.mtc.due{background:var(--red);color:#fff}
+.mtc+.mtc{margin-left:4px}
+.hamdot{position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--panel)}
 /* tour "you are here" highlight — the active section pops while the rest of the header dims */
 .top.tut-lift{z-index:9502;pointer-events:none}
 .tab.tour-here{background:var(--brand);color:#fff;border-radius:9px 9px 3px 3px;border-bottom-color:var(--brand);box-shadow:0 3px 14px rgba(112,72,232,.42)}
@@ -39,7 +59,10 @@ body{margin:0;font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-s
 .pipe b{color:var(--ink)}.pipe .arr{color:#c2cad6}
 .gearbtn{font:inherit;font-weight:600;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:9px;padding:7px 12px;cursor:pointer}
 .gearbtn:hover{border-color:#c8d2e8;color:var(--ink)}
-.crumbrow{padding-top:7px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.crumbrow{padding-top:6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+#tutPillSlot{display:flex;align-items:center;flex:0 0 auto}
+.crumbrow .tut-pill{font-size:10.5px;padding:3px 10px;margin:0}   /* smaller, lives up here now */
+.tab.tour-here>.tc{box-shadow:0 0 0 2px var(--brand)}            /* badge ring matches the lifted tab */
 .iconbtn{font:inherit;font-size:15px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:9px;width:34px;height:34px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 .iconbtn:hover{border-color:#c8d2e8;color:var(--ink)}
 .iconbtn:disabled{opacity:.4;cursor:not-allowed}
@@ -531,11 +554,12 @@ tr.resolving .soak.wait{animation:pulse 1.3s ease-in-out infinite}
 
 <div class="top">
   <div class="topin crumbrow">
+    <div id="tutPillSlot"></div>
     <div class="spacer"></div>
     <div class="pipe">List Builder <span class="arr">→</span> Enrichment <span class="arr">→</span> Outreach Engine <span class="arr">→</span> <b style="color:var(--brand)">LinkedIn Engine</b></div>
   </div>
   <div class="topin">
-    <div class="brand"><span class="li">in</span>LinkedIn Engine <span style="background:#f59e0b;color:#111;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;margin-left:6px;letter-spacing:.6px;vertical-align:middle" title="You are viewing the front-end PROTOTYPE (mock data), not the real tool">PROTOTYPE</span></div>
+    <div class="brand"><span class="li">in</span><span class="bcol"><span class="bname">LinkedIn Engine</span><span class="pbadge" title="You are viewing the front-end PROTOTYPE (mock data), not the real tool">PROTOTYPE</span></span></div>
     <div class="tabs" id="tabs"></div>
     <div class="spacer"></div>
     <button class="iconbtn" data-tut="settings-btn" onclick="openSettings()" title="Settings">⚙</button>
@@ -1344,26 +1368,35 @@ function orderedCols(){
 
 const TABS=[["dash","Dashboard"],["prospects","Prospects"],["pipeline","Pipeline"],["followup","Follow-up"],["engage","Engage"],
   ["connections","Connections"],["invitations","Invitations"],["intro","Message Funnel"],["campaigns","Campaigns"],["messages","Messages"]];
+/* Per-key badge DATA, reused by the floating top-nav badges and the inline menu badges. */
+function _badges(k){
+  const out=[]; let due=false;
+  if(k==="prospects"){const n=people.filter(p=>["warming","request_sent"].includes(p.stage)).length;out.push({t:n});}
+  else if(k==="pipeline"){const n=people.filter(inPipelineNow).length;const acc=people.filter(p=>p.stage==="accepted"&&inPipelineNow(p)).length;out.push({t:n,due:!!acc,title:`${n} in the pipeline${acc?" \u00b7 "+acc+" awaiting an intro":""}`});if(acc)due=true;}
+  else if(k==="followup"){const open=followUps.filter(f=>!f.closedAt);const d=open.filter(f=>f.dueAt&&f.dueAt<=TODAY).length;out.push({t:open.length,due:!!d,title:`${open.length} open \u00b7 ${d} due now`});if(d)due=true;}
+  else if(k==="engage"){const n=engageablePosts().length;out.push({t:n});}
+  else if(k==="campaigns"){const n=msgQueue.filter(m=>m.status==="pending").length;out.push({t:n,due:!!n,title:`${n} messages awaiting approval`});if(n)due=true;}
+  else if(k==="connections"){const n=people.filter(p=>["accepted","intro_sent"].includes(p.stage)).length;const um=untaggedMeta();out.push({t:n});if(um.untaggedNew){out.push({t:um.untaggedNew,due:true,title:`${um.untaggedNew} new connection${um.untaggedNew!==1?'s':''} still need tagging${um.untaggedBacklog?' (+ '+um.untaggedBacklog+' older backlog)':''}`});due=true;}}
+  else if(k==="invitations"){const n=invitations.filter(v=>v.direction==="received"&&v.status==="pending").length;out.push({t:n,due:!!n,title:`${n} incoming invitations`});if(n)due=true;}
+  else if(k==="messages"){const n=convos.reduce((s,c)=>s+(c.archived?0:c.unreadCount),0);out.push({t:n,due:!!n});if(n)due=true;}
+  return {items:out,due};
+}
+function _tc(k,cls){return _badges(k).items.map(b=>`<span class="${cls}${b.due?" due":""}"${b.title?` title="${b.title}"`:""}>${b.t}</span>`).join("");}
+/* Top nav: Dashboard \u00b7 Prospects \u00b7 Pipeline\u25be(Contact Pipeline / Message Funnel) \u00b7 Engage \u00b7
+   Follow-up \u00b7 Campaigns \u00b7 \u2630(Connections / Invitations / Messages). TABS/go() are unchanged \u2014
+   they still own the full view list; this only changes how the nav is laid out. */
 function renderTabs(){
-  $("tabs").innerHTML=TABS.map(([k,l])=>{
-    let badge="";
-    if(k==="prospects"){const n=people.filter(p=>["warming","request_sent"].includes(p.stage)).length;badge=`<span class="tc">${n}</span>`;}
-    if(k==="pipeline"){const n=people.filter(inPipelineNow).length;
-      const acc=people.filter(p=>p.stage==="accepted"&&inPipelineNow(p)).length;
-      badge=`<span class="tc${acc?" due":""}" title="${n} in the pipeline${acc?" \u00b7 "+acc+" awaiting an intro":""}">${n}</span>`;}
-    if(k==="followup"){const open=followUps.filter(f=>!f.closedAt);
-      const due=open.filter(f=>f.dueAt&&f.dueAt<=TODAY).length;
-      badge=`<span class="tc${due?" due":""}" title="${open.length} open\u2009\u00b7\u2009${due} due now">${open.length}</span>`;}
-    if(k==="engage"){const n=engageablePosts().length;badge=`<span class="tc">${n}</span>`;}
-    if(k==="connections"){const n=people.filter(p=>["accepted","intro_sent"].includes(p.stage)).length;
-      const um=untaggedMeta();
-      badge=`<span class="tc">${n}</span>`+(um.untaggedNew?`<span class="tc due" title="${um.untaggedNew} new connection${um.untaggedNew!==1?'s':''} since ${(settings.untagged_watch_since||'').slice(0,10)} still need tagging${um.untaggedBacklog?' (+ '+um.untaggedBacklog+' older backlog)':''}">${um.untaggedNew}</span>`:"");}
-    if(k==="campaigns"){const n=msgQueue.filter(m=>m.status==="pending").length;badge=`<span class="tc${n?" due":""}" title="${n} messages awaiting approval">${n}</span>`;}
-    if(k==="messages"){const n=convos.reduce((s,c)=>s+(c.archived?0:c.unreadCount),0);badge=`<span class="tc${n?" due":""}">${n}</span>`;}
-    if(k==="invitations"){const n=invitations.filter(v=>v.direction==="received"&&v.status==="pending").length;badge=`<span class="tc${n?" due":""}" title="${n} incoming invitations">${n}</span>`;}
-    const th=(window.__tourTab===k)?" tour-here":"";
-    return `<div class="tab ${ST.tab===k?"active":""}${th}" onclick="go('${k}')">${l}${badge}</div>`;
-  }).join("");
+  const tour=window.__tourTab;
+  const T=(k,l)=>{const a=ST.tab===k?" active":"";const th=(tour===k)?" tour-here":"";return `<div class="tab${a}${th}" onclick="go('${k}')"><span class="tlab">${l}</span>${_tc(k,"tc")}</div>`;};
+  const mi=(k,l)=>`<div class="mi${ST.tab===k?" active":""}" onclick="event.stopPropagation();go('${k}')"><span>${l}</span>${_tc(k,"mtc")}</div>`;
+  const pA=(ST.tab==="pipeline"||ST.tab==="intro")?" active":"", pT=(tour==="pipeline"||tour==="intro")?" tour-here":"";
+  const pipeline=`<div class="tab parent${pA}${pT}" onclick="go('pipeline')"><span class="tlab">Pipeline</span>${_tc("pipeline","tc")}<span class="caret">\u25be</span>`+
+    `<div class="navpop">${mi("pipeline","Contact&nbsp;Pipeline")}${mi("intro","Message&nbsp;Funnel")}</div></div>`;
+  const ham=["connections","invitations","messages"], L={connections:"Connections",invitations:"Invitations",messages:"Messages"};
+  const hAny=ham.some(k=>_badges(k).due), hA=ham.includes(ST.tab)?" active":"", hT=ham.includes(tour)?" tour-here":"";
+  const hamburger=`<div class="tab hamburger${hA}${hT}" title="Connections, Invitations & Messages">\u2630${hAny?'<span class="hamdot"></span>':""}`+
+    `<div class="navpop right">${ham.map(k=>mi(k,L[k])).join("")}</div></div>`;
+  $("tabs").innerHTML=T("dash","Dashboard")+T("prospects","Prospects")+pipeline+T("engage","Engage")+T("followup","Follow-up")+T("campaigns","Campaigns")+hamburger;
 }
 function go(t){ST.tab=t;ST.sel.clear();renderTabs();TABS.forEach(([k])=>$("v-"+k).classList.toggle("show",k===t));render();}
 function render(){TODAY=computeToday();renderTabs();const r={dash:renderDash,prospects:renderProspects,pipeline:renderPipeline,
@@ -3508,7 +3541,7 @@ const TUT_STEPS=[
 {tab:"engage",sel:["#v-engage .post","#v-engage .feedwrap"],title:"AI replies in YOUR voice",body:"<b>Draft reply</b> asks an AI to write the comment as <i>you</i>, using the voice profile in Settings. A second model (the <b>critic</b>) reviews the draft, then a final pass strips em-dashes and banned hype words. You always edit and approve before anything is posted — and every edit you make teaches the tool your voice."},
 {tab:"engage",sel:["#v-engage .grptitle.low","#v-engage .qfrow"],title:"The low-value filter",body:"Not every post deserves your time. Hiring announcements, reposts, and promos are auto-labeled and moved into this group so you can skip the noise or clear it in one click. Mislabeled something? One click restores it to the main feed."},
 {tab:"connections",sel:["#connTbody .tagcell","#v-connections .tablewrap"],title:"Triage: tags are the nervous system",body:"This is your whole network as a CRM table, and <b>tags drive everything</b>: <span class=\"tag\">agency</span> marks someone as an outreach target, while <span class=\"tag block\">⛔ personal / client / omit / do-not-pitch</span> BLOCK them from ever receiving automated outreach. These quick-tag chips let you tag anyone with one click, straight from the list."},
-{tab:"connections",sel:["#v-connections .tagfilter","#v-connections .toolbar"],title:"Tri-state filters & the red badge",body:"Click a tag chip once to show only people <b>with</b> it, twice to show people <b>without</b> it, a third time to turn it off. And look at the tab bar: the <b>red number on Connections</b> counts NEW connections that still need tagging (hover it — it also tracks the older backlog). Untagged people are invisible to every rule, so triage that number to zero."},
+{tab:"connections",sel:["#v-connections .tagfilter","#v-connections .toolbar"],title:"Tri-state filters & the untagged flag",body:"Click a tag chip once to show only people <b>with</b> it, twice to show people <b>without</b> it, a third time to turn it off. A red dot on the <b>☰ More menu</b> (top nav) flags NEW connections that still need tagging — Connections lives in that menu now. Untagged people are invisible to every rule, so triage them to zero."},
 {tab:"connections",sel:["#connTbody .summcell","#v-connections .tablewrap"],title:"Summary & role badges",body:"The Summary column is the AI researcher's one-line read on each person, plus a role badge: <b>🛡 principal</b> (agency owner — the person you actually want), <b>agency staff</b>, <b>freelance/solo</b>, or <b>in-house</b>. It answers “who is this?” without opening LinkedIn."},
 {tab:"connections",sel:["[data-tut=conn-viewsbtn]","#v-connections .toolbar"],title:"Saved views",body:"Once you've arranged columns and filters you like, save the layout as a named view — “triage mode”, “principals only” — and flip between them here. Views remember column order, visibility, and widths, and persist in your browser."},
 {tab:"invitations",sel:["#v-invitations .seg","#v-invitations h1"],title:"Invitations: the raw ledger",body:"Every pending connection invitation, in <b>both directions</b>, synced from LinkedIn — including requests you sent outside this tool. A big pile of stale sent invites looks spammy, so you can withdraw them here (the real tool can auto-withdraw after a set number of days), and accept or ignore the ones you've received."},
@@ -3536,7 +3569,7 @@ const TUT_SPOTS=[
 {tab:"engage",sel:"#v-engage .post .ph",title:"A post card",body:"Like, skip, mute, mark low-value — or Draft reply for an AI draft in your voice (add an optional steering note first). You always edit and approve before anything goes out.",step:9},
 {tab:"connections",sel:"#v-connections h1",title:"Connections",body:"Your whole network as a CRM: search, filter, sort, choose and reorder columns, drill into anyone. Tagging here is what makes the rest of the tool smart.",step:11},
 {tab:"connections",sel:['th[data-col="tags"]',"#v-connections .listtbl thead"],title:"Quick-tag column",body:"One-click tag chips on every row. “agency” marks outreach targets; personal / client / omit / do-not-pitch BLOCK automated outreach to that person.",step:11},
-{tab:"*",sel:"#tabs .tab:nth-child(5)",title:"The red untagged badge",body:"When a red number shows on the Connections tab, that many NEW connections still need tags (hover it to see the older backlog too). Untagged people are invisible to filters and outreach rules — triage the number to zero.",step:12},
+{tab:"*",sel:".tab.hamburger",title:"The ☰ More menu",body:"Connections, Invitations and Messages live here — reference views you don't work day to day. A red dot on this menu flags something needing attention, e.g. NEW connections that still need tagging (untagged people are invisible to filters and outreach rules). Hover to open it.",step:12},
 {tab:"invitations",sel:"#v-invitations h1",title:"Invitations",body:"Pending invites in both directions, synced from LinkedIn. Withdraw stale sent ones; accept or ignore received ones.",step:15},
 {tab:"intro",sel:"#v-intro h1",title:"Message Funnel",body:"All intro and follow-up templates with live reply stats and A/B variants. Everything the tool sends comes from here.",step:16},
 {tab:"intro",sel:"#v-intro .opt .of",title:"Message stats",body:"The footer of every card: how many people got it and its reply rate (hover for replied/viewed). 🏆 marks the best performer in that stage.",step:16},
@@ -3574,8 +3607,10 @@ function findEl(sel){const list=Array.isArray(sel)?sel:[sel];for(const s of list
 const pill=document.createElement("button");
 pill.id="tutPill";pill.className="tut-pill";pill.title="Tutorial mode: hotspots + guided tour";
 pill.onclick=()=>TUT.setMode(isOn()?"off":"on");
+const pillSlot=document.getElementById("tutPillSlot");   // now lives top-left on the breadcrumb row
 const setBtn=document.querySelector('[data-tut=settings-btn]');
-if(setBtn)setBtn.parentNode.insertBefore(pill,setBtn);
+if(pillSlot)pillSlot.appendChild(pill);
+else if(setBtn)setBtn.parentNode.insertBefore(pill,setBtn);
 function syncPill(){pill.textContent=isOn()?"🎓 Tutorial ON":"🎓 Tutorial OFF";pill.classList.toggle("off",!isOn());}
 
 /* ---- hotspots ---- */
