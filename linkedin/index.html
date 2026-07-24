@@ -19,12 +19,16 @@ body{margin:0;font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-s
 /* ---- top bar ---- */
 .top{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
 .topin{display:flex;align-items:center;gap:24px;padding:0 24px;max-width:1360px;margin:0 auto}
-.brand{font-weight:700;font-size:15px;letter-spacing:.2px;padding:9px 0 7px;display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.brand{font-weight:700;font-size:15px;letter-spacing:.2px;padding:15px 0 13px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
 .brand .li{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:14px;flex:0 0 auto}
 .brand .bcol{display:flex;flex-direction:column;justify-content:center;line-height:1.08}
 .brand .bname{font-weight:700;font-size:15px;white-space:nowrap}
 .brand .pbadge{align-self:flex-start;background:#f59e0b;color:#111;font-size:8px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.6px;margin-top:2px;line-height:1.45}
 .brand small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:1px}
+/* main nav row only (the breadcrumb/utility row stays compact): more room around + between items */
+.topin:not(.crumbrow){gap:36px;padding-left:26px;padding-right:26px}
+.topin:not(.crumbrow) .tabs{gap:9px}
+.topin:not(.crumbrow) .tab{padding:0 19px}
 .tabs{display:flex;gap:2px;align-self:stretch}
 .tab{position:relative;display:flex;align-items:center;gap:5px;padding:0 15px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
 .tab:hover{color:var(--ink)}
@@ -1551,7 +1555,7 @@ function renderDash(){
       <span class="pill ${t.priority<=2?'p-red':t.priority<=3?'p-amb':'p-gray'}" title="priority">P${t.priority}</span>
       <div class="fv" style="min-width:0"><b>${esc(TASK_LABEL[t.type]||t.type)}</b>${p?` · <span class="linkish" onclick="openPerson(${p.id})">${esc(p.name)}</span>`:''}</div>
       <div style="margin-left:auto;white-space:nowrap">
-        <button class="btn green ghost sm" onclick="completeTask(${t.id})">✓ Done</button>
+        <button class="btn green sm" onclick="completeTask(${t.id})">✓ Done</button>
         <button class="btn gray ghost sm" onclick="snoozeTask(${t.id})">Snooze</button></div></div>`;}).join("")||'<div class="muted">Queue clear — nice.</div>'}
   </div>`;})()}
   <div class="grid2">
@@ -3514,7 +3518,8 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden){const t=c
 .tut-b.pri{background:var(--accent);border-color:var(--accent);color:#fff}
 /* hotspot explainer card + tab intro card */
 .tut-spotcard{position:fixed;z-index:8500;width:min(330px,calc(100vw - 24px));background:var(--panel);border:1px solid var(--line);border-radius:11px;box-shadow:0 8px 26px rgba(18,28,45,.22);padding:13px 14px 11px}
-.tut-tabcard{position:fixed;right:18px;bottom:18px;z-index:8400;width:min(320px,calc(100vw - 36px));background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:11px;box-shadow:0 8px 26px rgba(18,28,45,.22);padding:13px 14px 11px}
+.tut-tabdim{position:fixed;inset:0;background:rgba(15,20,30,.42);z-index:8399}   /* dim layer behind the intro card */
+.tut-tabcard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8400;width:min(430px,calc(100vw - 40px));background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;box-shadow:0 24px 60px rgba(15,20,30,.4);padding:20px 22px 18px}
 .tut-link{color:var(--accent);font-weight:700;font-size:12px;cursor:pointer}
 .tut-link:hover{text-decoration:underline}
 /* settings row */
@@ -3648,13 +3653,15 @@ function spotCardOutside(e){if(spotCard&&!spotCard.contains(e.target))closeSpotC
 function closeSpotCard(){if(spotCard){spotCard.remove();spotCard=null;document.removeEventListener("click",spotCardOutside);}}
 
 /* ---- tab intro cards (once per tab per session) ---- */
-let tabCard=null;
-function hideTabCard(){if(tabCard){tabCard.remove();tabCard=null;}}
+let tabCard=null,tabDim=null;
+function hideTabCard(){if(tabCard){tabCard.remove();tabCard=null;}if(tabDim){tabDim.remove();tabDim=null;}}
 function maybeShowTabCard(tab){
   if(!isOn()||tour.on||seenTabs.has(tab)||!TUT_TABS[tab])return;
   if(document.getElementById("modalwrap").classList.contains("show"))return;   // welcome open etc.
   seenTabs.add(tab);hideTabCard();
   const t=TUT_TABS[tab];
+  tabDim=document.createElement("div");tabDim.className="tut-tabdim";tabDim.onclick=()=>TUT.hideTab();  // click-away dismiss
+  document.body.appendChild(tabDim);
   const c=document.createElement("div");c.className="tut-tabcard";
   c.innerHTML=`<div class="tut-ct">${t.title}</div><div class="tut-cb">${t.body}</div>
     <div class="tut-cf"><span class="tut-link" onclick="TUT.start(${t.step-1})">▶ Tour this tab</span>
