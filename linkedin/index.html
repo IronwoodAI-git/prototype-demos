@@ -219,8 +219,66 @@ body.resizing{cursor:col-resize;user-select:none}
 .chip2 .c{font-size:10.5px;font-weight:700;background:#eef1f5;border-radius:999px;padding:0 6px}
 .chip2.set .c{background:#fff}
 /* segmented funnel kanban */
-.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;align-items:start}
-@media(max-width:1100px){.kanban{grid-template-columns:repeat(2,1fr)}}
+/* PIPELINE BOARD — columns come from the funnel's stages, so the count is user-defined. Give each
+   a min width and let the board scroll inside its own wrapper rather than squeezing to nothing:
+   a 6-stage funnel used to crush every column to ~160px. */
+.kanwrap{overflow-x:auto;padding-bottom:8px}
+/* sync-now control */
+.h1row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.syncbar{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+.syncbar.working{color:var(--accent);font-weight:600}
+.syncbar.err{color:#dc2626;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.28);
+  border-radius:9px;padding:5px 10px;max-width:520px}
+.syncnote{color:var(--muted)}
+.syncbar .mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Consolas,monospace}
+.spin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--accent);
+  border-radius:50%;display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* drag to re-seat a card between columns */
+.pcard[draggable=true]{cursor:grab}
+.pcard.dragging{opacity:.45;cursor:grabbing}
+.kcol.droppable{outline:1px dashed var(--line);outline-offset:3px;border-radius:10px}
+.kcol.over{outline:2px dashed var(--accent);background:var(--accent-soft,rgba(37,99,235,.06))}
+/* follow-up list */
+.hcount{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px}
+.fustats{display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap}
+.fustat{font-size:12px;color:var(--muted);background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:4px 11px}
+.fustat b{color:var(--ink);font-size:13px}
+.fustat.hot{border-color:#f0dca8;background:#fff8e6;color:#7a5b12}
+.fustat.hot b{color:#7a5b12}
+.furow{display:grid;grid-template-columns:minmax(190px,1.4fr) 120px 132px minmax(200px,1.6fr) auto;
+  gap:12px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:11px;
+  background:var(--panel);margin-bottom:9px}
+.furow.due{border-color:#f0dca8;background:#fffdf7}
+.furow.done{opacity:.62}
+.fu-who{display:flex;gap:9px;align-items:center;min-width:0;cursor:pointer}
+.fu-nm{font-weight:650;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-hl{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-when{font-size:12px}
+.fu-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+.fu-date{font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:7px;
+  background:var(--bg);color:var(--ink);width:100%}
+.fu-notes{font:inherit;font-size:12.5px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  background:var(--bg);color:var(--ink);resize:vertical;width:100%}
+.fu-acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.empty{border:1px dashed var(--line);border-radius:11px;padding:22px;color:var(--muted);font-size:13px}
+@media(max-width:1000px){.furow{grid-template-columns:1fr 1fr;gap:9px}
+  .fu-who{grid-column:1/-1}.fu-notes{grid-column:1/-1}.fu-acts{grid-column:1/-1;flex-direction:row}}
+/* thread-mirror lag: sends the tool has logged but the sync has not brought back yet */
+.thrpop .tlag{background:#fff8e6;border:1px solid #f0dca8;color:#7a5b12;border-radius:7px;
+  padding:6px 8px;margin:0 0 7px;font-size:11.5px;line-height:1.45}
+.lagdot{color:var(--amber,#c98a12);margin-left:4px;font-size:9px;vertical-align:2px}
+/* exited drawer — collapsed by default so it reads as an archive, not another column */
+.exwrap{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.exhead{display:inline-flex;align-items:center;gap:7px;background:none;border:0;cursor:pointer;
+  font:600 12.5px/1 inherit;color:var(--muted);padding:4px 2px}
+.exhead:hover{color:var(--ink)}
+.exhead .cv{font-size:10px;width:9px}
+.exhead .n{background:var(--line);color:var(--ink);border-radius:999px;padding:1px 7px;font-size:11px}
+.exlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:9px}
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(212px,1fr));gap:13px;align-items:start;min-width:min-content}
+@media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(212px,1fr))}}
 .kcol{background:#f1f3f7;border:1px solid var(--line);border-radius:12px;padding:11px;min-height:80px}
 .kcol .kh{display:flex;align-items:center;justify-content:space-between;margin:0 2px 9px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
 .kcol .kh .n{background:#fff;border:1px solid var(--line);border-radius:999px;padding:0 8px;font-size:11px}
@@ -231,8 +289,34 @@ body.resizing{cursor:col-resize;user-select:none}
 .pcard .pc-hl{color:var(--muted);font-size:11px;line-height:1.35;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pcard .pc-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .pcard .pc-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+/* secondary row: exit / re-bucket. Muted so it never competes with the send button. */
+.pcard .pc-acts2{display:flex;gap:5px;margin-top:5px;align-items:center;flex-wrap:wrap}
+.pcard .pc-acts2 .btn{padding:2px 6px;font-size:10.5px}
+.pcard select.mvstage{font-size:10.5px;padding:2px 4px;max-width:132px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--muted)}
 .miniinfo{font-size:11px;color:var(--muted);margin-top:5px}
 .miniinfo.stale{color:var(--red);font-weight:600}
+/* THREAD HOVERCARD — the real synced LinkedIn exchange, revealed by hovering the last-touch stamp.
+   The event log only carries wording for sends made AFTER send-logging shipped, so for anything
+   older this conversation IS the record of what actually went out. */
+.thr{position:relative;display:inline-block;cursor:help;border-bottom:1px dotted currentColor}
+.thrpop{display:none;position:absolute;z-index:60;left:0;top:100%;margin-top:5px;width:330px;
+  max-height:326px;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,.16);padding:9px 10px;cursor:auto;
+  text-align:left;font-weight:400;color:var(--ink);text-transform:none;letter-spacing:0}
+.thr:hover .thrpop,.thrpop:hover{display:block}
+/* transparent hover bridge across the 5px gap so the popup doesn't drop while the cursor travels
+   from the link into it. The strip is part of .thrpop, so hovering it counts as .thrpop:hover. */
+.thrpop::before{content:"";position:absolute;left:0;right:0;top:-7px;height:7px}
+.thrpop.up::before{top:auto;bottom:-7px}
+.thrpop.up{top:auto;bottom:100%;margin:0 0 5px}
+.thrpop.rt{left:auto;right:0}
+.thrpop .thh{font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);
+  margin-bottom:6px;position:sticky;top:-9px;background:var(--panel);padding:2px 0 5px}
+.thrpop .tm{font-size:11.5px;line-height:1.45;margin-bottom:7px;padding:6px 8px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.thrpop .tm.me{background:var(--purple-soft);border:1px solid #d9d2f0}
+.thrpop .tm.them{background:var(--teal-soft);border:1px solid #bfe3d8}
+.thrpop .tw{font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);display:block;margin-bottom:2px}
+.thrpop .tnone{font-size:11.5px;color:var(--muted);padding:4px 0}
 .cell-stale{color:var(--red);font-weight:600}
 .soak{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
 .soak.ready{color:var(--green)}.soak.wait{color:var(--amber)}
@@ -256,6 +340,11 @@ tr.resolving .soak.wait{animation:pulse 1.3s ease-in-out infinite}
 .post.low{opacity:.74;border-left-color:#c2cad6;background:#fbfcfd}
 .post.done{opacity:.62}
 .engbadge{display:inline-block;font-size:10.5px;font-weight:600;color:var(--teal);background:var(--teal-soft);border:1px solid #c5e8df;border-radius:999px;padding:0 7px;margin-left:7px}
+/* Pipeline marker on Engage cards: where this author sits in the outreach funnel, hovering into the
+   DM thread so the feed shows not just past comments but the messages this person has been sent. It's
+   a .thr trigger wrapping a stage pill — kill the .thr dotted underline (a pill reads better plain). */
+.pipemark{border-bottom:none;margin-left:6px;vertical-align:baseline}
+.pipemark .pill{cursor:help;font-size:10px}
 .grptitle.low{color:var(--muted)}
 .post .ph{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .post .ph .meta{flex:1;min-width:0}
@@ -281,19 +370,71 @@ tr.resolving .soak.wait{animation:pulse 1.3s ease-in-out infinite}
 .errbar{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.32);color:var(--red);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .sidecard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:var(--shadow);margin-bottom:14px}
 .sidecard h4{margin:0 0 9px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
-/* message library */
-.libcat{margin-bottom:22px}
-.libcathead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 2px 11px;padding-bottom:7px;border-bottom:2px solid var(--line)}
-.libcathead .catname{font-weight:700;font-size:15px}
-.introitem{border:1px solid var(--line);border-radius:11px;padding:14px 15px;margin-bottom:11px;background:#fff}
-.introitem.alt{margin-left:26px;border-left:3px solid var(--purple-soft)}
-.introitem .ih{display:flex;align-items:center;gap:10px;margin-bottom:7px}
-.introitem .ititle{font-weight:600;font-size:14px}
-.introitem .ibody{font-size:12.5px;color:var(--muted);white-space:pre-wrap;border-left:2px solid var(--line);padding-left:11px;margin:7px 0}
-.abstat{display:flex;gap:18px;font-size:12px;align-items:center;flex-wrap:wrap}
-.abstat .s b{font-size:15px;display:block;color:var(--ink)}
-.abstat .s span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+/* message funnel */
 .winner{border-color:#c7e3c8;background:var(--green-soft)}
+/* ── MESSAGE LIBRARY BOARD (funnel model v2) ───────────────────────────────────────────
+   A FUNNEL is a board. Each STAGE is a tinted grouping container (a column); each OPTION is a
+   white card inside it; each BRANCH is a chip nested in the card of the message it came from.
+   Clicking a branch drills into that branch's own funnel — a grid can't express a tree. */
+.libwrap{overflow-x:auto;padding-bottom:8px}
+.board{display:flex;gap:12px;align-items:flex-start;min-width:min-content}
+.stagecol{flex:1 1 250px;min-width:250px;background:#eef1f5;border:1px solid var(--line);border-radius:12px;padding:10px}
+.stagecol.addcol{flex:0 0 118px;min-width:118px;background:transparent;border:1px dashed #c5ccd6;color:var(--muted);
+  font-size:12px;text-align:center;padding:20px 10px;cursor:pointer;align-self:stretch;min-height:150px;
+  display:flex;align-items:center;justify-content:center}
+.stagecol.addcol:hover{border-color:var(--brand);color:var(--brand)}
+.sh{display:flex;align-items:center;gap:6px;margin:0 2px 9px}
+.sh b{font-size:13px}
+.sh .n{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;background:#fff;
+  border:1px solid var(--line);border-radius:20px;padding:1px 7px}
+.sh .sx{margin-left:auto;color:var(--muted);cursor:pointer;font-size:14px;padding:0 3px;border-radius:5px}
+.sh .sx:hover{background:#fff;color:var(--ink)}
+/* stage ⋯ menu — delete used to be hidden behind "blank the rename prompt", which nobody
+   would ever guess. The actions are now listed. */
+.sh{position:relative}
+.smenu{position:absolute;right:0;top:100%;margin-top:4px;z-index:70;min-width:172px;
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;
+  box-shadow:0 10px 28px rgba(16,24,40,.16);padding:4px;text-transform:none;letter-spacing:0}
+.smenu button{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  font:500 12.5px/1.2 inherit;color:var(--ink);padding:7px 9px;border-radius:6px}
+.smenu button:hover{background:#f1f3f7}
+.smenu button.danger{color:var(--red)}
+.smenu button.danger:hover{background:rgba(220,38,38,.09)}
+.smenu .sep{height:1px;background:var(--line);margin:4px 2px}
+.opt{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:9px;
+  box-shadow:var(--shadow);font-size:12px}
+.opt.alt{margin-left:11px;border-left:3px solid var(--purple-soft)}
+.opt.arch{opacity:.6;background:#fafbfc;box-shadow:none}
+.opt.winner{border-color:#c7e3c8;background:var(--green-soft)}
+.opt .oh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.opt .ot{font-weight:600;font-size:12.5px;line-height:1.3;min-width:0;overflow-wrap:anywhere;margin-top:4px;width:100%}
+.opt .ob{color:var(--muted);white-space:pre-wrap;line-height:1.45;font-size:11.5px;border-left:2px solid var(--line);
+  padding-left:8px;margin:6px 0 0;cursor:pointer;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.opt .ob.open{display:block;-webkit-line-clamp:unset}
+.opt .of{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px;font-size:10.5px;color:var(--muted)}
+.opt .of b{font-size:11.5px;color:var(--ink)}
+.opt .oacts{display:flex;gap:3px;margin-left:auto}
+.opt .oacts .btn{padding:2px 6px;font-size:10.5px}
+.opt select.ov{font-size:10.5px;padding:2px 4px;max-width:104px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--muted)}
+/* branches — owned by ONE option, so they live INSIDE its card */
+.brs{margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)}
+.brs .blbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px}
+.br{display:flex;align-items:center;gap:6px;background:var(--teal-soft);border:1px solid #bfe3d8;border-radius:7px;
+  padding:4px 7px;margin-bottom:4px;font-size:11.5px;cursor:pointer}
+.br:hover{border-color:var(--teal)}
+.br .bk{font:600 10px ui-monospace,Menlo,monospace;background:#fff;border:1px solid #bfe3d8;border-radius:4px;padding:0 4px}
+.br .bl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br .bgo{margin-left:auto;color:var(--teal);font-weight:700;white-space:nowrap}
+.br.add{background:transparent;border:1px dashed #c5ccd6;color:var(--muted);justify-content:center}
+.br.add:hover{border-color:var(--teal);color:var(--teal)}
+.addmsg{width:100%;border:1px dashed #c5ccd6;border-radius:9px;background:transparent;color:var(--muted);
+  padding:7px;font-size:11.5px;cursor:pointer}
+.addmsg:hover{border-color:var(--brand);color:var(--brand)}
+/* drill-down breadcrumb */
+.crumb{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 11px}
+.crumb a{color:var(--accent);cursor:pointer}
+.crumb a:hover{text-decoration:underline}
+.crumb .cur{background:var(--teal-soft);border:1px solid #bfe3d8;border-radius:20px;padding:2px 10px;color:#0b6a56;font-weight:600}
 /* messages */
 .msglay{display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;min-height:540px}
 @media(max-width:840px){.msglay{grid-template-columns:1fr}}
@@ -410,6 +551,7 @@ tr.resolving .soak.wait{animation:pulse 1.3s ease-in-out infinite}
   <section class="view" id="v-invitations"></section>
   <section class="view" id="v-intro"></section>
   <section class="view" id="v-campaigns"></section>
+  <section class="view" id="v-followup"></section>
   <section class="view" id="v-messages"></section>
 </div>
 
@@ -490,6 +632,10 @@ function fuLabel(p){return p.stage!=="intro_sent"?"":(p.fuStep===0?"Intro sent":
 function daysAgoISO(n){const d=Date.parse(TODAY+"T00:00:00")-n*86400000;const dt=new Date(d);
   return dt.getUTCFullYear()+"-"+String(dt.getUTCMonth()+1).padStart(2,"0")+"-"+String(dt.getUTCDate()).padStart(2,"0");}
 function fmtDate(d){if(!d)return"—";const[y,m,day]=d.split("-").map(Number);return MONTHS[m-1]+" "+day;}
+/* "YYYY-MM-DD HH:MM:SS" — the normalised form the live build's /api/bootstrap emits as `ts`, so the
+   mirror-lag comparison behaves identically here. Day-precision `at` can't express lag at all: a
+   send and a message on the same day compare equal. */
+function tsAt(dayISO,h,mi){return dayISO+" "+String(h).padStart(2,"0")+":"+String(mi||0).padStart(2,"0")+":00";}
 /* business-days-since helper mirrors funnel_send.business_days_since() — weekends excluded */
 function bizDaysSince(iso){let n=0;let cur=Date.parse(iso+"T00:00:00");const end=Date.parse(TODAY+"T00:00:00");
   while(cur<end){cur+=86400000;const wd=new Date(cur).getUTCDay();if(wd!==0&&wd!==6)n++;}return n;}
@@ -513,6 +659,8 @@ function mkPerson(stage,opts){
     addedAt:daysAgoISO(2+Math.floor(rnd()*9)), connectedAt:null, introSentAt:null,
     lastActivityAt:null,  // most recent outbound touch (intro or follow-up) — drives the "last touch" stamp
     fuStep:0,  // follow-up funnel step after intro (0 = intro only, 1..3 = follow-ups)
+    fuTrack:"baseline",  // LEGACY (v1 branch key) — nothing reads it; the funnel lives in funnelId
+    funnelId:null, funnelExited:false, replyClass:null, replyClassifiedAt:null,
     warm:{viewed:false, commented:false, liked:false}
   },opts||{});
   people.push(p); return p;
@@ -549,6 +697,7 @@ FU_SPREAD.forEach(step=>{const p=mkPerson("intro_sent");
   // last touch = the most recent outbound (intro for step 0, else the latest follow-up). Some run stale.
   p.lastActivityAt=daysAgoISO(step===0?(1+Math.floor(rnd()*5)):(1+Math.floor(rnd()*8)));
   if(chance(.32)){p.replyCount=1+Math.floor(rnd()*3);p.lastInboundAt=daysAgoISO(Math.floor(rnd()*5));}});
+
 /* --- Connections enrichment: the controlled tag set (incl. the blocking gate), the agency graph,
    and the name-review / freelance facets. Mirrors the live linkedin_connections + tags + agency_links. --- */
 const agencyDomain=name=>name.toLowerCase().replace(/[^a-z0-9]+/g,"")+".com";
@@ -593,54 +742,130 @@ people.forEach(p=>{ if(!chance(.6))return;
  pool.forEach((p,i)=>{p.tags=[];p.research=null;p.isStarred=false;
    p.connectedAt=i<2?daysAgoISO(2+i*4):daysAgoISO(60+i*40);});}
 
-/* ---- MESSAGE LIBRARY: reusable DM templates grouped by CATEGORY (intro + the three
-   follow-ups; the category list is extensible). Each can carry A/B alternates + reply stats. ---- */
-const MSG_CATS=[
-  {key:"intro",label:"Intro",hint:"First touch after a connection accepts"},
-  {key:"fu1",label:"Follow-up 1",hint:"First nudge if no reply"},
-  {key:"fu2",label:"Follow-up 2",hint:"Second nudge"},
-  {key:"fu3",label:"Follow-up 3",hint:"Final nudge before you let it rest"},
+/* ═══ FUNNEL MODEL v2 (2026-07-18) ═══════════════════════════════════════════════════════
+   funnel → stage → option → branch → a NEW funnel.
+
+   · FUNNEL  one ordered sequence of stages. Exactly one ROOT (the baseline drip); every branch
+             owns another. `funnels[].branchId` = the branch that spawned it (null on the root).
+   · STAGE   one step = one COLUMN of the library board. User-defined: rename, reorder, add a
+             5th/6th follow-up, delete. Stage 0 of the root funnel is the intro.
+   · OPTION  a message you might send at that stage. Several per stage; A/B alternates nest.
+   · BRANCH  a classified reply to ONE option — it exists only because that message asked a
+             question, so it is owned by `branches[].messageId`, NOT by the funnel. Answering it
+             diverts the person into `branches[].funnelId`, and they never return to the parent.
+
+   Why not the v1 model: v1 made a branch a global row spanning every stage, which implied
+   "answered 1–2" meant something at the Intro stage. It doesn't. See DESIGN.md §13.
+
+   `quickKeys` stays an OPTIONAL per-branch shortcut — the classifier hides the row when empty. */
+let funnels=[{id:1,label:"Baseline",branchId:null,isRoot:true,people:0}];
+let stages=[
+  {id:1,funnelId:1,label:"Intro",hint:"First touch after a connection accepts",sortOrder:0},
+  {id:2,funnelId:1,label:"Follow-up 1",hint:"First nudge if no reply",sortOrder:1},
+  {id:3,funnelId:1,label:"Follow-up 2",hint:"Second nudge",sortOrder:2},
+  {id:4,funnelId:1,label:"Follow-up 3",hint:"Final nudge before you let it rest",sortOrder:3},
 ];
-const catLabel=k=>(MSG_CATS.find(c=>c.key===k)||{label:k}).label;
-const stepCat=step=>step===0?"intro":"fu"+step;   // pipeline fu_step → library category
+let branches=[];
+const rootFunnel   = ()=>funnels.find(f=>f.isRoot||f.branchId==null)||funnels[0];
+const funnelById   = id=>funnels.find(f=>f.id===id);
+const stageById    = id=>stages.find(s=>s.id===id);
+const stagesOf     = fid=>stages.filter(s=>s.funnelId===fid).sort((a,b)=>a.sortOrder-b.sortOrder);
+const stageIndex   = sid=>{const s=stageById(sid); return s?stagesOf(s.funnelId).findIndex(x=>x.id===sid):-1;};
+const branchesOf   = mid=>branches.filter(b=>b.messageId===mid).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+const branchByFunnel=fid=>branches.find(b=>b.funnelId===fid);
+/* the funnel a person is riding, defaulting to the root for anyone not yet routed */
+const personFunnel = p=>funnelById(p.funnelId)||rootFunnel();
+const onBranch     = p=>{const f=personFunnel(p); return !!f&&!f.isRoot&&f.branchId!=null;};
+/* fuStep = index of the LAST stage sent (-1 = nothing sent in this funnel yet), so the NEXT
+   message is stage index fuStep+1. Returns null when they've finished the funnel.
+   `lastSentIx` does NOT trust the counter blind: on the ROOT funnel, stage!=='intro_sent' means
+   nothing has gone out no matter what fuStep says, so the next send is the intro. Column 0 of the
+   board already reads `stage`, and /api/person/<id>/stage already treats accepted <-> step -1 as
+   the same fact — this closes the one place that read the counter alone. It mattered: the people
+   table defaulted fu_step to 0 ("intro already sent"), so every freshly synced connection served
+   Follow-up 1 from a button labelled "Send intro". */
+function lastSentIx(p){const f=personFunnel(p),ix=(p.fuStep==null?-1:p.fuStep);
+  if(f.isRoot&&p.stage!=="intro_sent")return -1;
+  return ix;}
+function nextStageOf(p){const ss=stagesOf(personFunnel(p).id);
+  const ix=lastSentIx(p)+1; return ix<ss.length?ss[ix]:null;}
+function stageLabelOf(p){const ss=stagesOf(personFunnel(p).id),ix=p.fuStep==null?-1:p.fuStep;
+  return (ix>=0&&ix<ss.length)?ss[ix].label:"";}
+/* breadcrumb from the root down to a funnel: [{funnel,stage,message,branch}…] */
+function funnelPath(fid){const out=[];let f=funnelById(fid),guard=0;
+  while(f&&!f.isRoot&&f.branchId!=null&&guard++<20){
+    const b=branches.find(x=>x.id===f.branchId); if(!b)break;
+    const m=msgById(b.messageId), s=m?stageById(m.stageId):null;
+    out.unshift({funnel:f,branch:b,message:m,stage:s});
+    f=s?funnelById(s.funnelId):null;}
+  return out;}
+/* every quick-pick token across the branches of ONE option — drives the classifier's quick row */
+function quickKeysFor(mid){const out=[];branchesOf(mid).forEach(b=>(b.quickKeys||[]).forEach(k=>out.push({tok:String(k),branchId:b.id})));
+  return out.sort((a,b)=>a.tok<b.tok?-1:(a.tok>b.tok?1:0));}
+/* active options sitting in one stage, A/B alternates nested under their base */
+function libByStage(sid){return library.filter(m=>m.stageId===sid&&m.isActive).sort((a,b)=>a.sortOrder-b.sortOrder);}
+
 let library=[], imid=1;
-function mkMsg(o){const m=Object.assign({id:imid++,category:"intro",parentId:null,isActive:true,sortOrder:imid,
+function mkMsg(o){const m=Object.assign({id:imid++,stageId:1,parentId:null,isActive:true,sortOrder:imid,
   versions:[],assigned:0,replied:0,viewed:0,withLoom:0},o);library.push(m);return m;}
-const im1=mkMsg({category:"intro",code:"1",title:"Loom — quick site teardown",
+const im1=mkMsg({stageId:1,code:"1",title:"Loom — quick site teardown",
   body:"Hi {{first}} — really liked what {{agency}} is doing. I recorded a quick 90-sec Loom with two ideas for the site, no pitch. Worth a look?"});
-mkMsg({category:"intro",code:"1.1",parentId:im1.id,title:"Loom — softer open",
+mkMsg({stageId:1,code:"1.1",parentId:im1.id,title:"Loom — softer open",
   body:"Hey {{first}}, {{agency}}'s work caught my eye. Made you a short Loom with a couple of thoughts — curious what you think."});
-const im2=mkMsg({category:"intro",code:"2",title:"Text intro — peer to peer",
+const im2=mkMsg({stageId:1,code:"2",title:"Text intro — peer to peer",
   body:"Hi {{first}}, fellow studio person here. We help agencies like {{agency}} ship sites faster without adding headcount. Open to comparing notes sometime?"});
-mkMsg({category:"intro",code:"2.1",parentId:im2.id,title:"Text intro — value-first",
+mkMsg({stageId:1,code:"2.1",parentId:im2.id,title:"Text intro — value-first",
   body:"Hey {{first}} — no pitch. We just published a teardown of 10 agency sites and {{agency}} reminded me of one. Happy to send it over if useful."});
-mkMsg({category:"intro",code:"3",title:"Event / referral warm open",
+mkMsg({stageId:1,code:"3",title:"Event / referral warm open",
   body:"Hi {{first}}, glad we connected. {{agency}} looks like exactly the kind of team we love partnering with. Mind if I share how we help?"});
-/* follow-up messages */
-mkMsg({category:"fu1",code:"F1a",title:"Soft bump",
+/* follow-up options */
+const f1a=mkMsg({stageId:2,code:"F1a",title:"Soft bump",
   body:"Floating this back to the top of your inbox, {{first}} — no worries at all if now's not the time."});
-mkMsg({category:"fu1",code:"F1b",title:"Value add",
+mkMsg({stageId:2,code:"F1b",title:"Value add",
   body:"{{first}}, in case it's useful — here's that teardown of agency sites I mentioned. Happy to walk {{agency}} through it sometime."});
-mkMsg({category:"fu2",code:"F2a",title:"Different angle",
+mkMsg({stageId:3,code:"F2a",title:"Different angle",
   body:"Hey {{first}}, totally get inbox chaos. If build speed ever becomes a headache for {{agency}}, I'm around — no pressure either way."});
-mkMsg({category:"fu2",code:"F2b",title:"Quick question",
+mkMsg({stageId:3,code:"F2b",title:"Quick question",
   body:"{{first}} — quick one: who handles web-build decisions at {{agency}} these days? Happy to aim my note at the right person."});
-mkMsg({category:"fu3",code:"F3a",title:"Graceful close",
+mkMsg({stageId:4,code:"F3a",title:"Graceful close",
   body:"Last note from me, {{first}} — I'll stop nudging. If the timing ever changes, my door's open. Either way, glad we're connected."});
-/* deterministic stats per category (intros see more volume than late follow-ups) */
-const STATSEED={intro:[[28,9,21,28],[16,2,11,16],[31,4,9,0],[19,5,7,0],[12,4,8,4]],
-  fu1:[[22,3,14,0],[15,4,9,0]], fu2:[[12,2,7,0],[9,3,5,0]], fu3:[[8,3,4,0]]};
-{const ix={};library.forEach(m=>{const arr=STATSEED[m.category]||[];const i=(ix[m.category]=(ix[m.category]??-1)+1);
+/* A demo BRANCH so the mock shows the shape: F1a asks a question, and one answer spawns its own
+   funnel with its own stages. Live data replaces all of this from /api/bootstrap. */
+{const bf={id:101,label:"Interested — wants detail",branchId:null,isRoot:false,people:2};
+ funnels.push(bf); bf.branchId=201;
+ stages.push({id:101,funnelId:101,label:"Reply 1",hint:"First message after they answer",sortOrder:0},
+             {id:102,funnelId:101,label:"Reply 2",hint:"",sortOrder:1});
+ branches.push({id:201,messageId:f1a.id,funnelId:101,key:"interested",label:"Interested — wants detail",
+                hint:"they asked a question back",quickKeys:["y","yes"],sortOrder:0,people:2});
+ mkMsg({stageId:101,code:"B1a",title:"Send the detail",
+   body:"Happy to, {{first}}. Here's the short version — two things we'd look at first for {{agency}}."});}
+/* --- Divert seeding (prototype only): deterministically route a few REPLIED people onto the demo
+   branch — and exit one — so the Pipeline shows the v2 model on load: an exited pill, the branch's
+   funnel-switcher tab, its "Diverted here" arrival column (fuStep -1 = nothing sent in the branch
+   yet), and a populated stage column. Uses the seeded PRNG (rnd), never Math.random. --- */
+{const cand=people.filter(p=>p.stage==="intro_sent"&&p.replyCount>0&&!!nextStageOf(p));
+ cand.forEach((p,i)=>{
+   if(i===0){ p.funnelExited=true; p.replyClass="conversation"; p.tags=p.tags.filter(t=>t!=="in-intro-funnel"); }
+   else if(i<=2){ p.funnelId=101; p.funnelExited=false; p.replyClass="Interested — wants detail";
+                  p.fuStep=(i===1?-1:0);   // one just diverted, one already sent Reply 1
+                  if(!p.tags.includes("in-intro-funnel"))p.tags.push("in-intro-funnel"); }
+   else return;
+   p.replyClassifiedAt=daysAgoISO(1+Math.floor(rnd()*3));
+ });}
+/* deterministic stats per stage (intros see more volume than late follow-ups) */
+const STATSEED={1:[[28,9,21,28],[16,2,11,16],[31,4,9,0],[19,5,7,0],[12,4,8,4]],
+  2:[[22,3,14,0],[15,4,9,0]], 3:[[12,2,7,0],[9,3,5,0]], 4:[[8,3,4,0]], 101:[[3,1,2,0]]};
+{const ix={};library.forEach(m=>{const arr=STATSEED[m.stageId]||[];const i=(ix[m.stageId]=(ix[m.stageId]??-1)+1);
   const s=arr[i]||[0,0,0,0];m.assigned=s[0];m.replied=s[1];m.viewed=s[2];m.withLoom=s[3];});}
 function replyPct(m){return m.assigned?Math.round(m.replied/m.assigned*100):0;}
 function msgById(id){return library.find(m=>m.id===id);}
-function libByCat(cat){return library.filter(m=>m.category===cat).sort((a,b)=>a.sortOrder-b.sortOrder);}
 /* assign intros to intro_sent people deterministically */
-{const intros=libByCat("intro");let k=0;people.filter(p=>p.stage==="intro_sent").forEach(p=>{
+{const intros=libByStage(stagesOf(rootFunnel().id)[0].id).filter(m=>!m.parentId);let k=0;
+ people.filter(p=>p.stage==="intro_sent").forEach(p=>{
   const m=intros[k%intros.length];p.introMessageId=m.id;k++;});}
 /* one retired template so the library's "View archived" toggle has content (added after the
    stats + intro-assignment passes so it never gets sends or assignments) */
-mkMsg({category:"fu1",code:"F1x",title:"Hard pitch bump (retired)",isActive:false,
+mkMsg({stageId:2,code:"F1x",title:"Hard pitch bump (retired)",isActive:false,
   body:"{{first}} — following up on my note. We build sites for agencies like {{agency}}. Can I send a quote?"});
 
 /* ---- feed posts by connected authors (engagement loop) ---- */
@@ -697,20 +922,58 @@ if(feedAuthors.length>3)feedAuthors[3].isMuted=true;
 /* Inbox = Unipile-synced chats + messages (live: linkedin_chats 5,397 / linkedin_messages 726 /
    linkedin_sync_state). Each chat has an unread count, a content_type, and an archived flag. */
 let convos=[];
+/* Manual follow-up list — promoted people. Rows, not a flag on `people`, because each carries a
+   due date and notes that are about the conversation, not the funnel. */
+let followUps=[];
 const CONTENT_TYPES=["linkedin_classic","linkedin_classic","linkedin_classic","linkedin_classic","linkedin_inmail","linkedin_offer"];
 const CONTENT_LABEL={linkedin_classic:"", linkedin_inmail:"InMail", linkedin_offer:"Offer"};
 let syncState={lastSyncAt:daysAgoISO(0), chats:5397, messages:726, status:"ok", syncing:false};  // mirrors live sync_state + row counts
 people.filter(p=>p.replyCount>0).slice(0,8).forEach((p,i)=>{
   const msgs=[
-    {from:"me",t:"Hey "+p.fn+" — thanks for connecting! Sent you a quick Loom with a couple ideas for the site.",at:daysAgoISO(5),seen:true},
-    {from:"them",t:"Appreciate it — watched it, the nav suggestion is spot on. We've been meaning to fix that.",at:daysAgoISO(3),seen:true},
-    {from:"me",t:"Glad it landed. Want me to put together a quick scope?",at:daysAgoISO(2),seen:true},
+    {from:"me",t:"Hey "+p.fn+" — thanks for connecting! Sent you a quick Loom with a couple ideas for the site.",at:daysAgoISO(5),ts:tsAt(daysAgoISO(5),10,15),seen:true},
+    {from:"them",t:"Appreciate it — watched it, the nav suggestion is spot on. We've been meaning to fix that.",at:daysAgoISO(3),ts:tsAt(daysAgoISO(3),14,2),seen:true},
+    {from:"me",t:"Glad it landed. Want me to put together a quick scope?",at:daysAgoISO(2),ts:tsAt(daysAgoISO(2),9,40),seen:true},
   ];
-  if(chance(.5))msgs.push({from:"them",t:"Yeah let's do it. Early next week work?",at:daysAgoISO(1),seen:false});
+  if(chance(.5))msgs.push({from:"them",t:"Yeah let's do it. Early next week work?",at:daysAgoISO(1),ts:tsAt(daysAgoISO(1),16,20),seen:false});
   const unreadCount=msgs.filter(m=>m.from==="them"&&!m.seen).length;
   convos.push({personId:p.id, msgs, unread:unreadCount>0, unreadCount, archived:i>=6,
     contentType:CONTENT_TYPES[i%CONTENT_TYPES.length], lastAt:msgs[msgs.length-1].at});
 });
+
+/* Sync lag is a real state of this tool, not an error: event_log records a send immediately, the
+   thread mirror only catches up on the next Unipile sync. Seed one person in that state so the
+   hovercard's "sent since the last sync" banner is visible in the reference build. Without this the
+   banner is dead code here — and the live bug it exists to prevent (a stale thread reading as
+   "never sent", which nearly caused 33 duplicate messages) would look impossible. */
+(function seedMirrorLag(){
+  const c=convos.find(x=>x.msgs&&x.msgs.length);if(!c)return;
+  const p=people.find(x=>x.id===c.personId);if(!p)return;
+  const newest=c.msgs.map(m=>m.ts||"").sort().pop();
+  (p.sends=p.sends||[]).push({type:"fu",step:(p.fuStep==null?0:p.fuStep),code:"FL24",
+    body:"The reason I asked that survey question is because most agencies are beginning with the "+
+         "productivity side of AI: complete the same work faster, reduce repetitive tasks, and "+
+         "increase output per person.",
+    at:TODAY, ts:tsAt(TODAY,17,24)});
+  if(newest>tsAt(TODAY,17,24))c.msgs.forEach(m=>{if(m.ts>tsAt(TODAY,17,24))m.ts=tsAt(daysAgoISO(1),12,0);});
+})();
+
+/* Mock follow-up list. The Follow-up tab is where a promoted conversation lands, so the reference
+   build needs rows -- an empty tab teaches nothing about the layout, the overdue treatment, or how
+   notes read at realistic length. One overdue, one scheduled, one completed. */
+(function seedFollowUps(){
+  const cands=people.filter(p=>p.replyCount>0).slice(0,3);
+  if(cands.length<3)return;
+  cands.forEach(p=>{p.funnelExited=true;p.exitReason="promoted";
+    p.tags=p.tags.filter(t=>t!=="in-intro-funnel");});
+  followUps=[
+    {personId:cands[0].id, addedAt:daysAgoISO(9), dueAt:daysAgoISO(2), closedAt:null, outcome:"",
+     notes:"Asked for a scope on the nav rebuild. Send the two-page version with the phased option -- they flagged budget timing, so lead with the smaller first phase."},
+    {personId:cands[1].id, addedAt:daysAgoISO(4), dueAt:daysAgoISO(-6), closedAt:null, outcome:"",
+     notes:"Wants to revisit after their Q3 planning wraps. Nothing to send before then."},
+    {personId:cands[2].id, addedAt:daysAgoISO(21), dueAt:daysAgoISO(14), closedAt:daysAgoISO(12),
+     outcome:"done", notes:"Intro'd them to Dana instead -- outside what we do."},
+  ];
+})();
 
 /* Pending invitations ledger (live: linkedin_pending_invitations 115 — sent AND received, per account).
    SENT = our request_sent prospects (withdrawable). RECEIVED = inbound invites to accept/ignore. */
@@ -904,14 +1167,114 @@ const TASK_LABEL={record_loom:"Record a Loom intro", review_inbound:"Review an i
 let tasks=[], taskId=0;
 const mkTask=(personId,type,priority)=>tasks.push({id:taskId++,personId,type,priority:priority||5,status:"open"});
 people.filter(p=>p.stage==="accepted"&&p.tags.includes("in-intro-funnel")).slice(0,2).forEach(p=>mkTask(p.id,"record_loom",2));
-people.filter(p=>p.stage==="intro_sent"&&p.fuStep<3&&!p.replyCount&&daysSince(p.lastActivityAt)>=FU_STALE_DAYS).slice(0,3).forEach(p=>mkTask(p.id,"approve_fu",3));
+people.filter(p=>p.stage==="intro_sent"&&!!nextStageOf(p)&&!p.replyCount&&daysSince(p.lastActivityAt)>=FU_STALE_DAYS).slice(0,3).forEach(p=>mkTask(p.id,"approve_fu",3));
 convos.filter(c=>c.unreadCount>0).slice(0,2).forEach(c=>mkTask(c.personId,"review_inbound",1));
 {const o=people.find(p=>p.overrideEligibility); if(o)mkTask(o.id,"reapprove_reeligible",4);}
 
 /* "last touch" stamp: date + how many days ago, reddened once it goes stale (author's activity-visibility ask) */
+/* The synced LinkedIn thread for a person, oldest → newest. This is the ONLY complete record of
+   what actually went out: `p.sends` is built from event_log payloads, which only carry wording for
+   sends made after send-logging shipped, so anything older has no body there. The chat is ground
+   truth for both directions. */
+function threadOf(p){const c=(typeof convos!=="undefined"&&convos||[]).find(x=>x.personId===p.id);
+  return c&&c.msgs&&c.msgs.length?c.msgs:null;}
+/* Hover the last-touch stamp to read the whole exchange — the "what did I actually send this person
+   six weeks ago?" question the activity log can't answer (it only says "Follow-up 1"). */
+/* Sends this tool has logged that the synced thread does not yet contain. event_log is written the
+   moment a send succeeds; chat_messages only catches up on the next Unipile sync, so the mirror
+   trails reality by up to one sync interval. Without this the hovercard renders a stale thread as
+   though it were complete, and "not synced yet" looks exactly like "never sent". */
+function unsyncedSends(p,msgs){
+  const sends=(p.sends||[]).filter(s=>s.ts);
+  if(!sends.length)return [];
+  /* compare on `ts` (normalised "YYYY-MM-DD HH:MM:SS"), never `at` — `at` is truncated to the day,
+     so a send and a message on the SAME day compare equal and same-day lag goes unreported, which
+     is exactly the case that misleads. */
+  const newest=(msgs&&msgs.length)?msgs.map(m=>m.ts||"").sort().pop():"";
+  return sends.filter(s=>s.ts>newest).sort((a,b)=>a.ts<b.ts?-1:1);
+}
+function threadPop(p){
+  const msgs=threadOf(p);
+  const pend=unsyncedSends(p,msgs);
+  const lag=pend.length?`<div class="tlag">\u26a0 ${pend.length} message${pend.length===1?"":"s"} sent since the last
+     sync${pend.length===1?"":" (newest "+fmtDate(pend[pend.length-1].at)+")"} \u2014 already delivered, not yet mirrored below.</div>`:"";
+  if(!msgs)return `<div class="thrpop"><div class="thh">Message history</div>${lag}
+    <div class="tnone">No synced conversation yet. LinkedIn threads arrive on the next sync.</div></div>`;
+  const rows=msgs.map(m=>`<div class="tm ${m.from==="me"?"me":"them"}">
+    <span class="tw">${m.from==="me"?"You":esc(p.fn||p.name)} · ${fmtDate(m.at)}</span>${esc(m.t)}</div>`).join("");
+  const nOut=msgs.filter(m=>m.from==="me").length, nIn=msgs.length-nOut;
+  return `<div class="thrpop" onclick="event.stopPropagation()">
+    <div class="thh">Message history · ${nOut} sent · ${nIn} received</div>${lag}${rows}</div>`;
+}
 function lastTouchStamp(p){const iso=p.lastActivityAt;if(!iso)return"";const n=daysSince(iso);
-  const stale=n>=FU_STALE_DAYS&&p.fuStep<3&&!p.replyCount;
-  return `<div class="miniinfo${stale?' stale':''}">Last touch: ${fmtDate(iso)} · ${n<=0?'today':n+'d ago'}${stale?' ⚠ due':''}</div>`;}
+  const stale=n>=FU_STALE_DAYS&&!!nextStageOf(p)&&!p.replyCount;
+  const has=!!threadOf(p), lag=unsyncedSends(p,threadOf(p)).length;
+  return `<div class="miniinfo${stale?' stale':''}"><span class="thr" title="${
+    lag?lag+' message'+(lag===1?'':'s')+' sent since the last sync \u2014 hover for detail':(has?'Hover to read the full exchange':'No synced thread yet')}"
+    >Last touch: ${fmtDate(iso)} · ${n<=0?'today':n+'d ago'}${stale?' ⚠ due':''}${has?' 💬':''}${lag?'<span class="lagdot" title="newer sends not yet mirrored">\u25cf</span>':''}${threadPop(p)}</span></div>`;}
+/* flip the hovercard up/left when it would run off the viewport */
+document.addEventListener("mouseover",e=>{
+  const t=e.target.closest&&e.target.closest(".thr");if(!t)return;
+  const pop=t.querySelector(".thrpop");if(!pop)return;
+  pop.classList.remove("up","rt");
+  const r=t.getBoundingClientRect();
+  if(r.bottom+336>window.innerHeight&&r.top>336)pop.classList.add("up");
+  if(r.left+330>window.innerWidth)pop.classList.add("rt");
+});
+
+/* ---- per-card funnel actions ------------------------------------------------------------------
+   EXIT: the conversation became real, so stop automating it. Reuses the classify-reply 'exit' path
+   (drops in-intro-funnel, sets funnel_exited) rather than inventing a second way to leave. */
+function exitFunnel(id){const p=personById(id);if(!p)return;
+  if(!confirm('Take '+p.fn+' out of the funnel?\n\nThey stop receiving automated touches and stay a regular connection. Their history is kept.'))return;
+  snapshot("exit funnel");
+  p.funnelExited=true;p.replyClass=p.replyClass||"conversation";
+  p.tags=p.tags.filter(t=>t!=="in-intro-funnel");p.replyClassifiedAt=TODAY;
+  toast(esc(p.fn)+" exited the funnel","ok");render();}
+/* UNEXIT: the mirror of exitFunnel, for the accidental click. The stage endpoint already clears
+   funnel_exited and restores the membership tag, so re-assert their CURRENT position and let it. */
+function unexitFunnel(id){const p=personById(id);if(!p)return;
+  snapshot("return to funnel");
+  p.funnelExited=false;if(!p.tags.includes("in-intro-funnel"))p.tags.push("in-intro-funnel");
+  toast(esc(p.fn)+" is back in the funnel","ok");render();}
+/* PROMOTE: the positive way out. Exit and Promote both stop the drip, but a dead lead and a live
+   opportunity should never look the same afterwards — promoting routes them to the Follow-up tab
+   with a due date, so a good conversation can't quietly evaporate into the exited pile. */
+function promotePerson(id){const p=personById(id);if(!p)return;
+  const due=prompt("Follow up with "+p.fn+" on… (YYYY-MM-DD, or leave blank for no date)","");
+  if(due===null)return;
+  const d=(due||"").trim();
+  if(d&&!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast("Date must look like 2026-08-01","warn");return;}
+  snapshot("promote to follow-up");
+  p.funnelExited=true;p.exitReason="promoted";p.replyClass=p.replyClass||"conversation";
+  p.tags=p.tags.filter(t=>t!=="in-intro-funnel");
+  followUps=followUps.filter(f=>f.personId!==id);
+  followUps.unshift({personId:id,addedAt:TODAY,dueAt:d||null,notes:"",closedAt:null,outcome:""});
+  toast(esc(p.fn)+" \u2192 Follow-up","ok");render();}
+/* MOVE: put someone at a different stage WITHOUT sending anything. Needed because people who were
+   worked before the funnel settled are out of sequence — the step recorded against them may not be
+   the message they actually last received. */
+function moveStage(id,val){const p=personById(id);if(!p||!val)return;
+  const [fid,ix]=val.split(":").map(Number);
+  const st=stagesOf(fid)[ix]||null, f=funnelById(fid);
+  snapshot("move to stage");
+  p.funnelId=fid;p.fuStep=ix;p.funnelExited=false;p.exitReason=null;
+  /* `stage` has to move with `fu_step`. The first column filters on stage==='accepted' while every
+     other column filters on fu_step, so changing only fu_step leaves someone matching their OLD
+     column's test and the card visibly doesn't move. Mirrors the same rule in /api/person/<id>/stage. */
+  if(f&&f.isRoot&&(p.stage==="accepted"||p.stage==="intro_sent"))p.stage=ix<0?"accepted":"intro_sent";
+  if(!p.tags.includes("in-intro-funnel"))p.tags.push("in-intro-funnel");
+  toast(esc(p.fn)+" → "+(ix<0?"start of "+(f?f.label:"funnel"):(st?st.label:"stage")+" sent"),"ok");render();}
+/* options = every stage of every funnel, valued as "<funnelId>:<lastStageIndexSent>". Index -1 means
+   "nothing sent in this funnel yet", which is how a just-diverted person sits. */
+function stageMoveOptions(p){
+  const cur=(p.funnelId||rootFunnel().id), ix=(p.fuStep==null?-1:p.fuStep);
+  return funnels.map(f=>{const ss=stagesOf(f.id);if(!ss.length)return"";
+    const opts=[`<option value="${f.id}:-1" ${f.id===cur&&ix<0?'selected':''}>— nothing sent yet</option>`]
+      .concat(ss.map((s,i)=>`<option value="${f.id}:${i}" ${f.id===cur&&i===ix?'selected':''}>${esc(s.label)} sent</option>`));
+    return `<optgroup label="${attrEsc(f.isRoot?f.label:"🌿 "+f.label)}">${opts.join("")}</optgroup>`;
+  }).join("");
+}
 
 /* posts worth your attention: not engaged/dismissed, not low-value, author not muted */
 function engageablePosts(){return posts.filter(p=>p.state==="none"&&!p.lowValue&&!personById(p.authorId).isMuted);}
@@ -930,11 +1293,12 @@ function toast(msg,kind){const t=document.createElement("div");t.className="to "
 
 /* ---- global UNDO (Ctrl+Z) — snapshot mutable state before any action ---- */
 let _undo=[];
-function snapshot(label){_undo.push({label,data:JSON.stringify({people,library,posts,convos,invitations,syncState,tasks,settings,voiceRevisions,styleVersions})});if(_undo.length>50)_undo.shift();updateUndoBtn();}
+function snapshot(label){_undo.push({label,data:JSON.stringify({people,library,funnels,stages,branches,posts,convos,invitations,syncState,tasks,settings,voiceRevisions,styleVersions})});if(_undo.length>50)_undo.shift();updateUndoBtn();}
 function undo(){if(!_undo.length){toast("Nothing to undo");return;}const s=_undo.pop();const d=JSON.parse(s.data);
   people=d.people;library=d.library;posts=d.posts;convos=d.convos;settings=d.settings;
   if(d.invitations)invitations=d.invitations; if(d.syncState)syncState=d.syncState; if(d.tasks)tasks=d.tasks;
   if(d.voiceRevisions)voiceRevisions=d.voiceRevisions; if(d.styleVersions)styleVersions=d.styleVersions;
+  if(d.funnels)funnels=d.funnels; if(d.stages)stages=d.stages; if(d.branches)branches=d.branches;
   ST.sel.clear();toast("Undo: "+s.label);updateUndoBtn();render();}
 function updateUndoBtn(){const b=$("undoBtn");if(b){b.disabled=!_undo.length;b.title=_undo.length?("Undo: "+_undo[_undo.length-1].label+" (Ctrl+Z)"):"Nothing to undo";}}
 document.addEventListener("keydown",e=>{
@@ -978,14 +1342,18 @@ function orderedCols(){
   return out;
 }
 
-const TABS=[["dash","Dashboard"],["prospects","Prospects"],["pipeline","Pipeline"],["engage","Engage"],
-  ["connections","Connections"],["invitations","Invitations"],["intro","Message Library"],["campaigns","Campaigns"],["messages","Messages"]];
+const TABS=[["dash","Dashboard"],["prospects","Prospects"],["pipeline","Pipeline"],["followup","Follow-up"],["engage","Engage"],
+  ["connections","Connections"],["invitations","Invitations"],["intro","Message Funnel"],["campaigns","Campaigns"],["messages","Messages"]];
 function renderTabs(){
   $("tabs").innerHTML=TABS.map(([k,l])=>{
     let badge="";
     if(k==="prospects"){const n=people.filter(p=>["warming","request_sent"].includes(p.stage)).length;badge=`<span class="tc">${n}</span>`;}
-    if(k==="pipeline"){const n=people.filter(p=>["accepted","intro_sent"].includes(p.stage)).length;
-      const acc=people.filter(p=>p.stage==="accepted").length;badge=`<span class="tc${acc?" due":""}" title="${acc} awaiting an intro">${n}</span>`;}
+    if(k==="pipeline"){const n=people.filter(inPipelineNow).length;
+      const acc=people.filter(p=>p.stage==="accepted"&&inPipelineNow(p)).length;
+      badge=`<span class="tc${acc?" due":""}" title="${n} in the pipeline${acc?" \u00b7 "+acc+" awaiting an intro":""}">${n}</span>`;}
+    if(k==="followup"){const open=followUps.filter(f=>!f.closedAt);
+      const due=open.filter(f=>f.dueAt&&f.dueAt<=TODAY).length;
+      badge=`<span class="tc${due?" due":""}" title="${open.length} open\u2009\u00b7\u2009${due} due now">${open.length}</span>`;}
     if(k==="engage"){const n=engageablePosts().length;badge=`<span class="tc">${n}</span>`;}
     if(k==="connections"){const n=people.filter(p=>["accepted","intro_sent"].includes(p.stage)).length;
       const um=untaggedMeta();
@@ -999,7 +1367,97 @@ function renderTabs(){
 }
 function go(t){ST.tab=t;ST.sel.clear();renderTabs();TABS.forEach(([k])=>$("v-"+k).classList.toggle("show",k===t));render();}
 function render(){TODAY=computeToday();renderTabs();const r={dash:renderDash,prospects:renderProspects,pipeline:renderPipeline,
+  followup:renderFollowUp,
   engage:renderEngage,connections:renderConnections,invitations:renderInvitations,intro:renderLibrary,campaigns:renderCampaigns,messages:renderMessages}[ST.tab];if(r)r();}
+
+/* ============================ FOLLOW-UP ============================ */
+/* The people worth chasing personally. They got here by Promote, which is the deliberate opposite
+   of Exit: the funnel worked, so it stops and a human takes over. Everything here is hand-managed
+   — a due date and free notes — because the whole point is that automation is done with them. */
+function fuRow(f){
+  const p=personById(f.personId);if(!p)return "";
+  const overdue=f.dueAt&&f.dueAt<=TODAY&&!f.closedAt;
+  const conv=(typeof convos!=="undefined"&&convos||[]).find(c=>c.personId===p.id);
+  const lastAt=(conv&&conv.msgs&&conv.msgs.length)?conv.msgs[conv.msgs.length-1].at:p.lastActivityAt;
+  const hasThread=!!threadOf(p);
+  return `<div class="furow${f.closedAt?" done":""}${overdue?" due":""}">
+    <div class="fu-who" onclick="openPerson(${p.id})">
+      ${avatar(p)}
+      <div style="min-width:0">
+        <div class="fu-nm">${starGlyph(p)}${esc(p.name)}</div>
+        <div class="fu-hl">${esc(p.headline||p.title||"")}</div>
+      </div>
+    </div>
+    <div class="fu-when">
+      <div class="fu-lbl">Last exchange</div>
+      <div>${lastAt
+        ? `<span class="thr" title="${hasThread?'Hover to read the full exchange':'No synced thread yet'}">${fmtDate(lastAt)} \u00b7 ${daysSince(lastAt)}d ago${hasThread?' \ud83d\udcac':''}${threadPop(p)}</span>`
+        : '<span class="muted">\u2014</span>'}</div>
+    </div>
+    <div class="fu-when">
+      <div class="fu-lbl">Follow up on</div>
+      <input type="date" class="fu-date" value="${f.dueAt||''}"
+        onchange="setFollowUpDue(${p.id},this.value)" title="When you want to come back to this">
+      ${overdue?'<span class="pill p-amb" style="margin-top:4px;display:inline-block">\u26a0 due</span>':''}
+    </div>
+    <textarea class="fu-notes" rows="2" placeholder="What you agreed, what to send, where it stands\u2026"
+      onchange="setFollowUpNotes(${p.id},this.value)">${esc(f.notes||"")}</textarea>
+    <div class="fu-acts">
+      ${f.closedAt
+        ? `<span class="pill p-gray" title="Closed ${attrEsc(f.closedAt)}">\u2713 done</span>
+           <button class="btn ghost sm" onclick="reopenFollowUp(${p.id})">Reopen</button>`
+        : `<button class="btn grn ghost sm" onclick="closeFollowUp(${p.id})" title="Handled \u2014 archive it (nothing is deleted)">\u2713 Done</button>
+           <button class="btn ghost sm" onclick="backToFunnel(${p.id})" title="Put them back on the automated drip">\u21a9 Funnel</button>`}
+    </div>
+  </div>`;
+}
+function renderFollowUp(){
+  const open=followUps.filter(f=>!f.closedAt&&personById(f.personId));
+  const done=followUps.filter(f=>f.closedAt&&personById(f.personId));
+  const due=open.filter(f=>f.dueAt&&f.dueAt<=TODAY);
+  const undated=open.filter(f=>!f.dueAt);
+  $("v-followup").innerHTML=`
+  <h1>Follow-up <span class="hcount">${open.length} open</span></h1>
+  <p class="lede">People you <b>promoted</b> out of the funnel because the conversation went somewhere.
+     They get no automated touches \u2014 this is the hand-managed list. Set a date to bring one back
+     to the top, and keep notes so you're not reconstructing the thread from scratch weeks later.</p>
+  ${open.length?`<div class="fustats">
+    <span class="fustat${due.length?' hot':''}"><b>${due.length}</b> due now</span>
+    <span class="fustat"><b>${open.length-due.length-undated.length}</b> scheduled later</span>
+    <span class="fustat"><b>${undated.length}</b> no date</span>
+  </div>`:''}
+  ${open.length?open.map(fuRow).join(""):`<div class="empty">
+     <p>Nothing here yet. On a pipeline card, <b>\u2b50 Promote</b> moves someone here when a
+     conversation turns real \u2014 as opposed to <b>\u26d4 Exit</b>, which closes them out.</p></div>`}
+  ${done.length?`<div class="exwrap">
+    <button class="exhead" onclick="ST.fuDone=!ST.fuDone;renderFollowUp()">
+      <span class="cv">${ST.fuDone?"\u25be":"\u25b8"}</span> Completed
+      <span class="n">${done.length}</span></button>
+    ${ST.fuDone?done.map(fuRow).join(""):""}</div>`:''}`;
+}
+function _fu(id){return followUps.find(f=>f.personId===id);}
+function setFollowUpDue(id,v){const f=_fu(id);if(!f)return;
+  snapshot("follow-up date");f.dueAt=v||null;
+  toast(v?"Follow-up set for "+fmtDate(v):"Date cleared","ok");renderFollowUp();renderTabs();}
+function setFollowUpNotes(id,v){const f=_fu(id);if(!f)return;
+  snapshot("follow-up notes");f.notes=v;
+  toast("Notes saved","ok");}
+function closeFollowUp(id){const f=_fu(id);if(!f)return;
+  snapshot("close follow-up");f.closedAt=TODAY;f.outcome="done";
+  toast("Marked done","ok");renderFollowUp();renderTabs();}
+function reopenFollowUp(id){const f=_fu(id);if(!f)return;
+  snapshot("reopen follow-up");f.closedAt=null;f.outcome="";
+  toast("Reopened","ok");renderFollowUp();renderTabs();}
+/* Back onto the drip: reuses the stage endpoint, which already clears funnel_exited and restores
+   the membership tag. The follow-up row is closed rather than deleted \u2014 the conversation
+   still happened. */
+function backToFunnel(id){const p=personById(id),f=_fu(id);if(!p)return;
+  if(!confirm("Put "+p.fn+" back on the automated funnel?\n\nThey resume from where they left off and the follow-up is marked done."))return;
+  snapshot("back to funnel");
+  p.funnelExited=false;p.exitReason=null;
+  if(!p.tags.includes("in-intro-funnel"))p.tags.push("in-intro-funnel");
+  if(f){f.closedAt=TODAY;f.outcome="back to funnel";}
+  toast(esc(p.fn)+" is back in the funnel","ok");render();}
 
 /* ============================ DASHBOARD ============================ */
 function renderDash(){
@@ -1020,7 +1478,7 @@ function renderDash(){
   /* today's actions */
   const readyToSend=people.filter(p=>p.stage==="warming"&&p.resolved&&bizDaysSince(p.addedAt)>=settings.funnel_soak_business_days);
   const awaitingIntro=people.filter(p=>p.stage==="accepted");
-  const dueFollowup=people.filter(p=>p.stage==="intro_sent"&&p.fuStep<3&&!p.replyCount&&daysSince(p.lastActivityAt)>=FU_STALE_DAYS);
+  const dueFollowup=people.filter(p=>p.stage==="intro_sent"&&!!nextStageOf(p)&&!p.replyCount&&daysSince(p.lastActivityAt)>=FU_STALE_DAYS);
   const newReplies=convos.filter(c=>c.unread);
   const fresh=engageablePosts().filter(p=>Math.round((Date.parse(TODAY+"T00:00:00")-Date.parse(p.postedAt+"T00:00:00"))/86400000)<=2);
 
@@ -1066,7 +1524,7 @@ function renderDash(){
   <div class="grid2">
     <div class="card">
       <h3>Message reply-rate leaderboard</h3>
-      <div class="sub">Top messages by reply rate across the library. <span class="linkish" onclick="go('intro')">Open library →</span></div>
+      <div class="sub">Top messages by reply rate across the funnel. <span class="linkish" onclick="go('intro')">Open the message funnel →</span></div>
       ${[...library].sort((a,b)=>replyPct(b)-replyPct(a)).slice(0,5).map(m=>`
         <div class="barrow"><div class="lab"><span class="code">${m.code}</span> ${esc(m.title.slice(0,18))}</div>
           <div class="track"><i class="green" style="width:${replyPct(m)*2.5}%"></i></div>
@@ -1151,11 +1609,17 @@ function renderProspects(){
       </tr></thead><tbody>
       ${onDeck.map(p=>{
         if(!p.resolved){
+          /* A resolve that has been pending for days is stuck, not in flight — say so
+             rather than showing a permanent "Resolving…" spinner (it read as "just added"). */
+          const rd=bizDaysSince(p.addedAt), stuck=rd>=1;
           return `<tr class="resolving">
             <td onclick="openPerson(${p.id})" style="cursor:pointer">${personCell(p)}</td>
-            <td class="muted">just now</td>
-            <td colspan="3"><span class="soak wait">🔍 Resolving LinkedIn profile…</span>
-              <span class="muted" style="font-size:11.5px;margin-left:6px">looking up their provider-id via Unipile — warm-up unlocks once it's found</span></td>
+            <td class="muted">${rd} biz day${rd!==1?'s':''}</td>
+            <td colspan="3">${stuck
+              ? `<span class="soak wait">⚠️ Profile resolve stuck</span>
+                 <span class="muted" style="font-size:11.5px;margin-left:6px">pending ${rd} day${rd!==1?'s':''}${p.profileUrl?` — Unipile can't resolve this URL`:` — no LinkedIn URL on this prospect, so there's nothing to look up`}</span>`
+              : `<span class="soak wait">🔍 Resolving LinkedIn profile…</span>
+                 <span class="muted" style="font-size:11.5px;margin-left:6px">looking up their provider-id via Unipile — warm-up unlocks once it's found</span>`}</td>
             <td style="text-align:right"><button class="btn sm gray" disabled>Send request</button></td>
           </tr>`;}
         const bd=bizDaysSince(p.addedAt);const ok=bd>=soak;
@@ -1202,6 +1666,64 @@ function sendRequest(id){snapshot("send request");const p=personById(id);p.stage
 function markAccepted(id){snapshot("mark accepted");const p=personById(id);p.stage="accepted";p.connectedAt=TODAY;p.tags.push("in-intro-funnel");toast(p.fn+" accepted — now in Pipeline","ok");render();}
 
 /* ============================ PIPELINE (post-connection state machine) ============================ */
+/* Pipeline membership, defined ONCE so the tab badge and the board can never disagree: carried in
+   through the prospect funnel, not blocked by a tag, not exited, and still pre-graduation. The badge
+   used to count every accepted/intro_sent person — i.e. the whole 1st-degree network (~4,578) — which
+   made it read as a connection count sitting on the wrong tab. */
+function inPipelineNow(p){return p.tags.includes("in-intro-funnel")&&!personBlocked(p)
+  &&!p.funnelExited&&(p.stage==="accepted"||p.stage==="intro_sent");}
+/* ---- manual "Sync now" ----------------------------------------------------------------------
+   The pipeline hovercards read a LOCAL mirror that refreshes on a ~30-min schedule; this pulls it
+   NOW so Eric can refresh, then process everyone in one pass without a just-sent message showing as
+   un-sent. Non-instant (~1 min), so it obeys the async-action-feedback rule: press ack, elapsed
+   ticker, explicit error + retry, never a silent hang. */
+let _sync={status:"idle",startedAt:0,error:"",mirror:null};
+let _syncTick=null;
+function _syncElapsed(){if(!_sync.startedAt)return"";
+  const s=Math.max(0,Math.floor((Date.now()-_sync.startedAt)/1000));
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;}
+function _syncMirrorLabel(){const m=_sync.mirror; if(!m||!m.lastSyncedAt)return"";
+  const t=String(m.lastSyncedAt).replace("T"," ").slice(11,16);
+  return t?`synced through ${t}`:"";}
+function syncBar(){
+  if(_sync.status==="pending")return `<div class="syncbar working">
+    <span class="spin"></span> Syncing LinkedIn… <span id="synctick" class="mono">${_syncElapsed()}</span></div>`;
+  if(_sync.status==="error")return `<div class="syncbar err">
+    <span>⚠ ${esc(_sync.error||"Sync failed.")}</span>
+    <button class="btn sm" onclick="runSync()">↻ Try again</button></div>`;
+  const done=_sync.status==="done";
+  return `<div class="syncbar">
+    <button class="btn ghost sm" onclick="runSync()" title="Pull the latest LinkedIn messages now so every card is up to date before you send">⟳ Sync now</button>
+    <span class="syncnote">${done?"✓ "+esc(_syncMirrorLabel()||"up to date"):esc(_syncMirrorLabel())}</span></div>`;}
+function _startSyncTick(){if(_syncTick)return;
+  _syncTick=setInterval(()=>{if(_sync.status!=="pending"){clearInterval(_syncTick);_syncTick=null;return;}
+    const el=document.getElementById("synctick");if(el)el.textContent=_syncElapsed();},1000);}
+function _paintSync(){if(ST.tab==="pipeline")renderPipeline();}   // only the pipeline shows the bar
+function runSync(){
+  if(_sync.status==="pending")return;                         // re-entrancy guard
+  _sync={status:"pending",startedAt:Date.now(),error:"",mirror:_sync.mirror};
+  _paintSync();_startSyncTick();
+  if(!window.__LIVE){                                          // static/mock: simulate a short sync
+    setTimeout(()=>{_sync={status:"done",startedAt:0,error:"",
+      mirror:{lastSyncedAt:new Date().toISOString(),messages:0,chats:0}};_paintSync();
+      toast("Mirror refreshed","ok");},1400);return;}
+  api("/api/sync/now",{}).then(r=>{
+    if(!r||!r.ok){_sync={status:"error",startedAt:0,error:(r&&r.error)||"The server refused the sync."};_paintSync();return;}
+    pollSync();
+  }).catch(e=>{_sync={status:"error",startedAt:0,error:"Network error: "+e};_paintSync();});}
+function pollSync(){
+  if(_sync.status!=="pending")return;_startSyncTick();
+  api("/api/sync/status").then(r=>{
+    if(!r||!r.ok){setTimeout(pollSync,2500);return;}           // transient blip → keep trying
+    if(r.running){setTimeout(pollSync,2500);return;}
+    if(r.idle){_sync={status:"error",startedAt:0,error:"The sync was interrupted (the engine may have restarted). Try again."};_paintSync();return;}
+    if(r.syncOk===false||r.error){_sync={status:"error",startedAt:0,error:r.error||"Sync did not complete. Try again.",mirror:r.mirror};_paintSync();return;}
+    // success → pull the freshly-synced data in and re-render
+    _sync={status:"done",startedAt:0,error:"",mirror:r.mirror};
+    api("/api/bootstrap").then(d=>{if(applyBootstrap(d)){render();}else{_paintSync();}
+      const n=(r.summary||"").match(/(\d+)\s+synced/g);
+      toast("Synced"+(n?" — "+n.join(", "):"")+".","ok");});
+  }).catch(()=>{setTimeout(pollSync,2500);});}
 function renderPipeline(){
   /* 4 columns: Connected (owe an intro) → Intro sent → Follow-up 1 → Follow-up 2.
      Post-intro people are bucketed by fu_step. There is NO "Follow-up 3" column: sending follow-up 3
@@ -1212,24 +1734,56 @@ function renderPipeline(){
      AND in-intro-funnel; the intro/follow-up columns are always in-funnel by construction. */
   /* A blocking tag (omit / personal / client / do-not-pitch) drops someone from the pipeline —
      tagging "omit" removes them here, unless outbound is explicitly overridden for them. */
-  const inFunnel=p=>p.tags.includes("in-intro-funnel")&&!personBlocked(p);
-  const cols=[
-    {label:"Connected — owe an intro", list:people.filter(p=>p.stage==="accepted"&&inFunnel(p))},
-    {label:"Intro sent", list:people.filter(p=>p.stage==="intro_sent"&&p.fuStep===0&&!personBlocked(p))},
-    {label:"Follow-up 1", list:people.filter(p=>p.stage==="intro_sent"&&p.fuStep===1&&!personBlocked(p))},
-    {label:"Follow-up 2", list:people.filter(p=>p.stage==="intro_sent"&&p.fuStep===2&&!personBlocked(p))},
-  ];
+  const inFunnel=p=>inPipelineNow(p);
+  /* Columns come from the SELECTED funnel's stages, so adding a 6th follow-up adds a column and a
+     branch funnel gets its own board. The final stage has no column: sending it graduates them. */
+  const fid=(funnelById(ST.pipeFunnel)?ST.pipeFunnel:rootFunnel().id); ST.pipeFunnel=fid;
+  const f=funnelById(fid), ss=stagesOf(fid), onF=p=>(p.funnelId||rootFunnel().id)===fid;
+  /* First column = people who OWE the funnel's opening touch. On the root that's "connected but
+     no intro yet"; on a branch it's whoever was just diverted here (fuStep -1 = nothing sent in
+     THIS funnel), who would otherwise render in no column at all. */
+  const cols=[f.isRoot
+      ? {label:"Connected — owe an intro", list:people.filter(p=>p.stage==="accepted"&&inFunnel(p))}
+      : {label:"Diverted here — owe "+(ss[0]?ss[0].label:"a reply"),
+         list:people.filter(p=>onF(p)&&(p.fuStep==null||p.fuStep<0)&&!p.funnelExited&&!personBlocked(p))}]
+    .concat(ss.slice(0,-1).map((st,i)=>({label:st.label+" sent",
+      list:people.filter(p=>p.stage==="intro_sent"&&onF(p)&&p.fuStep===i&&!personBlocked(p)&&!p.funnelExited)})));
+  /* Exiting is the point at which a real conversation started, so the card should leave the board —
+     it was still sitting in its old column wearing an "exited" pill, which reads as "still queued".
+     Kept reachable in a drawer instead of vanishing, because exiting by accident is one click. */
+  /* Only the CLOSED ones belong in this drawer. Promoted people left for the Follow-up tab and
+     showing them here as "exited" would bury the exact conversations worth chasing. */
+  const exited=people.filter(p=>p.funnelExited&&onF(p)&&p.stage==="intro_sent"&&p.exitReason!=="promoted");
+  /* funnel switcher — a branch is its own pipeline, so it needs its own board */
+  const withPeople=funnels.filter(x=>!x.isRoot&&people.some(p=>p.funnelId===x.id&&!p.funnelExited));
+  const tabs=[rootFunnel()].concat(withPeople).map(x=>`<button class="${x.id===fid?'on':''}" onclick="ST.pipeFunnel=${x.id};renderPipeline()">${x.isRoot?'':'🌿 '}${esc(x.label)}${
+    x.isRoot?'':' · '+people.filter(p=>p.funnelId===x.id&&!p.funnelExited).length}</button>`).join("");
   $("v-pipeline").innerHTML=`
-  <h1>Pipeline</h1>
-  <p class="lede">The post-connection nurture sequence. A new connection needs an <b>introduction</b> (a Loom or a text intro from your A/B library),
-  then up to <b>three follow-ups</b>. Each card shows its <b>last touch</b> and how long ago, so you can see who's gone quiet and is due for a nudge.
-  Sending <b>follow-up 3</b> is the final touch — it graduates them out of the pipeline into your regular <b>Connections</b> (sort there by follow-up status to see who finished).</p>
-  <div class="kanban" style="grid-template-columns:repeat(4,1fr)">
-    ${cols.map(col=>`<div class="kcol">
-        <div class="kh"><span>${col.label}</span><span class="n">${col.list.length}</span></div>
+  <div class="h1row"><h1>Pipeline</h1>${syncBar()}</div>
+  <p class="lede">${f.isRoot
+    ? `The post-connection nurture sequence. A new connection needs an <b>introduction</b>, then works through this funnel's
+       stages. Each card shows its <b>last touch</b> and how long ago, so you can see who's gone quiet. Sending the
+       <b>final stage</b> graduates them out into your regular <b>Connections</b>. When someone replies, <b>classify it</b> —
+       that moves them onto the branch's own funnel, which gets its own tab here.`
+    : `The <b>${esc(f.label)}</b> branch has its own funnel. These people answered that way and left the baseline drip for
+       good — they'll only ever get the stages below.`}</p>
+  ${withPeople.length?`<div class="seg" style="margin:8px 0 12px">${tabs}</div>`:''}
+  <div class="kanwrap"><div class="kanban" style="grid-template-columns:repeat(${Math.max(cols.length,1)},minmax(212px,1fr))">
+    ${cols.length?cols.map((col,ci)=>`<div class="kcol" ondragover="colDragOver(event)"
+        ondragleave="colDragLeave(event)" ondrop="colDrop(event,${fid},${ci-1})">
+        <div class="kh"><span>${esc(col.label)}</span><span class="n">${col.list.length}</span></div>
         ${col.list.map(pipelineCard).join("")||'<div class="muted" style="font-size:12px;padding:6px 4px">—</div>'}
-      </div>`).join("")}
-  </div>`;
+      </div>`).join(""):'<div class="muted" style="padding:10px">This funnel has only one stage, so everyone in it is waiting on that single touch — add a stage in the Message Funnel to give it a board.</div>'}
+  </div></div>
+  ${exited.length?`<div class="exwrap">
+    <button class="exhead" onclick="ST.pipeExited=!ST.pipeExited;renderPipeline()"
+      title="People you pulled out of this funnel because the conversation became real">
+      <span class="cv">${ST.pipeExited?"\u25be":"\u25b8"}</span> Exited this funnel
+      <span class="n">${exited.length}</span></button>
+    ${ST.pipeExited?`<p class="lede" style="margin:8px 0 10px">No longer receiving automated touches. Their
+       history is intact \u2014 put one back if you exited them by mistake.</p>
+      <div class="exlist">${exited.map(pipelineCard).join("")}</div>`:""}
+  </div>`:""}`;
 }
 /* pipeline card message chips: the intro + every follow-up sent so far, accumulating as the person
    moves through the funnel. Hover a chip to read the actual text that went out — the logged send if
@@ -1250,32 +1804,82 @@ function touchChips(p){
     chips.push(`<span class="pill p-amb" title="${b?attrEsc(b):'Follow-up '+s+' sent — exact message not recorded'}">FL${s}${c?' · '+esc(c):''}</span>`);}
   return chips.join(" ");
 }
+/* ---- drag to re-seat -------------------------------------------------------------------------
+   Dropping is a BOOKKEEPING move, never a send: it corrects where someone sits when the funnel was
+   rebuilt under them, or advances someone you don't want to walk through every stage. The column a
+   card lands in is the stage it was last SENT, so dropping on "Follow-up 1 sent" means exactly
+   "treat FL1 as already delivered" — the next send is FL2. */
+let _drag=null;
+function cardDragStart(ev,id){_drag=id;ev.dataTransfer.effectAllowed="move";
+  try{ev.dataTransfer.setData("text/plain",String(id));}catch(_){}
+  ev.currentTarget.classList.add("dragging");
+  document.querySelectorAll(".kcol").forEach(c=>c.classList.add("droppable"));}
+function cardDragEnd(ev){_drag=null;ev.currentTarget.classList.remove("dragging");
+  document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("droppable","over"));}
+function colDragOver(ev){if(_drag==null)return;ev.preventDefault();
+  ev.dataTransfer.dropEffect="move";ev.currentTarget.classList.add("over");}
+function colDragLeave(ev){ev.currentTarget.classList.remove("over");}
+/* step = the fuStep this column represents; -1 = the leading "owe them the first touch" column */
+function colDrop(ev,fid,step){
+  ev.preventDefault();ev.currentTarget.classList.remove("over");
+  const id=_drag!=null?_drag:parseInt(ev.dataTransfer.getData("text/plain"),10);
+  _drag=null;document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("droppable","over"));
+  const p=personById(id);if(!p)return;
+  const cur=(p.funnelId||rootFunnel().id), curIx=(p.fuStep==null?-1:p.fuStep);
+  if(cur===fid&&curIx===step&&!p.funnelExited)return;      // dropped where it already was
+  moveStage(id,fid+":"+step);
+}
 function pipelineCard(p){
   let acts="", meta="", touch="";
   if(p.stage==="accepted"){
-    acts=`<button class="btn sm" onclick="event.stopPropagation();openIntroPicker(${p.id})">✉️ Send intro</button>`;
+    acts=`<button class="btn sm" onclick="event.stopPropagation();openStageComposer(${p.id})">✉️ Send intro</button>`;
     meta=`<span class="pill p-teal">connected ${daysAgoLabel(p.connectedAt)}</span>`;
-  } else {  // intro_sent (with a fu_step 0..3)
-    const m=msgById(p.introMessageId);
-    const replied=p.replyCount>0;
-    if(!replied&&p.fuStep<3){
-      const next=p.fuStep+1;
-      acts=`<button class="btn accent ghost sm" onclick="event.stopPropagation();openFollowupPicker(${p.id})" ${next===3?'title="Final touch — graduates them out of the pipeline"':''}>Send follow-up ${next} ${next===3?'· final →':'→'}</button>`;
+  } else {  // intro_sent — somewhere inside a funnel
+    const replied=p.replyCount>0, br=onBranch(p), exited=!!p.funnelExited, f=personFunnel(p);
+    const next=nextStageOf(p), ss=stagesOf(f.id), isLast=next&&next.sortOrder===ss.length-1;
+    if(replied&&!exited&&!br){        // replied but not yet routed → classify it against what we sent
+      acts=`<button class="btn accent ghost sm" onclick="event.stopPropagation();openReplyClassifier(${p.id})">🌿 Classify reply → branch</button>`;
+    } else if(exited){                 // off the board — the only useful action is undoing that
+      acts=`<button class="btn ghost sm" onclick="event.stopPropagation();unexitFunnel(${p.id})">\u21a9 Put back in funnel</button>`;
+    } else if(next){                   // next stage of WHATEVER funnel they're on
+      acts=`<button class="btn accent ${br?'':'ghost'} sm" onclick="event.stopPropagation();openStageComposer(${p.id})" ${isLast?'title="Final stage of this funnel — sending it graduates them out"':''}>${
+        br?'🌿 ':''}Send ${esc(next.label)} ${isLast?'· final →':'→'}</button>`;
     }
-    meta=`${touchChips(p)} ${replied?'<span class="pill p-grn">✓ replied</span>':''}`;
+    const statePill = br?`<span class="pill p-acc" title="Diverted into the ${attrEsc(f.label)} branch funnel — off the parent drip for good">🌿 ${esc(f.label)}</span>`
+      : (exited&&p.exitReason==="promoted")?`<span class="pill p-grn" title="Promoted — on the manual Follow-up list">\u2b50 promoted</span>`
+      : exited?`<span class="pill p-teal" title="Closed — off the drip, still a connection">\u26d4 closed</span>`
+      : (replied?'<span class="pill p-grn">✓ replied</span>':'');
+    meta=`${touchChips(p)} ${statePill}`;
     touch=lastTouchStamp(p);
   }
-  return `<div class="pcard" onclick="openPerson(${p.id})">
+  return `<div class="pcard" draggable="true" onclick="openPerson(${p.id})"
+    ondragstart="event.stopPropagation();cardDragStart(event,${p.id})" ondragend="cardDragEnd(event)">
     <div class="pc-top">${avatar(p)}<div style="min-width:0"><div class="pc-nm">${starGlyph(p)}${esc(p.name)}</div></div></div>
     <div class="pc-hl">${esc(p.headline)}</div>
     <div class="pc-meta">${meta}</div>
     ${touch}
-    ${acts?`<div class="pc-acts">${acts}</div>`:''}</div>`;
+    ${acts?`<div class="pc-acts">${acts}</div>`:''}
+    ${p.stage==="intro_sent"?`<div class="pc-acts2" onclick="event.stopPropagation()">
+      ${p.funnelExited?'':`<button class="btn grn ghost sm" onclick="promotePerson(${p.id})"
+        title="It went well — take them off the drip and onto the manual Follow-up list">\u2b50 Promote</button>
+      <button class="btn gray sm" onclick="exitFunnel(${p.id})"
+        title="This one is over — stop the automated touches, keep them as a connection">\u26d4 Exit</button>`}
+      <select class="mvstage" title="Correct which stage they're actually at — moves them WITHOUT sending anything"
+        onchange="moveStage(${p.id},this.value)">${stageMoveOptions(p)}</select>
+    </div>`:''}</div>`;
 }
-/* shared: radio list of active messages in a category, macros rendered against the person */
-function msgPickOptions(cat,p,name){
-  const opts=libByCat(cat).filter(m=>m.isActive);
-  if(!opts.length)return `<div class="muted" style="padding:6px 0">No active ${catLabel(cat).toLowerCase()} messages yet — add one in the Message Library.</div>`;
+/* The option a person was last SENT — the message whose reply we're about to classify, and so the
+   only place the right branches can come from. p.sends carries the code of each logged send. */
+function lastSentMessage(p){
+  const s=(p.sends||[]).slice().pop();
+  if(s&&s.code){const m=library.find(x=>x.code===s.code); if(m)return m;}
+  if((p.fuStep==null||p.fuStep===0)&&p.introMessageId!=null)return msgById(p.introMessageId)||null;
+  return null;
+}
+/* shared: radio list of active options in a stage, macros rendered against the person */
+function msgPickOptions(sid,p,name){
+  const opts=libByStage(sid);
+  if(!opts.length)return `<div class="muted" style="padding:6px 0">No active options at this stage yet — add one in the Message Funnel.</div>`;
   return opts.map((m,i)=>`
     <label class="rulerow" style="cursor:pointer;align-items:flex-start;border:0;padding:9px 0">
       <input type="radio" name="${name}" value="${m.id}" class="ck" style="margin-top:3px" ${i===0?'checked':''}>
@@ -1283,28 +1887,98 @@ function msgPickOptions(cat,p,name){
         <div class="muted">${renderMacros(m.body,p)}</div></div>
     </label>`).join("");
 }
-function openIntroPicker(id){ openSendComposer(id,"intro"); }
-/* "Send follow-up N" → open the composer for that follow-up category */
-function openFollowupPicker(id){ const p=personById(id); const next=(p.fuStep||0)+1; if(next>3)return; openSendComposer(id,"fu"+next); }
+/* ONE composer for every send. v1 had three (intro / follow-up N / branch) because the stage set
+   was hard-coded; now the person's funnel tells us the next stage and we serve its options. */
+function openStageComposer(id){
+  const p=personById(id); if(!p)return;
+  const f=personFunnel(p), next=nextStageOf(p);
+  if(!next){toast(p.fn+" has reached the end of the "+f.label+" funnel — add a stage if you want another touch.","warn");return;}
+  openSendComposer(id,next);
+}
+function openIntroPicker(id){ openStageComposer(id); }        // kept: older call sites
+function openFollowupPicker(id){ openStageComposer(id); }
 
-/* ---- SEND COMPOSER (prototype; mock — no backend persist) ---------------------------
-   Pick a template → see it MERGED for this person → edit the text → Send. The tweak is what
-   gets "sent"; it does NOT fork the template. Ticking "save as a new variant" is the only thing
-   that spins off an A/B variant (edited text re-generalized back to merge tags first). */
+/* ---- REPLY CLASSIFIER — route a replied person into a branch's own funnel -------------------
+   A branch belongs to the MESSAGE that asked the question, so the choices here come from
+   branchesOf(the option they were last sent) — not a global list. Picking by name is the primary
+   path; quick-pick keys are an optional per-branch shortcut and the row hides when none exist. */
+function openReplyClassifier(id){const p=personById(id);if(!p)return;
+  const src=lastSentMessage(p);
+  let brs=src?branchesOf(src.id):[], scopeNote="";
+  if(!brs.length){   // fall back to every branch at the stage they're on, so the modal is never empty
+    const st=src?stageById(src.stageId):null;
+    const pool=st?libByStage(st.id):[];
+    brs=pool.reduce((a,m)=>a.concat(branchesOf(m.id)),[]);
+    if(brs.length)scopeNote=`<div class="muted" style="font-size:12px;margin-bottom:8px">We couldn't pin down exactly which option ${esc(p.fn)} was sent, so these are every branch at the <b>${esc(st?st.label:'')}</b> stage.</div>`;
+  }
+  const quicks=[];brs.forEach(b=>(b.quickKeys||[]).forEach(k=>quicks.push({tok:String(k),branchId:b.id})));
+  const quickRow=quicks.length?`
+      <label class="fld">Quick pick <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— shortcut keys you set on these branches</span></label>
+      <div class="btnrow" style="gap:8px;margin-bottom:16px;flex-wrap:wrap">${
+        quicks.map(qk=>`<button class="btn gray sm" title="→ ${attrEsc((branches.find(x=>x.id===qk.branchId)||{}).label)}" onclick="classifyReply(${id},'divert',${qk.branchId},'${attrEsc(qk.tok)}')">${esc(qk.tok)}</button>`).join(" ")
+      }</div>`:"";
+  const rows=brs.length
+    ? brs.map(b=>`<label class="rulerow" style="cursor:pointer;align-items:flex-start;border:0;padding:7px 0">
+        <input type="radio" name="rc-branch" value="${b.id}" class="ck" style="margin-top:3px">
+        <div class="rinfo"><b>${esc(b.label)}</b>${b.hint?`<div class="muted">${esc(b.hint)}</div>`:''}</div></label>`).join("")
+    : `<div class="muted" style="padding:6px 0">${src?`<span class="code">${esc(src.code)}</span> has no branches yet — add one below, or just exit them.`:'No branches available here yet.'}</div>`;
+  openModal(`<div class="mhead"><div><h2>Classify ${esc(p.fn)}'s reply</h2>
+    <div class="sub">${src?`They were last sent <span class="code">${esc(src.code)}</span> — ${esc(src.title)}. `:''}Diverting takes them
+    <b>off this funnel for good</b> and into the branch's own sequence; they won't see the remaining stages here.</div></div>
+    <div class="dclose" onclick="closeModal()">×</div></div>
+    <div class="mbody">
+      ${quickRow}
+      <label class="fld">${quicks.length?'…or pick a branch directly':'Pick a branch'}</label>
+      ${scopeNote}
+      <div id="rc-branches">${rows}</div>
+      ${src?`<div style="margin-top:8px"><button class="btn ghost sm" onclick="openBranchEditor(null,${src.id})">＋ New branch on ${esc(src.code)}…</button></div>`:''}
+      <div class="btnrow" style="margin-top:16px;justify-content:space-between">
+        <button class="btn red ghost sm" onclick="classifyReply(${id},'exit',null,'conversation')" title="Conversation is live / handled — leave the funnel, no more automated touches">Just a conversation → exit funnel</button>
+        <span><button class="btn gray" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="var t=document.querySelector('input[name=rc-branch]:checked');if(!t){toast('Pick a branch first','warn');return;}classifyReply(${id},'divert',+t.value,null)">Divert to branch →</button></span></div>
+    </div>`);
+}
+function classifyReply(id,action,branchId,replyClass){const p=personById(id);if(!p)return;
+  snapshot("classify reply");
+  const b=branchId?branches.find(x=>x.id===branchId):null;
+  if(action==="exit"){p.funnelExited=true;p.replyClass=replyClass;p.tags=p.tags.filter(t=>t!=="in-intro-funnel");}
+  else if(b){ /* into the branch's OWN funnel, at its very start (nothing sent there yet) */
+    p.funnelId=b.funnelId;p.funnelExited=false;p.fuStep=-1;p.replyClass=replyClass||b.label;
+    if(!p.tags.includes("in-intro-funnel"))p.tags.push("in-intro-funnel");}
+  p.replyClassifiedAt=TODAY;
+  /* real build also POSTs /api/person/<id>/classify-reply here */
+  closeModal();
+  toast(action==="exit"?esc(p.fn)+" exited the funnel — no more automated touches"
+        :esc(p.fn)+" → "+esc(b?b.label:"branch")+" — now on its own funnel","ok");
+  render();
+}
+/* ---- SEND COMPOSER ------------------------------------------------------------------
+   Pick a template → see it MERGED for this person → edit the text → Send.
+   The tweak you make is what gets sent + logged; it does NOT fork the template. Ticking
+   "save as a new variant" is the ONLY thing that spins off an A/B variant (your edited
+   text is re-generalized back to merge tags first). Fixes Eric's two gripes: (1) no more
+   accidental variant per incidental edit, (2) you see + adjust the real merged message
+   (e.g. fix a mangled first name) before it goes. */
 function mergeText(body,p){return (body||"")
   .replace(/\{\{first\}\}/g,p.fn||"").replace(/\{\{last\}\}/g,p.ln||"").replace(/\{\{name\}\}/g,p.name||"")
   .replace(/\{\{agency\}\}/g,p.agency||"").replace(/\{\{title\}\}/g,p.title||"").replace(/\{\{city\}\}/g,p.city||"");}
+/* reverse of mergeText: concrete values → merge tags, so an edited message can be saved as a
+   reusable variant. Most-specific values first so e.g. full name is caught before first name. */
 function regeneralize(text,p){let s=text||"";
   [[p.name,"{{name}}"],[p.agency,"{{agency}}"],[p.title,"{{title}}"],[p.city,"{{city}}"],[p.fn,"{{first}}"],[p.ln,"{{last}}"]]
     .forEach(function(pair){if(pair[0])s=s.split(pair[0]).join(pair[1]);});return s;}
-function openSendComposer(personId,cat){
+/* `stage` is a STAGE ROW (from nextStageOf), not a category string — the composer serves the
+   options of whatever stage the person's funnel says comes next, baseline or branch alike. */
+function openSendComposer(personId,stage,opt){
+  opt=opt||{};
   const p=personById(personId); if(!p)return;
-  const isIntro=cat==="intro";
-  const opts=libByCat(cat).filter(m=>m.isActive);
-  if(!opts.length){toast("No active "+catLabel(cat).toLowerCase()+" messages yet — add one in the Message Library","warn");return;}
-  ST._compose={personId:personId,cat:cat,isIntro:isIntro,msgId:opts[0].id};
-  openModal(`<div class="mhead"><div><h2>${isIntro?"Send introduction":("Send "+catLabel(cat).toLowerCase())} to ${esc(p.fn)}</h2>
-    <div class="sub">Pick a template, then edit the text for ${esc(p.fn)} before sending. Your tweaks are sent &amp; logged — they don't change the template unless you tick "save as a new variant".</div></div>
+  const f=personFunnel(p);
+  const isIntro=(stage.funnelId===rootFunnel().id&&stage.sortOrder===0);
+  const opts=(opt.pool||libByStage(stage.id));
+  if(!opts.length){toast(opt.emptyMsg||("No active options at the "+stage.label+" stage yet — add one in the Message Funnel"),"warn");return;}
+  ST._compose={personId:personId,stage:stage,isIntro:isIntro,msgId:opts[0].id};
+  openModal(`<div class="mhead"><div><h2>${opt.heading||((isIntro?"Send introduction":("Send "+esc(stage.label)))+" to "+esc(p.fn))}</h2>
+    <div class="sub">${f.isRoot?'':`<span class="pill p-acc">🌿 ${esc(f.label)}</span> `}Pick a template, then edit the text for ${esc(p.fn)} before sending. Your tweaks are sent &amp; logged — they don't change the template unless you tick "save as a new variant".</div></div>
     <div class="dclose" onclick="closeModal()">×</div></div>
     <div class="mbody">
       <label class="fld">Template <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— drives A/B stats</span></label>
@@ -1323,7 +1997,7 @@ function openSendComposer(personId,cat){
       <div class="btnrow" style="margin-top:16px;justify-content:space-between">
         <button class="btn gray sm" onclick="copyComposer()">⧉ Copy text</button>
         <span><button class="btn gray" onclick="closeModal()">Cancel</button>
-        <button class="btn" onclick="sendComposed()">${isIntro?"Mark intro sent":"Mark follow-up sent"} →</button></span></div>
+        <button class="btn" onclick="sendComposed()">${isIntro?"Mark intro sent":("Mark "+esc(stage.label)+" sent")} →</button></span></div>
     </div>`);
 }
 function pickComposerMsg(mid){
@@ -1341,16 +2015,25 @@ function sendComposed(){
   snapshot(st.isIntro?"send intro":"send follow-up");
   if(saveVar){
     const gen=regeneralize(bodyText,p), root=familyRoot(m), n=library.filter(x=>x.parentId===root.id).length+1, code=root.code+"."+n;
-    library.push({id:imid++,category:root.category,code:code,parentId:root.id,title:m.title+" (v"+n+")",body:gen,isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0});
+    const v={id:imid++,stageId:root.stageId,code:code,parentId:root.id,title:m.title+" (v"+n+")",body:gen,isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
+    createMsgRemote(v,{action:"branch",id:m.id,title:v.title,body:gen},false);
     toast("Saved your edit as new variant "+code,"ok");
   }
   m.assigned=(m.assigned||0)+1;
+  const ss=stagesOf(personFunnel(p).id), lastIx=ss.length-1;
   let step=p.fuStep||0;
   if(st.isIntro){ p.stage="intro_sent";p.introMessageId=m.id;p.introKind=loom?"loom":"message";p.loomUrl=loom||null;p.fuStep=0;p.lastActivityAt=TODAY; }
-  else { step=Math.min(3,(p.fuStep||0)+1); p.fuStep=step; p.lastActivityAt=TODAY; if(!p.fuMsgIds)p.fuMsgIds={}; p.fuMsgIds[step]=m.id; if(step>=3)p.tags=p.tags.filter(t=>t!=="in-intro-funnel"); }
-  (p.sends=p.sends||[]).push({type:st.isIntro?"intro":"fu",step:st.isIntro?0:step,code:m.code,body:bodyText,at:TODAY});
+  else { step=Math.min(lastIx,(p.fuStep==null?-1:p.fuStep)+1); p.fuStep=step; p.lastActivityAt=TODAY;
+    if(!p.fuMsgIds)p.fuMsgIds={}; p.fuMsgIds[step]=m.id; }
+  /* graduation is now DATA: the last stage of whatever funnel they're on ends it (a 6-stage
+     baseline and a 2-stage branch both close correctly). Explicit Exit still exists. */
+  const done=(step>=lastIx&&lastIx>=0&&!st.isIntro);
+  if(done)p.tags=p.tags.filter(t=>t!=="in-intro-funnel");
+  (p.sends=p.sends||[]).push({type:st.isIntro?"intro":"fu",step:st.isIntro?0:step,code:m.code,body:bodyText,
+    at:TODAY,ts:tsAt(TODAY,new Date().getHours(),new Date().getMinutes())});
+  /* real build also POSTs /api/person/<id>/send here */
   closeModal();
-  toast((st.isIntro?"Intro "+m.code:"Follow-up "+step+" "+m.code)+" sent to "+p.fn+((!st.isIntro&&step>=3)?" — sequence complete, graduated to Connections":"")+" · logged","ok");
+  toast((st.isIntro?"Intro "+m.code:st.stage.label+" "+m.code)+" sent to "+p.fn+(done?" — final stage, graduated out of the funnel":"")+" · logged","ok");
   render();
 }
 
@@ -1362,17 +2045,23 @@ function renderEngage(){
   let list=posts.filter(p=>p.state==="none"&&!personById(p.authorId).isMuted&&postDaysAgo(p.postedAt)<=FEED_MAX_AGE_DAYS);
   if(within)list=list.filter(p=>postDaysAgo(p.postedAt)<=within);
   const ff=ST.feedFilter;
-  /* phase predicates: identify posts by contacts currently in the Prospect funnel or the Pipeline */
+  /* phase predicates: identify posts by contacts in the Prospect funnel, the Pipeline, or the
+     manual Follow-up list. Follow-up = an OPEN follow_ups row (promoted out of the pipeline) —
+     same definition the Follow-up tab uses, so keep commenting on their posts while you nurture. */
+  const openFollowupIds=new Set(followUps.filter(f=>!f.closedAt).map(f=>f.personId));
   const inProspects=p=>{const a=personById(p.authorId);return a&&["warming","request_sent"].includes(a.stage);};
   const inPipeline=p=>{const a=personById(p.authorId);return a&&a.tags.includes("in-intro-funnel");};
+  const inFollowup=p=>openFollowupIds.has(p.authorId);
   if(ff==="ai")list=list.filter(p=>p.isAI);
   if(ff==="pref")list=list.filter(p=>personById(p.authorId).isStarred);
   if(ff==="prospects")list=list.filter(inProspects);
   if(ff==="pipeline")list=list.filter(inPipeline);
+  if(ff==="followup")list=list.filter(inFollowup);
   const withinChips=[[0,"All ≤4d"],[1,"≤24h"],[2,"≤2d"],[3,"≤3d"]];
   const vis=posts.filter(p=>p.state==="none"&&!personById(p.authorId).isMuted&&postDaysAgo(p.postedAt)<=FEED_MAX_AGE_DAYS);
   const counts={all:vis.length, pref:vis.filter(p=>personById(p.authorId).isStarred).length,
-    ai:vis.filter(p=>p.isAI).length, prospects:vis.filter(inProspects).length, pipeline:vis.filter(inPipeline).length};
+    ai:vis.filter(p=>p.isAI).length, prospects:vis.filter(inProspects).length, pipeline:vis.filter(inPipeline).length,
+    followup:vis.filter(inFollowup).length};
   const mutedCount=people.filter(p=>p.isMuted).length;
 
   /* low-value (reposts/announcements) split into their own clearable group;
@@ -1392,7 +2081,7 @@ function renderEngage(){
   </div><div class="btnrow"><button class="iconbtn" onclick="openSettings('voice')" title="Voice & reply settings">⚙</button></div></div>
 
   <div class="qfrow">
-    ${[["all","All"],["pref","⭐ Preferred"],["ai","🤖 AI posts"],["prospects","🌱 In prospects"],["pipeline","📮 In pipeline"]].map(([k,l])=>
+    ${[["all","All"],["pref","⭐ Preferred"],["ai","🤖 AI posts"],["prospects","🌱 In prospects"],["pipeline","📮 In pipeline"],["followup","🤝 In follow-up"]].map(([k,l])=>
       `<span class="chip2 ${ff===k?'set':''}" onclick="ST.feedFilter='${k}';renderEngage()">${l} <span class="c">${counts[k]}</span></span>`).join("")}
     <span style="width:1px;height:22px;background:var(--line);margin:0 3px"></span>
     ${withinChips.map(([n,l])=>`<span class="chip2 ${within===n?'set':''}" onclick="ST.feedWithin=${n};renderEngage()">${l}</span>`).join("")}
@@ -1428,18 +2117,42 @@ function renderEngage(){
     </div>
   </div>`;
 }
+/* Engage pipeline marker — shows where this post's author sits in the outreach funnel and, on hover,
+   the DM thread (reusing the pipeline's threadPop), so the feed surfaces not just the comments Eric
+   has made to a person but the messages that person has actually been sent. Only renders for people
+   the funnel has touched (in-pipeline, promoted/exited, or with any logged send / synced thread) —
+   the vast majority of feed authors are random connections and get nothing. Derives stage from the
+   SAME helpers the Pipeline board uses (inPipelineNow / stageLabelOf / nextStageOf / lastSentIx) so
+   the marker and the board can never disagree about someone's stage. */
+function engStageMarker(a){
+  const inPipe=inPipelineNow(a);
+  const nSends=(a.sends||[]).length, hasThread=!!threadOf(a);
+  const promoted=a.funnelExited&&a.exitReason==="promoted", exited=a.funnelExited&&!promoted;
+  if(!inPipe&&!promoted&&!exited&&!nSends&&!hasThread)return "";
+  let label,cls;
+  if(inPipe&&(a.stage==="accepted"||lastSentIx(a)<0)){label="⏳ owe intro";cls="p-teal";}
+  else if(inPipe&&!nextStageOf(a)){label="✓ funnel complete";cls="p-grn";}
+  else if(inPipe){label="📮 "+(stageLabelOf(a)||"in funnel");cls="p-pur";}
+  else if(promoted){label="🤝 in follow-up";cls="p-grn";}
+  else if(exited){label="⤴ left funnel";cls="p-gray";}
+  else {label="✉ "+(stageLabelOf(a)||(nSends?nSends+" sent":"DM thread"));cls="p-amb";}
+  const hint=(nSends||hasThread)?"Hover to read the DM thread — what "+(a.fn||"they")+" has been sent"
+                               :"In your outreach pipeline — no DMs sent yet";
+  return `<span class="thr pipemark" title="${attrEsc(hint)}"><span class="pill ${cls}">${esc(label)}</span>${threadPop(a)}</span>`;
+}
 function postCard(p){
   const a=personById(p.authorId);
   const cls=(a.isStarred?" starred":"")+(p.isAI?" ai":"")+(p.state==="done"?" done":"");
   let panel="";
   if(p.replyJob){
     if(p.replyJob.status==="compose")panel=`<div class="replypanel"><div class="rh">✦ Draft a reply</div>
-      <label class="fld">Steering note <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— optional</span></label>
-      <textarea id="steer-${p.id}" class="steerbox" placeholder="Give the AI an angle before it drafts — e.g. &quot;agree, but add our take on pricing&quot; or &quot;keep it short and end with a question&quot;.">${esc(p.replyJob.steer||'')}</textarea>
+      <label class="fld">Your note <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— steer the draft, or write the exact comment</span></label>
+      <textarea id="steer-${p.id}" class="steerbox" placeholder="Steer the AI — e.g. &quot;agree, but add our take on pricing&quot; — OR type the exact comment you want and hit Send as is.">${esc(p.replyJob.steer||'')}</textarea>
       <div class="btnrow" style="margin-top:9px">
         <button class="btn sm" onclick="generateReply(${p.id})">✦ Generate reply</button>
-        <button class="btn gray sm" onclick="cancelReply(${p.id})">Cancel</button>
-        <span class="muted" style="font-size:11px">Leave blank to draft straight from your voice profile.</span></div></div>`;
+        <button class="btn green sm" onclick="sendReplyAsIs(${p.id})" title="Skip generation — save exactly what you typed as the sent comment and mark replied. Captured as training data.">✓ Send as is</button>
+        <button class="btn gray sm" onclick="cancelReply(${p.id})">Cancel</button></div>
+      <div class="muted" style="font-size:11px;margin-top:6px"><b>Generate reply</b> treats your note as an angle. <b>Send as is</b> posts exactly what you typed — no generation — and records it for self-learning. Leave blank + Generate to draft straight from your voice profile.</div></div>`;
     else if(p.replyJob.status==="pending")panel=`<div class="replypanel"><div class="rh"><span class="spin"></span> Drafting a reply in your voice… <span class="muted" id="rtick-${p.id}" style="font-weight:400;font-size:11.5px">${replyElapsed(p.replyJob)}</span></div>
       ${p.replyJob.steer?`<div class="muted" style="font-size:11.5px;margin-bottom:4px">↪ steering: "${esc(p.replyJob.steer)}"</div>`:''}
       <div class="rprog"><i></i></div>
@@ -1468,18 +2181,21 @@ function postCard(p){
   const engBadge=(a.engLikes||a.engReplies)?`<span class="engbadge" title="You've already engaged with ${esc(a.fn)}">✓ ${[a.engLikes?a.engLikes+' liked':'',a.engReplies?a.engReplies+' replied':''].filter(Boolean).join(' · ')}</span>`:'';
   const head=`<div class="ph"><span onclick="openPerson(${a.id})" style="cursor:pointer" title="Open ${esc(a.name)}'s detail">${avatar(a)}</span><div class="meta">
       <div class="nm">${starGlyph(a)}<span class="linkish" onclick="openPerson(${a.id})" title="Open ${esc(a.name)}'s detail">${esc(a.name)}</span> ${p.isAI?'<span class="pill p-pur">🤖 AI</span>':''}${p.lowValue?`<span class="pill p-gray">${esc(p.lvLabel)}</span>`:''}</div>
-      <div class="sub2">${esc(a.title)} · ${esc(a.agency)} · ${daysAgoLabel(p.postedAt)}${engBadge}</div></div>
+      <div class="sub2">${esc(a.title)} · ${esc(a.agency)} · ${daysAgoLabel(p.postedAt)}${engBadge}${engStageMarker(a)}</div></div>
       <span style="margin-left:auto;display:inline-flex;align-items:center;gap:10px;white-space:nowrap">
         <span style="font-size:11px;color:var(--muted);font-weight:700" title="Posted ${attrEsc(p.postedAt)}">🕒 ${postAge(p.postedAt)}</span>
         <span class="linkish" style="font-size:12px" onclick="toggleStar(${a.id})">${a.isStarred?'★ Preferred':'☆ Prefer'}</span></span></div>`;
   if(p.lowValue) return `<div class="post${cls}">${head}
     <p class="ptext">${esc(p.text)}</p>
     <div class="pacts">
+      <button class="btn teal ghost sm" onclick="likePost(${p.id})" title="You can still like this even though it's flagged low-value">👍 Like</button>
+      <button class="btn ghost sm" onclick="openReplyCompose(${p.id})" title="You can still comment on this even though it's flagged low-value">✦ Draft reply</button>
       ${p.postUrl?`<a class="btn gray sm" href="${esc(p.postUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open this post on LinkedIn">↗ View post</a>`:''}
       <button class="btn gray sm" onclick="unmarkLowValue(${p.id})" title="Not low-value — move back to the main feed">↑ Restore</button>
       <button class="btn gray sm" onclick="dismissPost(${p.id})">Skip</button>
       <button class="btn gray sm" onclick="muteAuthor(${a.id})">🔇 Mute</button>
-      <span class="react">${p.likes} reactions · ${p.comments} comments</span></div></div>`;
+      <span class="react">${p.likes} reactions · ${p.comments} comments</span></div>
+    ${panel}</div>`;
   return `<div class="post${cls}">${head}
     <p class="ptext">${esc(p.text)}</p>
     <div class="pacts">
@@ -1525,7 +2241,6 @@ function skipRemaining(){
   snapshot("skip remaining");
   const ids=targets.map(p=>p.id);
   targets.forEach(p=>p.state="dismissed");
-  persist("/api/feed/skip",{ids});
   toast("Skipped "+ids.length+" post"+(ids.length!==1?"s":"")+" — undo with Ctrl+Z","ok");renderEngage();}
 /* Draft reply is now TWO steps: (1) open the compose area + ask for an optional steering note,
    (2) Generate actually runs the async draft. Clicking "Draft reply" no longer auto-generates. */
@@ -1578,6 +2293,15 @@ function saveReply(id){snapshot("save reply");const p=posts.find(x=>x.id===id);
   const ta=$("rt-"+id);if(ta)p.replyJob.text=ta.value;p.state="done";p.replyJob=null;
   const a=personById(p.authorId);a.engReplies=(a.engReplies||0)+1;
   toast("Reply saved & marked replied — edit captured for self-learning","ok");renderEngage();}
+/* Send-as-is: save exactly what Eric typed in the compose box as the sent comment (no generation),
+   mark replied. In the live build this records source='as_is' so it's a pure-voice training exemplar
+   kept out of the diff-based reply_learn analyzer; here it just updates local mock state. */
+function sendReplyAsIs(id){const p=posts.find(x=>x.id===id);if(!p)return;
+  const el=$("steer-"+id);const text=((el&&el.value)||(p.replyJob&&p.replyJob.steer)||"").trim();
+  if(!text){toast("Type the message you want to send first","warn");return;}
+  snapshot("send reply as-is");p.state="done";p.replyJob=null;
+  const a=personById(p.authorId);a.engReplies=(a.engReplies||0)+1;
+  toast("Sent as-is & marked replied — captured as training data","ok");renderEngage();}
 
 /* ============================ CONNECTIONS (CRM table) ============================ */
 const CONN_COLS=[["person","Connection"],["stage","Stage"],["eligible","Outbound"],["facets","Facets"],["research","Research"],["summary","Summary"],["fu","Follow-up"],["agency","Agency"],["loc","Location"],
@@ -1603,12 +2327,18 @@ const CONN_CELL={
   summary:p=>{const s=p.research&&p.research.summary;const rv=roleVerdict(p);
     if(!s)return `<td class="summcell"><span class="muted" title="not yet researched">—</span></td>`;
     return `<td class="summcell"><div><span class="pill ${rv.cls}" style="font-size:9px" title="Classifier's role read · ${esc(p.research.confidence||'?')} confidence">${rv.label}</span></div><div class="summtxt" title="${attrEsc(s)}">${esc(s)}</div></td>`;},
-  fu:p=>`<td>${p.stage==="intro_sent"?(p.fuStep>=3?`<span class="pill p-grn" title="Completed the follow-up sequence — graduated out of the pipeline">✓ completed</span>`:`<span class="pill ${p.fuStep===0?'p-pur':'p-amb'}">${p.fuStep===0?'intro only':'fu '+p.fuStep+'/3'}</span>`):'<span class="muted">—</span>'}</td>`,
+  /* stage counts are user-defined now, so never hard-code a denominator: "completed" means the
+     person's OWN funnel has no next stage, and the total is that funnel's stages after the opener. */
+  fu:p=>{if(p.stage!=="intro_sent")return '<td><span class="muted">—</span></td>';
+    const f=personFunnel(p), nfu=Math.max(stagesOf(f.id).length-1,0), ix=p.fuStep==null?-1:p.fuStep;
+    if(!nextStageOf(p))return `<td><span class="pill p-grn" title="Reached the end of the ${attrEsc(f.label)} funnel — graduated out of the pipeline">✓ completed</span></td>`;
+    if(ix<0)return `<td><span class="pill p-acc" title="Just diverted into ${attrEsc(f.label)} — nothing sent here yet">🌿 not started</span></td>`;
+    return `<td><span class="pill ${ix===0?'p-pur':'p-amb'}" title="${attrEsc(f.label)} · ${attrEsc(stageLabelOf(p))} sent">${ix===0&&f.isRoot?'intro only':'fu '+ix+'/'+nfu}</span></td>`;},
   agency:p=>`<td title="${esc(p.agency)}">${esc(p.agency)}</td>`,
   loc:p=>`<td class="muted">${esc(p.city)}, ${esc(p.state)}</td>`,
   score:p=>`<td>${scorePill(p.score)}</td>`,
   intro:p=>{const m=msgById(p.introMessageId);return `<td>${m?`<span class="code" title="${esc(m.title)}">${m.code}</span>`:'<span class="muted">—</span>'}</td>`;},
-  lastTouch:p=>`<td class="${daysSince(p.lastActivityAt)>=FU_STALE_DAYS&&p.stage==='intro_sent'&&p.fuStep<3&&!p.replyCount?'cell-stale':'muted'}">${p.lastActivityAt?fmtDate(p.lastActivityAt)+' · '+daysSince(p.lastActivityAt)+'d':'—'}</td>`,
+  lastTouch:p=>`<td class="${daysSince(p.lastActivityAt)>=FU_STALE_DAYS&&p.stage==='intro_sent'&&!!nextStageOf(p)&&!p.replyCount?'cell-stale':'muted'}">${p.lastActivityAt?fmtDate(p.lastActivityAt)+' · '+daysSince(p.lastActivityAt)+'d':'—'}</td>`,
   tags:p=>`<td class="tagcell">${PRIMARY_QUICK_TAGS.map(t=>{const on=p.tags.includes(t),blk=tagBlock(t);return `<span class="qtag${on?(blk?' on-block':' on'):''}" title="${esc((TAG_VOCAB[t]||{}).d||t)} · click to ${on?'remove':'add'}" onclick="event.stopPropagation();connQuickTag(${p.id},'${t}','${on?'remove':'add'}')">${on?'✓ ':''}${esc(t)}</span>`;}).join("")}${p.tags.filter(t=>!PRIMARY_QUICK_TAGS.includes(t)).map(t=>`<span class="tag${tagBlock(t)?' block':''} tagtog" title="${esc((TAG_VOCAB[t]||{}).d||t)} · click to remove" onclick="event.stopPropagation();connQuickTag(${p.id},'${esc(t)}','remove')">${tagBlock(t)?'⛔ ':''}${esc(t)}<b class="tx">×</b></span>`).join("")}<button class="tagadd" title="Add another tag" onclick="event.stopPropagation();openTagPop(${p.id},event)">＋</button></td>`,
   replies:p=>`<td class="tnum">${p.replyCount||'—'}</td>`,
   connectedAt:p=>`<td class="muted">${fmtDate(p.connectedAt)}</td>`
@@ -1810,58 +2540,197 @@ function bulkPrincipal(){const ids=[...ST.sel];if(!ids.length)return;snapshot("b
   toast(ids.length+" marked principal","ok");ST.sel.clear();render();}
 
 /* ============================ INTRO LIBRARY (A/B) ============================ */
+/* ══ MESSAGE LIBRARY BOARD ═══════════════════════════════════════════════════════════════
+   Renders ONE funnel at a time (ST.libFunnel; defaults to the root/baseline). Columns are that
+   funnel's stages; cards are the options in each stage; a branch is a chip inside the card of the
+   message that spawned it. Clicking a branch drills into ITS funnel — same screen, deeper path. */
 function renderLibrary(){
-  const archN=library.filter(m=>!m.isActive).length;
+  const fid=(funnelById(ST.libFunnel)?ST.libFunnel:rootFunnel().id);
+  ST.libFunnel=fid;
+  const f=funnelById(fid), ss=stagesOf(fid), archN=library.filter(m=>!m.isActive).length;
+  const best={}; ss.forEach(st=>{best[st.id]=Math.max(...libByStage(st.id).map(replyPct),0);});
+  const cols=ss.map(st=>{
+    const msgs=library.filter(m=>m.stageId===st.id&&(ST.libShowArchived||m.isActive)).sort((a,b)=>a.sortOrder-b.sortOrder);
+    const roots=msgs.filter(m=>!m.parentId), rootIds=new Set(roots.map(m=>m.id));
+    const cards=roots.map(m=>optCard(m,best[st.id])+msgs.filter(x=>x.parentId===m.id).map(a=>optCard(a,best[st.id],true)).join("")).join("")
+      /* an alternate whose base moved stage still has to render somewhere */
+      +msgs.filter(m=>m.parentId&&!rootIds.has(m.parentId)).map(m=>optCard(m,best[st.id],true)).join("");
+    return `<div class="stagecol">
+      <div class="sh"><b>${esc(st.label)}</b><span class="n">stage ${st.sortOrder}</span>
+        <span class="sx" title="Rename or delete this stage" onclick="stageMenu(${st.id},event)">⋯</span></div>
+      ${cards}
+      <button class="addmsg" onclick="newMsg(${st.id})" title="A new message option at the ${attrEsc(st.label)} stage">＋ Add option</button>
+    </div>`;}).join("");
+  const path=funnelPath(fid);
+  const crumb=`<div class="crumb"><a onclick="openFunnel(${rootFunnel().id})">${esc(rootFunnel().label)} funnel</a>${
+    path.map((h,i)=>` › <a onclick="openFunnel(${h.stage?h.stage.funnelId:rootFunnel().id})">${esc(h.stage?h.stage.label:'?')} · ${esc(h.message?h.message.code:'?')}</a>${
+      i===path.length-1?` › <span class="cur">🌿 ${esc(h.branch.label)}</span>`:` › <a onclick="openFunnel(${h.funnel.id})">🌿 ${esc(h.branch.label)}</a>`}`).join("")}</div>`;
   $("v-intro").innerHTML=`
   <div class="pagehead"><div class="pht">
-    <h1>Message Library
+    <h1>Message Funnel
       ${(archN||ST.libShowArchived)?`<button class="btn ghost sm" style="float:right;font-weight:600" onclick="ST.libShowArchived=!ST.libShowArchived;renderLibrary()">${ST.libShowArchived?'Hide archived':'View archived'+(archN?' ('+archN+')':'')}</button>`:''}
     </h1>
-    <p class="lede">Your reusable LinkedIn DM templates, grouped by purpose — the <b>intro</b> and each <b>follow-up</b>. Build as many
-    variants per category as you want; each shows its live reply rate, and A/B alternates (e.g. <span class="code">1.1</span>) let you
-    test against a base. <b>Editing a message that already has reply data offers to branch it into a new variant</b>
-    (<span class="code">F1b</span> → <span class="code">F1b.1</span>) so a wording change keeps its own stats instead of muddying the original's.
-    The Pipeline pickers and the campaign sender pull their messages from here.${ST.libShowArchived?' <b>Showing archived messages.</b>':''}</p>
+    <p class="lede">${f.isRoot
+      ? `Your <b>baseline funnel</b> — what everyone gets until a reply diverts them. Each <b>column is a stage</b>
+         (add as many follow-ups as you need); each card is an <b>option</b> you might send at that stage.
+         A <b>branch</b> lives inside the card of the message that asked the question — because that's the only
+         place it means anything — and answering one moves the person into that branch's <b>own funnel</b>.`
+      : `You're inside the <b>${esc(f.label)}</b> branch. These are its own stages — someone who answers this way
+         leaves the parent drip for good, so they never see the parent's remaining stages.`}${
+      ST.libShowArchived?' <b>Showing archived messages.</b>':''}</p>
   </div></div>
-  ${MSG_CATS.map(cat=>{
-    const msgs=libByCat(cat.key).filter(m=>ST.libShowArchived||m.isActive), roots=msgs.filter(m=>!m.parentId), bestPct=Math.max(...msgs.map(replyPct),0);
-    return `<div class="libcat">
-      <div class="libcathead"><div><span class="catname">${cat.label}</span> <span class="muted" style="font-size:12px">· ${cat.hint}</span></div>
-        <button class="btn ghost sm" onclick="newMsg('${cat.key}')">＋ New ${cat.label.toLowerCase()} message</button></div>
-      ${roots.length?roots.map(m=>{
-        const alts=msgs.filter(x=>x.parentId===m.id);
-        return libItem(m,bestPct)+alts.map(a=>libItem(a,bestPct,true)).join("");
-      }).join(""):'<div class="muted" style="padding:2px 2px 10px">No messages in this category yet — add one.</div>'}
-    </div>`;
-  }).join("")}`;
+  ${crumb}
+  <div class="libwrap"><div class="board" data-tut="lib-grid">${cols}
+    <div class="stagecol addcol" onclick="addStage(${fid})" title="Add another stage to this funnel">＋ Add stage<br><span style="font-size:11px">(another follow-up)</span></div>
+  </div></div>`;
 }
-function libItem(m,bestPct,isAlt){
-  const pct=replyPct(m);const win=pct===bestPct&&pct>0&&m.assigned>0;
-  return `<div class="introitem ${isAlt?'alt':''} ${win?'winner':''}">
-    <div class="ih"><span class="code">${m.code}</span><span class="ititle">${esc(m.title)}</span>
-      ${win?'<span class="pill p-grn">🏆 best in category</span>':''}
+/* one OPTION card: the message, its stats, and the branches it owns */
+function optCard(m,bestPct,isAlt){
+  const pct=replyPct(m), win=pct===bestPct&&pct>0&&m.assigned>0, brs=branchesOf(m.id);
+  const stageOpts=stagesOf((stageById(m.stageId)||{}).funnelId)
+    .map(x=>`<option value="${x.id}" ${x.id===m.stageId?'selected':''}>${esc(x.label)}</option>`).join("");
+  const brHTML=`<div class="brs">${brs.length?'<div class="blbl">Branches from this message</div>':''}
+    ${brs.map(b=>`<div class="br" onclick="openFunnel(${b.funnelId})" title="Open the ${attrEsc(b.label)} funnel">
+      ${(b.quickKeys||[]).length?`<span class="bk">${esc((b.quickKeys||[]).join(','))}</span>`:''}
+      <span class="bl">${esc(b.label)}</span>
+      <span class="bgo">${library.filter(x=>x.isActive&&stagesOf(b.funnelId).some(s=>s.id===x.stageId)).length} msg ›</span>
+      <span class="sx" title="Edit branch" onclick="event.stopPropagation();openBranchEditor(${b.id})">⋯</span></div>`).join("")}
+    <div class="br add" onclick="openBranchEditor(null,${m.id})">＋ Add branch</div></div>`;
+  return `<div class="opt ${isAlt?'alt':''} ${win?'winner':''} ${m.isActive?'':'arch'}">
+    <div class="oh"><span class="code">${m.code}</span>
+      ${win?'<span class="pill p-grn" title="best reply rate at this stage">🏆</span>':''}
       ${!m.isActive?'<span class="pill p-gray">archived</span>':''}
-      <span style="margin-left:auto"></span>
-      <button class="btn ghost sm" onclick="editMsg(${m.id})">Edit</button>
-      <button class="btn gray sm" onclick="addAlt(${m.id})" title="Add an A/B alternate">＋ Alt</button></div>
-    <div class="ibody">${esc(m.body)}</div>
-    <div class="abstat">
-      <span class="s"><b>${m.assigned}</b><span>assigned</span></span>
-      <span class="s"><b>${m.replied}</b><span>replied</span></span>
-      <span class="s"><b style="color:${pct>=20?'var(--green)':pct>=10?'var(--amber)':'var(--red)'}">${pct}%</b><span>reply rate</span></span>
-      <span class="s"><b>${m.viewed}</b><span>viewed</span></span>
-      ${m.category==='intro'?`<span class="s"><b>${m.withLoom}</b><span>w/ loom</span></span>`:''}
-      ${m.versions.length?`<span class="s linkish" onclick="msgHistory(${m.id})"><b>${m.versions.length}</b><span>versions</span></span>`:''}
-    </div></div>`;
+      <div class="ot">${esc(m.title)}</div></div>
+    <div class="ob" onclick="this.classList.toggle('open')" title="Click to expand / collapse">${esc(m.body)}</div>
+    <div class="of">
+      <span title="${m.replied} replied · ${m.viewed} viewed"><b>${m.assigned}</b> sent ·
+        <b style="color:${pct>=20?'var(--green)':pct>=10?'var(--amber)':'var(--red)'}">${pct}%</b> reply</span>
+      ${m.versions.length?`<span class="linkish" onclick="msgHistory(${m.id})">${m.versions.length} ver</span>`:''}
+      <span class="oacts">
+        <select class="ov" title="Move to another stage" onchange="moveMsgStage(${m.id},+this.value)">${stageOpts}</select>
+        <button class="btn ghost sm" onclick="editMsg(${m.id})">Edit</button>
+        <button class="btn gray sm" onclick="addAlt(${m.id})" title="Add an A/B alternate">＋Alt</button>
+        <button class="btn ${m.isActive?'red ghost':'gray'} sm" onclick="archiveMsg(${m.id})"
+          title="${m.isActive?'Archive — stops appearing in the pickers, keeps its stats':'Restore'}">${m.isActive?'Archive':'Restore'}</button>
+      </span></div>
+    ${brHTML}</div>`;
 }
-/* the family root for A/B purposes: an alternate branches under its base, the base branches under itself */
+function openFunnel(fid){ST.libFunnel=fid;renderLibrary();window.scrollTo(0,0);}
+/* move an option to another stage of the SAME funnel — alternates follow their base (a family
+   must never straddle two stages), and `setstage` avoids logging a bogus wording version. */
+function moveMsgStage(id,sid){const m=msgById(id);if(!m||m.stageId===sid)return;
+  snapshot("move option to another stage");
+  [m].concat(library.filter(x=>x.parentId===m.id)).forEach(x=>x.stageId=sid);
+  toast(m.code+" → "+((stageById(sid)||{}).label||"stage"),"ok");renderLibrary();}
+
+/* ---- STAGES — the columns. Fully user-defined so any deployment can run 3 follow-ups or 6. ---- */
+function addStage(fid){
+  const label=(prompt('Name the new stage (e.g. "Follow-up 4"):',"Follow-up "+stagesOf(fid).length)||"").trim();
+  if(!label)return;
+  snapshot("add stage");
+  const id=Date.now();
+  stages.push({id:id,funnelId:fid,label:label,hint:"",sortOrder:stagesOf(fid).length});
+  toast("Stage added: "+label,"ok");renderLibrary();}
+/* The ⋯ on a stage header. v1 of this was a single prompt() where you deleted the stage by
+   blanking the field — the capability existed but nothing announced it, so it read as missing.
+   List the actions instead. */
+function stageMenu(sid,ev){ev.stopPropagation();closeStageMenu();
+  const st=stageById(sid);if(!st)return;
+  const host=ev.currentTarget.parentElement;
+  const m=document.createElement("div");m.className="smenu";
+  m.innerHTML=`<button onclick="renameStage(${sid})">Rename stage…</button>
+    <div class="sep"></div>
+    <button class="danger" onclick="deleteStage(${sid})">Delete stage…</button>`;
+  host.appendChild(m);
+  setTimeout(()=>document.addEventListener("click",closeStageMenu,{once:true}),0);}
+function closeStageMenu(){document.querySelectorAll(".smenu").forEach(x=>x.remove());}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeStageMenu();});
+function renameStage(sid){closeStageMenu();const st=stageById(sid);if(!st)return;
+  const label=prompt("Rename this stage:",st.label);
+  if(label===null||!label.trim())return;
+  snapshot("rename stage");st.label=label.trim();renderLibrary();}
+/* Deleting a stage is never just a column disappearing: its messages have to land somewhere,
+   and `fu_step` is an INDEX into the stage order, so everyone at or past it shifts down one.
+   Say both out loud before doing it. */
+function deleteStage(sid){closeStageMenu();
+  const st=stageById(sid);if(!st)return;
+  const n=library.filter(m=>m.stageId===sid&&m.isActive).length;
+  const sibs=stagesOf(st.funnelId).filter(x=>x.id!==sid);
+  if(!sibs.length){toast("A funnel needs at least one stage","warn");return;}
+  const nb=sibs.slice().sort((a,b)=>Math.abs(a.sortOrder-st.sortOrder)-Math.abs(b.sortOrder-st.sortOrder))[0];
+  const shifted=people.filter(p=>(p.funnelId||rootFunnel().id)===st.funnelId
+    &&(p.fuStep!=null&&p.fuStep>=st.sortOrder)&&!p.funnelExited).length;
+  let msg='Delete the "'+st.label+'" stage?';
+  if(n)msg+='\n\n• '+n+' message'+(n===1?'':'s')+' move'+(n===1?'s':'')+' to "'+nb.label+'" (nothing is deleted).';
+  if(shifted)msg+='\n\n• '+shifted+' '+(shifted===1?'person is':'people are')+' at or past this stage and will shift back one step, so their next message is whatever takes this slot.';
+  if(!n&&!shifted)msg+='\n\nIt is empty — nothing else changes.';
+  if(!confirm(msg))return;
+  snapshot("delete stage");
+  library.forEach(m=>{if(m.stageId===sid)m.stageId=nb.id;});
+  people.forEach(p=>{if((p.funnelId||rootFunnel().id)===st.funnelId&&p.fuStep!=null&&p.fuStep>=st.sortOrder)p.fuStep-=1;});
+  stages=stages.filter(x=>x.id!==sid);
+  stagesOf(st.funnelId).forEach((x,i)=>x.sortOrder=i);
+  toast("Stage deleted"+(n?" — "+n+" message"+(n===1?'':'s')+" moved to "+nb.label:""),"ok");renderLibrary();}
+
+/* ---- BRANCHES — owned by ONE option; creating one also creates its funnel + first stage. ---- */
+function openBranchEditor(bid,messageId){
+  const b=bid?branches.find(x=>x.id===bid):null, m=msgById(b?b.messageId:messageId);
+  openModal(`<div class="mhead"><div><h2>${b?"Edit branch":"New branch"}</h2>
+    <div class="sub">A branch is a classified reply to <span class="code">${esc(m?m.code:'?')}</span>. Answering it takes the
+    person OFF this funnel and into a funnel of the branch's own — they won't see the remaining stages here.</div></div>
+    <div class="dclose" onclick="closeModal()">×</div></div>
+    <div class="mbody">
+      <label class="fld">Name</label>
+      <input type="text" id="bt-label" value="${b?attrEsc(b.label):''}" placeholder="e.g. Interested — wants pricing" style="width:100%;margin-bottom:12px">
+      <label class="fld">Description <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— optional; shown in the classifier</span></label>
+      <input type="text" id="bt-hint" value="${b?attrEsc(b.hint||''):''}" placeholder="when this branch applies" style="width:100%;margin-bottom:12px">
+      <label class="fld">Quick-pick keys <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— optional shortcut, leave blank if it doesn't fit</span></label>
+      <input type="text" id="bt-quick" value="${b?attrEsc((b.quickKeys||[]).join(', ')):''}" placeholder="e.g. yes, y   —   or   1, 2   —   or leave empty" style="width:100%;margin-bottom:6px">
+      <div class="muted" style="font-size:12px;margin-bottom:6px">Purely a convenience: any short token you'd recognise in a reply
+        becomes a one-click button in the classifier. Branches work exactly the same with none set — you just pick by name.</div>
+      <div class="btnrow" style="margin-top:16px;justify-content:${b?'space-between':'flex-end'}">
+        ${b?`<button class="btn red ghost sm" onclick="deleteBranch(${b.id})">Delete branch</button>`:''}
+        <span><button class="btn gray" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="saveBranch(${b?b.id:'null'},${m?m.id:'null'})">${b?'Save':'Create branch'} →</button></span></div>
+    </div>`);
+}
+function saveBranch(bid,messageId){
+  const label=($("bt-label").value||"").trim(); if(!label){toast("Give the branch a name","warn");return;}
+  const hint=($("bt-hint").value||"").trim();
+  const quickKeys=($("bt-quick").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+  snapshot(bid?"edit branch":"new branch");
+  if(bid){const b=branches.find(x=>x.id===bid);
+    if(b){b.label=label;b.hint=hint;b.quickKeys=quickKeys;const f=funnelById(b.funnelId);if(f)f.label=label;}
+    closeModal();toast("Branch updated","ok");renderLibrary();return;}
+  const id=Date.now(), fid=id+1;
+  funnels.push({id:fid,label:label,branchId:id,isRoot:false,people:0});
+  stages.push({id:fid*1000+1,funnelId:fid,label:"Reply 1",hint:"First message after they answer",sortOrder:0});
+  branches.push({id:id,messageId:messageId,funnelId:fid,key:"b"+id,label:label,hint:hint,quickKeys:quickKeys,
+                 sortOrder:branchesOf(messageId).length,people:0});
+  closeModal();toast("Branch created — it has its own funnel now","ok");renderLibrary();}
+function deleteBranch(bid){const b=branches.find(x=>x.id===bid);if(!b)return;
+  const nm=library.filter(m=>stagesOf(b.funnelId).some(s=>s.id===m.stageId)).length;
+  if(!confirm('Delete the "'+b.label+'" branch?'+(nm?"\n\nIts "+nm+" message"+(nm===1?'':'s')+" will be archived back onto the baseline, and "+(b.people||0)+" people return to the baseline funnel.":"")))return;
+  snapshot("delete branch");
+  const first=stagesOf(rootFunnel().id)[0];
+  const bstages=stagesOf(b.funnelId).map(s=>s.id);
+  library.forEach(m=>{if(bstages.indexOf(m.stageId)>=0){m.stageId=first.id;m.isActive=false;}});
+  people.forEach(p=>{if(p.funnelId===b.funnelId){p.funnelId=rootFunnel().id;p.fuStep=0;}});
+  stages=stages.filter(s=>s.funnelId!==b.funnelId);
+  funnels=funnels.filter(f=>f.id!==b.funnelId);
+  branches=branches.filter(x=>x.id!==bid);
+  if(ST.libFunnel===b.funnelId)ST.libFunnel=rootFunnel().id;
+  closeModal();toast("Branch deleted","ok");renderLibrary();}
+
+/* the family root for A/B purposes: an alternate branches under its base, the base under itself */
 function familyRoot(m){return m.parentId?(msgById(m.parentId)||m):m;}
 function editMsg(id){const m=msgById(id);const hasStats=m.assigned>0;const root=familyRoot(m);
-  openModal(`<div class="mhead"><div><h2>Edit message <span class="code">${m.code}</span></h2>
-    <div class="sub">${catLabel(m.category)} · ${hasStats?`this one has <b>${m.assigned} sends</b> of reply data`:'no sends yet'}.</div></div><div class="dclose" onclick="closeModal()">×</div></div>
+  const st=stageById(m.stageId)||{}, f=funnelById(st.funnelId)||{};
+  openModal(`<div class="mhead"><div><h2>Edit option <span class="code">${m.code}</span></h2>
+    <div class="sub">${esc(f.label||'')} · ${esc(st.label||'')} · ${hasStats?`this one has <b>${m.assigned} sends</b> of reply data`:'no sends yet'}.</div></div><div class="dclose" onclick="closeModal()">×</div></div>
     <div class="mbody">
-      <label class="fld">Category</label>
-      <select id="im-cat" style="width:100%;margin-bottom:12px">${MSG_CATS.map(c=>`<option value="${c.key}" ${m.category===c.key?'selected':''}>${c.label}</option>`).join("")}</select>
+      <label class="fld">Stage <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— which step of <b>${esc(f.label||'')}</b> this is sent at</span></label>
+      <select id="im-stage" style="width:100%;margin-bottom:12px">${stagesOf(st.funnelId).map(x=>`<option value="${x.id}" ${x.id===m.stageId?'selected':''}>${esc(x.label)}</option>`).join("")}</select>
       <label class="fld">Title</label><input type="text" id="im-title" value="${esc(m.title)}" style="width:100%;margin-bottom:12px">
       <label class="fld">Body — use {{first}} and {{agency}} merge tags</label>
       <textarea id="im-body" style="min-height:120px">${esc(m.body)}</textarea>
@@ -1877,31 +2746,41 @@ function editMsg(id){const m=msgById(id);const hasStats=m.assigned>0;const root=
           :`<button class="btn" onclick="saveMsg(${m.id})">Save</button>`}</span></div>
     </div>`);
 }
-function saveMsg(id){snapshot("edit message");const m=msgById(id);
+function saveMsg(id){snapshot("edit option");const m=msgById(id);
   const nt=$("im-title").value.trim(),nb=$("im-body").value.trim();
   if(nb!==m.body)m.versions.push({title:m.title,body:m.body,at:TODAY});
-  m.title=nt||m.title;m.body=nb||m.body;m.category=$("im-cat").value;closeModal();toast("Saved "+m.code,"ok");renderLibrary();}
-/* branch-on-edit: keep an edited-with-traction message related but A/B-separate — spins off a child
-   variant (F1b → F1b.1, F1b.2) seeded with the edited text and FRESH stats, under the family root. */
+  m.title=nt||m.title;m.body=nb||m.body;
+  const ssel=$("im-stage"); if(ssel)m.stageId=+ssel.value;
+  closeModal();toast("Saved "+m.code,"ok");renderLibrary();}
+/* mock create: the real build also POSTs /api/message here and adopts the server's id/code */
+function createMsgRemote(localRow,payload,openEdit){
+  library.push(localRow);
+  renderLibrary();if(openEdit)editMsg(localRow.id);}
 function branchMsg(id){const src=msgById(id);
   const nt=$("im-title").value.trim(),nb=$("im-body").value.trim();
   const root=familyRoot(src);const n=library.filter(m=>m.parentId===root.id).length+1;const code=root.code+"."+n;
-  snapshot("branch message variant");
-  const v={id:imid++,category:root.category,code,parentId:root.id,
+  snapshot("branch option variant");
+  const v={id:imid++,stageId:root.stageId,code,parentId:root.id,
     title:nt||src.title,body:nb||src.body,isActive:true,sortOrder:imid,
     versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
-  library.push(v);closeModal();
-  toast("Branched "+src.code+" → new variant "+code+" — fresh A/B stats, same family","ok");renderLibrary();}
-function archiveMsg(id){snapshot("archive message");const m=msgById(id);m.isActive=!m.isActive;closeModal();toast(m.isActive?"Restored":"Archived","ok");renderLibrary();}
-function newMsg(cat){snapshot("new message");cat=cat||"intro";
-  const n=library.filter(m=>m.category===cat&&!m.parentId).length+1;
-  const prefix=cat==='intro'?'':cat.replace('fu','FL');   // follow-up codes use FL (FL1n), not FU
-  const m={id:imid++,category:cat,code:prefix+n,parentId:null,title:"Untitled "+catLabel(cat).toLowerCase()+" message",body:"Hi {{first}}, …",isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
-  library.push(m);renderLibrary();editMsg(m.id);}
+  closeModal();
+  createMsgRemote(v,{action:"branch",id:src.id,title:v.title,body:v.body},false);
+  toast("Branched "+src.code+" → new variant "+code+" — fresh A/B stats, same family","ok");}
+function archiveMsg(id){snapshot("archive option");const m=msgById(id);m.isActive=!m.isActive;closeModal();toast(m.isActive?"Restored":"Archived","ok");renderLibrary();}
+/* a new option is born in the STAGE whose ＋ was clicked, so it's never mis-filed */
+function newMsg(sid){snapshot("new option");
+  const st=stageById(sid)||stagesOf(rootFunnel().id)[0]; sid=st.id;
+  const isIntro=(st.funnelId===rootFunnel().id&&st.sortOrder===0);
+  const n=library.filter(m=>m.stageId===sid&&!m.parentId).length+1;
+  const prefix=isIntro?'':(st.label.replace(/follow[\s-]*up\s*/i,'FL').replace(/[^A-Za-z0-9]/g,'')||'M');
+  const m={id:imid++,stageId:sid,code:prefix+n,parentId:null,title:"Untitled "+st.label.toLowerCase()+" message",
+    body:"Hi {{first}}, …",isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
+  createMsgRemote(m,{action:"create",stageId:sid,code:m.code,title:m.title,body:m.body},true);}
 function addAlt(parentId){snapshot("add alternate");const parent=msgById(parentId);
   const n=library.filter(m=>m.parentId===parentId).length+1;
-  const m={id:imid++,category:parent.category,code:parent.code+"."+n,parentId,title:parent.title+" (alt "+n+")",body:parent.body,isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
-  library.push(m);renderLibrary();editMsg(m.id);}
+  const m={id:imid++,stageId:parent.stageId,code:parent.code+"."+n,parentId,title:parent.title+" (alt "+n+")",
+    body:parent.body,isActive:true,sortOrder:imid,versions:[],assigned:0,replied:0,viewed:0,withLoom:0};
+  createMsgRemote(m,{action:"branch",id:parent.id,title:m.title,body:m.body},true);}
 function msgHistory(id){const m=msgById(id);
   openModal(`<div class="mhead"><div><h2>Version history <span class="code">${m.code}</span></h2></div><div class="dclose" onclick="closeModal()">×</div></div>
     <div class="mbody">${m.versions.length?m.versions.slice().reverse().map(v=>`<div class="hist"><b>${fmtDate(v.at)}</b> · ${esc(v.title)}<div class="muted" style="margin-top:4px">${esc(v.body)}</div></div>`).join(""):'<div class="muted">No prior versions.</div>'}</div>`);
@@ -2161,8 +3040,8 @@ function openPerson(id){
       <div class="frow"><div class="fl">Connected</div><div class="fv">${p.connectedAt?fmtDate(p.connectedAt):'—'}</div></div>
       ${p.introMessageId?`<div class="frow"><div class="fl">Intro sent</div><div class="fv"><span class="code">${m.code}</span> ${esc(m.title)}
         ${p.introKind==='loom'?'<span class="pill p-pur">📹 Loom</span>':'<span class="pill p-pur">✉ text</span>'}</div></div>`:''}
-      ${p.stage==='intro_sent'?`<div class="frow"><div class="fl">Follow-ups</div><div class="fv">${p.fuStep}/3 sent ${p.fuStep>=3?'<span class="pill p-grn">✓ sequence complete — graduated from pipeline</span>':''} ${p.replyCount?'<span class="pill p-grn">✓ replied</span>':''}</div></div>
-      <div class="frow"><div class="fl">Last touch</div><div class="fv ${daysSince(p.lastActivityAt)>=FU_STALE_DAYS&&p.fuStep<3&&!p.replyCount?'cell-stale':''}">${p.lastActivityAt?fmtDate(p.lastActivityAt)+' · '+daysSince(p.lastActivityAt)+'d ago':'—'}</div></div>`:''}
+      ${p.stage==='intro_sent'?`<div class="frow"><div class="fl">Follow-ups</div><div class="fv">${Math.max(p.fuStep==null?0:p.fuStep,0)}/${Math.max(stagesOf(personFunnel(p).id).length-1,0)} sent ${!nextStageOf(p)?'<span class="pill p-grn">✓ sequence complete — graduated from pipeline</span>':''} ${p.replyCount?'<span class="pill p-grn">✓ replied</span>':''}</div></div>
+      <div class="frow"><div class="fl">Last touch</div><div class="fv ${daysSince(p.lastActivityAt)>=FU_STALE_DAYS&&!!nextStageOf(p)&&!p.replyCount?'cell-stale':''}">${p.lastActivityAt?fmtDate(p.lastActivityAt)+' · '+daysSince(p.lastActivityAt)+'d ago':'—'}</div></div>`:''}
       <div class="frow"><div class="fl">Preferred</div><div class="fv">
         <button class="btn ${p.isStarred?'teal':'gray'} sm" onclick="toggleStar(${p.id});openPerson(${p.id})">${p.isStarred?'★ Preferred':'☆ Mark preferred'}</button></div></div>
 
@@ -2183,7 +3062,7 @@ function openPerson(id){
       <div class="sechead">Quick actions</div>
       <div class="btnrow">
         ${p.stage==='accepted'?`<button class="btn sm" onclick="closeDrawer();openIntroPicker(${p.id})">✉️ Send intro</button>`:''}
-        ${p.stage==='intro_sent'&&p.fuStep<3&&!p.replyCount?`<button class="btn accent ghost sm" onclick="closeDrawer();openFollowupPicker(${p.id})">🔁 Send follow-up ${p.fuStep+1}</button>`:''}
+        ${p.stage==='intro_sent'&&!!nextStageOf(p)&&!p.replyCount?`<button class="btn accent ghost sm" onclick="closeDrawer();openStageComposer(${p.id})">🔁 Send ${esc((nextStageOf(p)||{}).label||'')}</button>`:''}
         ${openConvo?`<button class="btn accent ghost sm" onclick="closeDrawer();go('messages');ST.msgSel=${p.id};renderMessages()">💬 Open conversation</button>`:''}
       </div>
     </div>`);
@@ -2614,7 +3493,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden){const t=c
 "use strict";
 const KEY="le_tutorial";                       // matches the file's le_* localStorage convention
 const N_TABS={dash:"Dashboard",prospects:"Prospects",pipeline:"Pipeline",engage:"Engage",
-  connections:"Connections",invitations:"Invitations",intro:"Message Library",campaigns:"Campaigns",messages:"Messages"};
+  connections:"Connections",invitations:"Invitations",intro:"Message Funnel",campaigns:"Campaigns",messages:"Messages"};
 
 /* ---------------- content: guided tour (workflow order, beginner voice) ---------------- */
 const TUT_STEPS=[
@@ -2625,7 +3504,7 @@ const TUT_STEPS=[
 {tab:"prospects",sel:"[data-tut=prospects-guide]",title:"Send pacing & safety",body:"The tool never blasts requests. There's a daily cap, every prospect must sit a few <b>business days</b> on deck first (the “soak”), and real sends are spaced at randomized intervals so the pattern looks human. This is deliberate: send too fast and LinkedIn restricts your account. One nice touch — when someone <b>accepts</b>, the day's send budget expands a little."},
 {tab:"pipeline",sel:"#v-pipeline .kcol",title:"You owe these people an intro",body:"When someone accepts your request they land in this first column. An accepted request with no message after it is a wasted connection — think of this as your <b>debt list</b>. Cards move right as you send the intro and up to three follow-ups; follow-up 3 is the final touch and graduates them out into your regular Connections."},
 {tab:"pipeline",sel:["#v-pipeline .pcard .pc-acts .btn","#v-pipeline .kanban"],title:"The send composer",body:"Click <b>Send intro</b> on a card and a composer opens: pick a template, see it already filled in with this person's name and company, and edit freely before sending. In the <b>real tool this actually sends the LinkedIn message</b>; in this demo it's simulated. Your edits get logged against the template, feeding its A/B stats."},
-{tab:"engage",sel:"#v-engage .qfrow",title:"Engage: your network's posts",body:"A feed of recent posts from people you're connected with. Commenting keeps you visible — relationships go cold when the only time people hear from you is a pitch. The <b>🌱 In prospects</b> and <b>📮 In pipeline</b> filters show posts by people currently in your funnel: engaging with exactly them, at exactly the right moment, is the highest-value minute in this tool."},
+{tab:"engage",sel:"#v-engage .qfrow",title:"Engage: your network's posts",body:"A feed of recent posts from people you're connected with. Commenting keeps you visible — relationships go cold when the only time people hear from you is a pitch. The <b>🌱 In prospects</b>, <b>📮 In pipeline</b>, and <b>🤝 In follow-up</b> filters show posts by people in your funnel or the ones you've promoted out of it: engaging with exactly them, at exactly the right moment, is the highest-value minute in this tool."},
 {tab:"engage",sel:["#v-engage .post","#v-engage .feedwrap"],title:"AI replies in YOUR voice",body:"<b>Draft reply</b> asks an AI to write the comment as <i>you</i>, using the voice profile in Settings. A second model (the <b>critic</b>) reviews the draft, then a final pass strips em-dashes and banned hype words. You always edit and approve before anything is posted — and every edit you make teaches the tool your voice."},
 {tab:"engage",sel:["#v-engage .grptitle.low","#v-engage .qfrow"],title:"The low-value filter",body:"Not every post deserves your time. Hiring announcements, reposts, and promos are auto-labeled and moved into this group so you can skip the noise or clear it in one click. Mislabeled something? One click restores it to the main feed."},
 {tab:"connections",sel:["#connTbody .tagcell","#v-connections .tablewrap"],title:"Triage: tags are the nervous system",body:"This is your whole network as a CRM table, and <b>tags drive everything</b>: <span class=\"tag\">agency</span> marks someone as an outreach target, while <span class=\"tag block\">⛔ personal / client / omit / do-not-pitch</span> BLOCK them from ever receiving automated outreach. These quick-tag chips let you tag anyone with one click, straight from the list."},
@@ -2633,9 +3512,12 @@ const TUT_STEPS=[
 {tab:"connections",sel:["#connTbody .summcell","#v-connections .tablewrap"],title:"Summary & role badges",body:"The Summary column is the AI researcher's one-line read on each person, plus a role badge: <b>🛡 principal</b> (agency owner — the person you actually want), <b>agency staff</b>, <b>freelance/solo</b>, or <b>in-house</b>. It answers “who is this?” without opening LinkedIn."},
 {tab:"connections",sel:["[data-tut=conn-viewsbtn]","#v-connections .toolbar"],title:"Saved views",body:"Once you've arranged columns and filters you like, save the layout as a named view — “triage mode”, “principals only” — and flip between them here. Views remember column order, visibility, and widths, and persist in your browser."},
 {tab:"invitations",sel:["#v-invitations .seg","#v-invitations h1"],title:"Invitations: the raw ledger",body:"Every pending connection invitation, in <b>both directions</b>, synced from LinkedIn — including requests you sent outside this tool. A big pile of stale sent invites looks spammy, so you can withdraw them here (the real tool can auto-withdraw after a set number of days), and accept or ignore the ones you've received."},
-{tab:"intro",sel:["#v-intro .libcat","#v-intro h1"],title:"The Message Library",body:"Everything the tool sends comes from here: <b>intro</b> templates and the three <b>follow-up</b> categories. Each message shows live performance — assigned, replied, reply rate — and you can add A/B variants (<span class=\"code\">1.1</span> under <span class=\"code\">1</span>) to test wording. Editing a message that already has stats offers to <b>branch</b> it into a new variant so the numbers stay clean; archived messages are kept, just out of rotation."},
+{tab:"intro",sel:["#v-intro .board","#v-intro h1"],title:"The Message Funnel",body:"Everything the tool sends comes from here, laid out as a <b>funnel board</b>: each <b>column is a stage</b> and each card is an <b>option</b> you might send at that stage. Add as many stages as you need — a fifth follow-up is one click on <b>＋ Add stage</b>. Each card shows live performance (sent, reply rate), takes A/B variants (<span class=\"code\">1.1</span> under <span class=\"code\">1</span>), and can be <b>Archived</b> to retire it from the pickers without losing its stats."},
 {tab:"campaigns",sel:["#v-campaigns .guide","#v-campaigns h1"],title:"Campaigns — a planned area",body:"Honest note: this tab is designed and specified, but it's the least built-out part of the plan — bulk message sequences to a chosen segment, with a per-message <b>approval queue</b> and daily caps. The core funnel (Prospects → Pipeline) doesn't depend on it at all. Treat it as a preview of where the tool goes next."},
 {tab:"messages",sel:["#v-messages .guide","#v-messages h1"],title:"Messages: your synced inbox",body:"Your LinkedIn conversations, mirrored into the tool so every reply lands next to the person's CRM record. Unread counts, archiving, and thread history work like LinkedIn's inbox; the sync runs on a schedule and you can trigger it manually."},
+{tab:"followup",sel:["#v-followup h1","#v-followup"],title:"Follow-up: the hand-managed list",body:"When a conversation actually goes somewhere, you <b>promote</b> that person out of the automated funnel to here. They get <b>no automated touches</b> — this is the deliberate, human list. Set a <b>date</b> to resurface someone to the top when it's time to circle back, and keep <b>notes</b> so you're not rebuilding the thread from scratch weeks later. The <b>🤝 In follow-up</b> filter on Engage surfaces their posts so you can stay warm between touches."},
+{tab:"pipeline",sel:["#v-pipeline .pcard .pc-acts .btn","#v-pipeline .kanban","#v-pipeline h1"],title:"Branching: when someone replies",body:"The follow-up sequence assumes silence — so the moment someone <b>replies</b>, the generic nudges stop and the card asks you to <b>classify the reply</b>. You can <b>divert</b> them onto a <b>branch</b> — a path with its own pre-written messages, for a specific kind of answer — or <b>exit</b> them entirely when the conversation's now a real back-and-forth. If they answered a survey with a number, one click on that number routes them. This is what keeps a canned “no response yet?” from ever going out after a real reply."},
+{tab:"intro",sel:["#v-intro .br","#v-intro h1"],title:"Branches belong to a message",body:"A branch exists only because <b>one message asked a question</b> — so it lives <b>inside that message’s card</b>, not off to the side. Add one with <b>＋ Add branch</b> on the card that asks. Answering it takes the person <b>off this funnel for good</b> and into the branch’s <b>own funnel</b>, with its own stages — click the chip to drill in. <b>Quick-pick keys</b> are an optional shortcut: any short token you’d recognise in a reply (<span class=\"code\">yes</span>/<span class=\"code\">no</span>, a number) becomes a one-click classify button. Leave them blank and you just pick the branch by name."},
 {tab:"dash",sel:"[data-tut=dash-learn]",title:"The self-learning voice loop",body:"Once a week the tool studies how you <b>edited</b> its drafted replies and proposes numbered recommendations (“shorter openers”, “fewer questions”). You steer in plain English — <i>“apply 1 and 2, skip 3”</i> — review a diff, then confirm. Every change is versioned: the <b>⏱ history</b> links in Settings show every prior value of your voice profile with one-click revert."},
 {tab:"dash",sel:"[data-tut=settings-btn]",title:"Settings: everything real starts OFF",body:"The most important idea in this tool: every automated action — connection requests, profile views, invite withdrawal, message sending — has its own <b>on/off switch</b>, a <b>dry-run</b> mode, and <b>daily caps</b>. In a fresh install of the real tool, <b>every sender starts OFF</b>. You turn them on one at a time, only once you trust what they'd do."},
 {tab:"dash",sel:"#tutPill",title:"That's the tour!",body:"Toggle this tutorial layer any time with the 🎓 pill (or in ⚙ Settings, where you can also restart this tour). While it's on, small <b>?</b> hotspots sit around the app — click any of them for a plain-English explainer of that area. Best next step: explore with hints on and click through the funnel yourself. Nothing here touches a real LinkedIn account."}
@@ -2644,23 +3526,26 @@ const TUT_STEPS=[
 /* ---------------- content: ambient hotspots ---------------- */
 const TUT_SPOTS=[
 {tab:"dash",sel:"#v-dash h1",title:"Dashboard",body:"Your daily home page: funnel counts, today's actions, and the task queue. Start here each morning and work top to bottom.",step:3},
-{tab:"dash",sel:"[data-tut=dash-learn] h3",title:"Self-learning launcher",body:"Open the weekly reply-learning report here: what the analyzer noticed in your edits, its numbered recommendations, and one-click apply with a diff and undo.",step:19},
+{tab:"dash",sel:"[data-tut=dash-learn] h3",title:"Self-learning launcher",body:"Open the weekly reply-learning report here: what the analyzer noticed in your edits, its numbered recommendations, and one-click apply with a diff and undo.",step:22},
 {tab:"prospects",sel:"#v-prospects h1",title:"Prospects",body:"The pre-connection funnel: everyone you plan to connect with, warming up and waiting on the soak-gated, capped auto-sender.",step:4},
 {tab:"prospects",sel:"[data-tut=prospects-guide]",title:"Sender status & pacing",body:"The auto-sender's live summary: on/paused, dry-run, per-run and daily caps, the soak rule, who's eligible right now — plus the 🤖 automated profile-view warm-up totals.",step:5},
 {tab:"pipeline",sel:"#v-pipeline h1",title:"Pipeline",body:"Post-connection nurture: intro → follow-up 1 → 2 → 3. Cards flow left to right; follow-up 3 graduates a person out of the pipeline.",step:6},
 {tab:"pipeline",sel:"#v-pipeline .kh",title:"Funnel columns",body:"Each column is a stage. This first one — connected, owing an intro — is the debt list: they said yes, now say something worth their time.",step:6},
+{tab:"pipeline",sel:["#v-pipeline .pcard .pc-acts .btn.accent","#v-pipeline .kanban"],title:"Reply branching",body:"A card whose person <b>replied</b> stops the generic follow-ups and offers <b>🌿 Classify reply → branch</b>: divert them onto a branch with its own messages, or exit them if it's now a live conversation. It's what keeps a canned nudge from firing after a real answer.",step:20},
 {tab:"engage",sel:"#v-engage h1",title:"Engage",body:"Recent posts from your network, grouped so the people who matter float to the top. A few genuine comments a day keeps you visible without pitching anyone.",step:8},
 {tab:"engage",sel:"#v-engage .post .ph",title:"A post card",body:"Like, skip, mute, mark low-value — or Draft reply for an AI draft in your voice (add an optional steering note first). You always edit and approve before anything goes out.",step:9},
 {tab:"connections",sel:"#v-connections h1",title:"Connections",body:"Your whole network as a CRM: search, filter, sort, choose and reorder columns, drill into anyone. Tagging here is what makes the rest of the tool smart.",step:11},
 {tab:"connections",sel:['th[data-col="tags"]',"#v-connections .listtbl thead"],title:"Quick-tag column",body:"One-click tag chips on every row. “agency” marks outreach targets; personal / client / omit / do-not-pitch BLOCK automated outreach to that person.",step:11},
 {tab:"*",sel:"#tabs .tab:nth-child(5)",title:"The red untagged badge",body:"When a red number shows on the Connections tab, that many NEW connections still need tags (hover it to see the older backlog too). Untagged people are invisible to filters and outreach rules — triage the number to zero.",step:12},
 {tab:"invitations",sel:"#v-invitations h1",title:"Invitations",body:"Pending invites in both directions, synced from LinkedIn. Withdraw stale sent ones; accept or ignore received ones.",step:15},
-{tab:"intro",sel:"#v-intro h1",title:"Message Library",body:"All intro and follow-up templates with live reply stats and A/B variants. Everything the tool sends comes from here.",step:16},
-{tab:"intro",sel:"#v-intro .introitem .abstat",title:"Message stats",body:"Anatomy of a template: assigned (how many people got it), replied, reply rate, views. 🏆 marks the best performer in its category — rework or archive the laggards.",step:16},
+{tab:"intro",sel:"#v-intro h1",title:"Message Funnel",body:"All intro and follow-up templates with live reply stats and A/B variants. Everything the tool sends comes from here.",step:16},
+{tab:"intro",sel:"#v-intro .opt .of",title:"Message stats",body:"The footer of every card: how many people got it and its reply rate (hover for replied/viewed). 🏆 marks the best performer in that stage.",step:16},
+{tab:"intro",sel:"#v-intro .br",title:"Branches",body:"A branch sits <b>inside the card of the message that asked the question</b> — the only place it means anything. Click one to drill into its <b>own funnel</b>, which has its own stages; someone who answers that way never returns to this funnel. Quick-pick keys are an optional one-click classifying shortcut — branches work fine without them.",step:21},
 {tab:"campaigns",sel:"#v-campaigns h1",title:"Campaigns",body:"Planned bulk sequences with approval queues and daily caps. Fully spec'd for the real build, least essential today.",step:17},
 {tab:"messages",sel:"#v-messages h1",title:"Messages",body:"Your synced LinkedIn inbox, joined to the CRM so every thread sits next to the person's record.",step:18},
+{tab:"followup",sel:"#v-followup h1",title:"Follow-up",body:"People you promoted out of the automated funnel because the conversation got real. No automated touches — set a date to resurface someone and keep notes so nothing goes cold.",step:19},
 {tab:"modal",sel:"#cmp-opts",title:"The send composer",body:"Pick a template (that choice drives the A/B stats), edit the merged text for this person, then send. In the real tool this REALLY sends on LinkedIn; here it's simulated.",step:7},
-{tab:"modal",sel:"#set-funnel",title:"The safety gates",body:"Every sender has an on/off switch, a dry-run mode, per-run + daily caps, and the soak window. In the real build these all start OFF — you enable them one at a time.",step:20}
+{tab:"modal",sel:"#set-funnel",title:"The safety gates",body:"Every sender has an on/off switch, a dry-run mode, per-run + daily caps, and the soak window. In the real build these all start OFF — you enable them one at a time.",step:23}
 ];
 
 /* ---------------- content: per-tab intro cards (shown once per tab per session) ---------------- */
@@ -2671,9 +3556,10 @@ pipeline:{title:"Pipeline — you owe these people an intro",body:"Accepted conn
 engage:{title:"Engage — stay visible",body:"Recent posts from your network, with AI-drafted replies in your voice. A few real comments a day beats any pitch.",step:8},
 connections:{title:"Connections — your LinkedIn CRM",body:"Everyone you're connected with. Tags drive outreach eligibility — triage the red untagged badge down to zero.",step:11},
 invitations:{title:"Invitations — the pending ledger",body:"Sent and received invites synced from LinkedIn. Withdraw stale ones; accept or ignore incoming.",step:15},
-intro:{title:"Message Library — what the tool says",body:"Intro + follow-up templates with live reply stats and A/B variants. Every send pulls from here.",step:16},
+intro:{title:"Message Funnel — what the tool says",body:"Intro + follow-up templates with live reply stats and A/B variants. Every send pulls from here.",step:16},
 campaigns:{title:"Campaigns — planned bulk sequences",body:"Designed but least built-out: sequences with approval queues and caps. A preview of what's next.",step:17},
-messages:{title:"Messages — your synced inbox",body:"LinkedIn conversations mirrored next to each person's CRM record.",step:18}
+messages:{title:"Messages — your synced inbox",body:"LinkedIn conversations mirrored next to each person's CRM record.",step:18},
+followup:{title:"Follow-up — the hand-managed list",body:"People you promoted out of the automated funnel because the conversation went somewhere. No automated touches — set a date to bring one back and keep notes.",step:19}
 };
 
 /* ---------------- engine ---------------- */
@@ -2758,31 +3644,37 @@ function startTour(i){
   showStep();
 }
 function showStep(){
-  const st=TUT_STEPS[tour.i];
+  const idx=tour.i, st=TUT_STEPS[idx];
   if(st.tab&&ST.tab!==st.tab)go(st.tab);
   window.__tourTab=(st.tab&&st.tab!=="*")?st.tab:null;   // highlight that section's nav tab
   if(typeof renderTabs==="function")renderTabs();
-  requestAnimationFrame(()=>{
-    let el=findEl(st.sel);
+  // Paint SYNCHRONOUSLY, then settle on rAF. The old code did all its work inside nested
+  // requestAnimationFrame callbacks, so if rAF is starved — a hidden/background tab, or the
+  // app mid re-render — the halo + card never got populated and the tour looked frozen.
+  // Painting inline first (like the Outreach Engine's tour) makes it robust; the rAF pass
+  // just re-measures after layout settles. `idx` guards against a skipped step's stale rAF.
+  const paint=()=>{
+    if(!tour.on||tour.i!==idx)return;                    // a newer step took over — bail
+    const el=findEl(st.sel);
     if(!el){ // defensive: skip a step whose target is absent (fallbacks should prevent this)
-      if(tour.i<TUT_STEPS.length-1){tour.i++;showStep();}else endTour();
+      if(idx<TUT_STEPS.length-1){tour.i=idx+1;showStep();}else endTour();
       return;
     }
     el.scrollIntoView({block:"center",behavior:"auto"});
-    requestAnimationFrame(()=>{
-      const r=el.getBoundingClientRect();
-      halo.style.top=(r.top-6)+"px";halo.style.left=(r.left-6)+"px";
-      halo.style.width=(r.width+12)+"px";halo.style.height=(r.height+12)+"px";
-      const last=tour.i===TUT_STEPS.length-1;
-      const secName=(st.tab&&st.tab!=="*"&&typeof N_TABS!=="undefined")?N_TABS[st.tab]:"";
-      card.innerHTML=`<div class="tut-kicker">Guided tour${secName?" · "+secName:""}</div><div class="tut-ct">${st.title}</div><div class="tut-cb">${st.body}</div>
-        <div class="tut-cf"><span class="tut-n">step ${tour.i+1} of ${TUT_STEPS.length}</span>
-          <button class="tut-b" ${tour.i===0?"disabled":""} onclick="TUT.back()">‹ Back</button>
-          <button class="tut-b pri" onclick="${last?"TUT.end()":"TUT.next()"}">${last?"✓ Finish":"Next ›"}</button></div>
-        <span class="tut-x" onclick="TUT.end()">✕ End tour</span>`;
-      placeBox(card,r,st.pos||"bottom");
-    });
-  });
+    const r=el.getBoundingClientRect();
+    halo.style.top=(r.top-6)+"px";halo.style.left=(r.left-6)+"px";
+    halo.style.width=(r.width+12)+"px";halo.style.height=(r.height+12)+"px";
+    const last=idx===TUT_STEPS.length-1;
+    const secName=(st.tab&&st.tab!=="*"&&typeof N_TABS!=="undefined")?N_TABS[st.tab]:"";
+    card.innerHTML=`<div class="tut-kicker">Guided tour${secName?" · "+secName:""}</div><div class="tut-ct">${st.title}</div><div class="tut-cb">${st.body}</div>
+      <div class="tut-cf"><span class="tut-n">step ${idx+1} of ${TUT_STEPS.length}</span>
+        <button class="tut-b" ${idx===0?"disabled":""} onclick="TUT.back()">‹ Back</button>
+        <button class="tut-b pri" onclick="${last?"TUT.end()":"TUT.next()"}">${last?"✓ Finish":"Next ›"}</button></div>
+      <span class="tut-x" onclick="TUT.end()">✕ End tour</span>`;
+    placeBox(card,r,st.pos||"bottom");
+  };
+  paint();                        // works even when rAF is throttled
+  requestAnimationFrame(paint);   // re-measure after layout / re-render settles
 }
 function placeBox(box,r,pref){
   const vw=window.innerWidth,vh=window.innerHeight,m=12;
