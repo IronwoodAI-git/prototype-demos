@@ -4253,17 +4253,17 @@ var STORY_CH = [
 {
   kicker:"An interactive demo",
   title:"The Outreach&nbsp;Engine",
-  lede:"Before you click anything, here is what this tool is and why it exists. It takes about two minutes, and it will make the rest of the demo make sense.",
+  lede:"Before you click anything, here is what this tool is and why it exists. It takes about three minutes, and it will make the rest of the demo make sense.",
   body:"<p>You can skip straight into the tool if you would rather poke around first. The story is here whenever you want it, behind the <b>\u{1F4D6} The story</b> button at the top of the screen.</p>",
   choices:[
-    {act:"story",   icon:"\u{1F4D6}", label:"Tell me the story first",  sub:"Why this exists, what it does, and how it differs from a CRM or a bulk email tool", pri:true},
+    {act:"story",   icon:"\u{1F4D6}", label:"Tell me the story first",  sub:"Why this exists, what it does, and why it is not a CRM or a bulk email tool", pri:true},
     {act:"tour",    icon:"\u{1F393}", label:"Skip to the guided walkthrough", sub:"A step by step tour of the screens, in the order you would really use them"},
     {act:"explore", icon:"\u{1F5B1}", label:"Let me click around on my own", sub:"Hints stay switched on, so every section keeps a small ? you can open"}
   ]
 },
 {
   title:"Cold outreach punishes you for doing more of it",
-  lede:"Every company that sells to other companies ends up doing the same three things: build a list, email the list, follow up. All three fight back.",
+  lede:"Every company that sells to other companies ends up doing the same three things: build a list, contact the list, follow up. All three fight back.",
   body:"<p>Lists rot. A large share of the addresses you buy or scrape are already wrong, and every dead address you email is counted against you by the mailbox providers.</p>"+
        "<p>Volume is the only lever most tools hand you, and volume is exactly the thing that gets your sending domain flagged.</p>"+
        "<p>Follow-up is where most of the replies actually come from, and it is the first thing a busy human drops.</p>",
@@ -4283,59 +4283,89 @@ var STORY_CH = [
   ]
 },
 {
-  title:"Why this is not a CRM",
-  lede:"A CRM records what already happened. This decides what happens next.",
+  title:"Why a commercial CRM fights you",
+  lede:"Every CRM on the market arrives with an enormous feature set and a built-in opinion about how you are going to run your marketing. That opinion is not yours.",
   vs:[
-    {h:"A CRM",  b:"<p>A <b>system of record</b>. You tell it what you did and it remembers. It is built around deals that already exist and people who are already talking to you.</p><p>It will happily let you email four thousand strangers from a brand new domain on a Tuesday afternoon, because policing that was never its job.</p>"},
-    {h:"This tool", b:"<p>A <b>system of judgment</b>, for the stage before a deal exists. Thousands of people you do not know, most of whom you should never email at all.</p><p>Its work is deciding who is worth contacting, who clearly is not, who has gone quiet and needs one more touch, and how much you are allowed to send today.</p>"}
+    {h:"A commercial CRM",  b:"<p>The shape of it was averaged from thousands of other companies, so it fits nobody exactly. From day one you are <b>bending your process to fit their software</b>: working around the parts you do not need, and inventing workarounds for the parts you do.</p><p>You pay well for that, usually per seat, and often again as your contact count climbs.</p><p>Then you hit <b>the wall</b>. Somewhere in every one of these tools is the one thing you actually need that it simply does not do. No subscription tier adds it. You file a request, you wait, and you keep a spreadsheet on the side forever.</p>"},
+    {h:"A system built for you", b:"<p>It is shaped around <b>how you already work</b>, because that is the only requirement it was built against. There is nothing to work around, because nothing is in it that you did not ask for.</p><p>There is no wall. Something it does not do yet is a thing that gets added, on your timeline rather than on a vendor's roadmap.</p><p>And it does the part no CRM was ever going to do here: decide <b>who is worth contacting at all</b>, and protect your ability to reach them.</p>"}
   ],
-  note:"The two fit together rather than compete. When somebody replies and turns into a real opportunity, that is the point where a CRM earns its keep."
+  note:"A CRM is a <b>system of record</b>. You tell it what you did and it remembers, and it is built around deals that already exist. This is a <b>system of judgment</b> for the stage before a deal exists: thousands of people you do not know, most of whom you should never contact."
 },
 {
-  title:"Why this is not Mailchimp",
-  lede:"Bulk email platforms are built for an audience that asked to hear from you. Cold outreach is the opposite problem.",
-  body:"<p>A newsletter tool optimises for <b>reach</b>: send more, send faster, prettier templates, bigger lists. That is the right goal when people subscribed on purpose.</p>"+
-       "<p>When the audience did not ask, <b>reputation is the scarce resource</b>, not reach. One careless week of sending can quietly cost you your domain for months, and almost nothing on your screen will tell you it happened.</p>"+
-       "<p>So this tool spends its effort on the unglamorous parts:</p>",
+  title:"It is yours, so there is no meter running on it",
+  lede:"Commercial tools charge per seat, and then again as your list grows. That pricing quietly changes how you work: you start pruning perfectly good contacts to stay inside a tier.",
+  body:"<p>This runs on your own infrastructure, so none of that applies.</p>",
   list:[
-    "<b>Addresses get verified</b> before they are ever used, so bounces stay near zero.",
-    "<b>New sending addresses warm up</b> over weeks, starting at a trickle, instead of opening at full volume on day one.",
-    "<b>Daily caps per address</b>, so no single mailbox ever looks like a machine.",
-    "<b>Randomised timing</b>, so a day of sending does not arrive as one obvious burst.",
-    "<b>Unsubscribes and bounces are permanent and global.</b> Someone who opted out cannot be reached by any campaign, in any segment, ever again."
+    "<b>No per-seat pricing.</b> Everyone on your team who needs it has it.",
+    "<b>No contact ceiling</b>, and no price step when you cross one. Put a hundred thousand people in it. Put a million.",
+    "<b>No feature locked behind a higher plan.</b> There are no plans.",
+    "<b>Your data on your infrastructure</b>, not parked in a vendor's account waiting for a renewal conversation."
+  ],
+  note:"The practical effect is that you stop making list decisions for billing reasons and start making them for real ones."
+},
+{
+  title:"When you need something it does not do, it gets built",
+  lede:"This is the part that is hard to appreciate until you have been stuck. Because the system is yours, its feature list is not fixed.",
+  body:"<p>Say that six months from now you decide cold calling deserves real effort. In a commercial CRM that is a hunt for an add-on, a second subscription, and a fresh set of somebody else's assumptions to work around.</p>"+
+       "<p>Here it is <b>a new tab</b>. A call list drawn from the contacts you already have, with your own call scheduling, your own outcomes and notes, and the same rules about who is off limits. It knows everything the rest of the tool knows, because it is the same tool.</p>",
+  note:"Every screen you are about to see started as a sentence exactly like that one. Nothing about the shape of this is fixed."
+},
+{
+  title:"Two engines, built to work as one",
+  lede:"Email is one channel. LinkedIn is the other, and the people who ignore one will often answer the other. Running them as two disconnected efforts is the most common way good prospects get wasted.",
+  body:"<p>The usual setup is a sequencer over here, somebody working LinkedIn by hand over there, and no shared idea of who has been contacted or how it went. The same person gets approached twice, or never.</p>"+
+       "<p>The Outreach Engine and the <b>LinkedIn Engine</b> are one system with two front doors. Same contacts, same rules about who is off limits, and each side telling the other what it knows.</p>",
+  flow:[
+    ["List","Companies and people arrive from the list building tools"],
+    ["Refine","You cut it down to the prospects worth talking to"],
+    ["Score","Each contact is judged for both channels, separately"],
+    ["Email","The broad list gets a careful, paced campaign"],
+    ["Hand off","The strongest LinkedIn prospects move to the LinkedIn Engine"],
+    ["Report back","What happens there changes what email does next"]
   ]
 },
 {
-  title:"Careful sending is enforced, not remembered",
-  lede:"The guardrails are the reason the tool exists, so they are not optional settings you are trusted to respect.",
-  body:"<p>Before anything goes out, the engine checks the address is verified, the person has not opted out, has not bounced, is not already enrolled in a competing campaign, and that today's budget for that sending address still has room. If any of those fail, the send does not happen.</p>"+
-       "<p>The same discipline runs on the way back. A reply, an unsubscribe or a hard bounce halts that person's remaining steps immediately, so nobody keeps receiving emails after they have already answered you.</p>",
-  note:"That is the difference between outreach that compounds and outreach that burns down the thing it depends on."
+  wide:true,
+  title:"It finds who is worth reaching on LinkedIn, not just who matches",
+  lede:"Matching your criteria makes somebody a good prospect. It does not make them reachable on LinkedIn. Those are two different questions, and the tool scores them separately.",
+  body:"<p>Every contact gets a <b>Rank</b>, which is how good a prospect they are overall: the right kind of company, the right size, the right role, a real verified address.</p>"+
+       "<p>Separately, anyone with a LinkedIn profile gets a <b>LinkedIn fit</b> score built only on LinkedIn evidence: how recently they actually posted, how far their following really reaches, and how much engagement they get.</p>"+
+       "<p>That second number is the one that decides the channel. A decision-maker who has not touched LinkedIn in two years is not a LinkedIn prospect no matter how perfectly they match. Somebody with a smaller following who posts every week is.</p>"+
+       "<p>So the hand-off queue ranks your list by exactly that, and the people worth a real relationship rise to the top. One click pushes a contact <b>straight into the LinkedIn Engine's database</b>. No export, no spreadsheet, no import.</p>",
+  note:"<b>And it comes back the other way.</b> Before the day's emails go out, the engine re-checks LinkedIn and holds anyone you have started a conversation with there out of the email queue. Nobody gets a cold email from you on the same day they are mid-conversation with you somewhere else."
+},
+{
+  title:"Why this is not Mailchimp either",
+  lede:"Bulk email platforms are built for an audience that asked to hear from you, so they optimise for reach: send more, send faster, bigger lists. When the audience did not ask, reach is not the scarce resource. Your reputation is.",
+  body:"<p>One careless week of sending can quietly cost you your sending domain for months, and almost nothing on your screen will tell you it happened. So the guardrails here are <b>enforced by the tool</b> rather than left to your memory on a busy day:</p>",
+  list:[
+    "<b>Addresses get verified</b> before they are ever used, so bounces stay near zero.",
+    "<b>New sending addresses warm up</b> over weeks, starting at a trickle rather than opening at full volume on day one.",
+    "<b>Daily caps per address, with randomised timing</b>, so no mailbox of yours ever looks like a machine.",
+    "<b>Opt-outs and bounces are permanent and global.</b> Somebody who opted out cannot be reached by any campaign, in any segment, ever again.",
+    "<b>A reply stops everything.</b> The moment somebody answers, their remaining emails are cancelled."
+  ],
+  note:"That is the difference between outreach that compounds and outreach that burns down the channel it depends on."
 },
 {
   title:"What you actually get out of it",
   lede:"",
   list:[
-    "<b>Your domain survives.</b> Warm-up, caps and guardrails are enforced by the tool rather than by your memory on a busy day.",
-    "<b>You stop emailing people you should not.</b> Opt-outs and bounces are honoured everywhere, automatically.",
-    "<b>Follow-up actually happens.</b> That is where most replies come from, and it is the part people reliably let slip.",
-    "<b>You can see what is working.</b> Reply rate by campaign, by segment and by message, so you are improving copy rather than guessing at it.",
-    "<b>The daily question gets simple.</b> Instead of “who should I email today”, the tool shows you who is due and you approve it."
+    "<b>A tool shaped like your process</b>, instead of a process bent around somebody else's tool.",
+    "<b>No meter.</b> No per-seat cost, no contact ceiling, no price step when the list grows.",
+    "<b>No wall.</b> Anything it does not do yet is something that can be added.",
+    "<b>Both channels working as one</b>, with the right people routed to the right one and each side aware of the other.",
+    "<b>Your domain survives</b>, because warm-up, caps and opt-outs are enforced rather than remembered.",
+    "<b>Follow-up actually happens</b>, which is where most replies come from and the first thing people let slip.",
+    "<b>The daily question gets simple.</b> Instead of who should I contact today, the tool shows you who is due."
   ],
-  note:"None of this is about sending more email. It is about sending less of it, to better people, without setting fire to the channel."
-},
-{
-  title:"Where this sits in the bigger picture",
-  lede:"This is one link in a chain, not the whole chain.",
-  body:"<p><b>Upstream</b>, separate tools find companies that match what you are looking for and enrich them into real people with real, verified addresses. Their output lands here.</p>"+
-       "<p><b>Here</b>, you refine the list, rank it, run campaigns, log replies and follow up.</p>"+
-       "<p><b>Sideways</b>, the strongest prospects get handed to a companion LinkedIn tool, so a relationship can be built in parallel with the emails rather than instead of them.</p>",
-  note:"Everything you are about to see runs on invented sample data. Nothing sends, nothing is real, and no button here can do any harm. Click anything you like."
+  note:"None of this is about doing more outreach. It is about doing less of it, to better people, in the right channel, without setting fire to either one."
 },
 {
   kicker:"That is the why",
   title:"Now, the how",
   lede:"You have the thirty thousand foot view. The guided walkthrough goes through the screens in the order you would really use them, and takes about three minutes.",
+  body:"<p>Everything you are about to see runs on invented sample data. Nothing sends, nothing is real, and no button here can do any harm. Click anything you like.</p>",
   choices:[
     {act:"tour",    icon:"\u{1F393}", label:"Walk me through the tool", sub:"Guided tour, roughly three minutes, following the real workflow start to finish", pri:true},
     {act:"explore", icon:"\u{1F5B1}", label:"Let me click around with hints on", sub:"Every section keeps a small ? you can open for a plain English explainer"},
