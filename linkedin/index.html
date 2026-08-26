@@ -3487,6 +3487,355 @@ setInterval(()=>{const t=computeToday();if(t!==TODAY){TODAY=t;render();}},60000)
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){const t=computeToday();if(t!==TODAY){TODAY=t;render();}}});
 </script>
 
+
+<style>
+/* ===== STORY LAYER (narrative orientation, runs ahead of the guided tour) ===== */
+/* flex + margin:auto on the child, NOT align/justify-center: a centred flex item whose
+   content is taller or wider than the veil gets its top and left CLIPPED and becomes
+   unscrollable. margin:auto centres the same way and never clips. */
+.sty-veil{position:fixed;inset:0;z-index:200000;background:rgba(12,17,28,.72);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;padding:28px 20px;overflow:auto}
+.sty-card{position:relative;margin:auto;width:min(700px,100%);max-width:100%;min-width:0;
+  flex:0 1 auto;background:#fff;border-radius:18px;
+  box-shadow:0 30px 80px rgba(10,16,30,.45);padding:30px 34px 22px;
+  font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);
+  animation:styIn .26s cubic-bezier(.2,.8,.3,1)}
+@keyframes styIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.sty-card.wide{width:min(780px,100%)}
+.sty-vs>div{min-width:0}
+.sty-flow{min-width:0}
+.sty-x{position:absolute;top:14px;right:18px;font-size:20px;line-height:1;color:#9aa4b4;
+  cursor:pointer;font-weight:400;background:none;border:0;padding:4px 6px}
+.sty-x:hover{color:var(--ink)}
+.sty-kick{font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--accent);margin:0 0 10px}
+.sty-h{font-size:25px;line-height:1.24;font-weight:750;letter-spacing:-.2px;margin:0 0 14px;
+  max-width:31ch}
+.sty-card.lead .sty-h{font-size:31px;max-width:22ch}
+.sty-b{font-size:15px;line-height:1.68;color:#33405a}
+.sty-b p{margin:0 0 12px}
+.sty-b b{color:var(--ink);font-weight:650}
+.sty-b .lede{font-size:16.5px;line-height:1.6;color:var(--ink)}
+.sty-ul{list-style:none;margin:14px 0 4px;padding:0}
+.sty-ul li{position:relative;padding:0 0 0 25px;margin:0 0 10px;font-size:14.5px;line-height:1.6;color:#33405a}
+.sty-ul li:before{content:"";position:absolute;left:5px;top:9px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);opacity:.55}
+.sty-ul li b{color:var(--ink)}
+/* the "vs" comparison block */
+.sty-vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;margin:16px 0 6px}
+.sty-vs>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:#4a566e}
+.sty-vs>div:first-child{background:#f7f8fa;border-right:1px solid var(--line)}
+.sty-vs h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;font-weight:800;color:#7a8598}
+.sty-vs>div:last-child h5{color:var(--accent)}
+.sty-vs b{color:var(--ink)}
+/* the little step-flow diagram */
+.sty-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:7px;margin:18px 0 8px}
+.sty-flow .fs{flex:1 1 88px;min-width:88px;border:1px solid var(--line);border-radius:10px;
+  padding:9px 8px 8px;text-align:center;background:#fbfcfe}
+.sty-flow .fs .n{font-size:9.5px;font-weight:800;letter-spacing:.7px;color:var(--accent);
+  text-transform:uppercase;display:block;margin-bottom:2px}
+.sty-flow .fs .t{font-size:12.5px;font-weight:700;color:var(--ink);display:block;line-height:1.3}
+.sty-flow .fs .d{font-size:11px;color:#6b7688;display:block;line-height:1.4;margin-top:3px}
+.sty-note{margin-top:16px;border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 9px 9px 0;padding:11px 14px;font-size:13.5px;line-height:1.6;color:#33405a}
+.sty-note b{color:var(--ink)}
+/* footer */
+.sty-foot{display:flex;align-items:center;gap:9px;margin-top:22px;padding-top:15px;
+  border-top:1px solid var(--line);flex-wrap:wrap}
+.sty-dots{display:flex;gap:5px;margin-right:auto;align-items:center}
+.sty-dots i{width:6px;height:6px;border-radius:50%;background:#d3d9e3;display:block;
+  transition:background .2s,width .2s;cursor:pointer}
+.sty-dots i.on{background:var(--accent);width:17px;border-radius:3px}
+.sty-dots i.past{background:#9fb0dd}
+.sty-btn{font:inherit;font-weight:650;font-size:13.5px;border-radius:9px;padding:9px 17px;
+  border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
+.sty-btn:hover{border-color:#c3cddf}
+.sty-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.sty-btn.pri:hover{filter:brightness(1.07)}
+.sty-btn:disabled{opacity:.4;cursor:not-allowed}
+.sty-lnk{font-size:12.5px;font-weight:650;color:var(--muted);cursor:pointer;background:none;
+  border:0;padding:6px 4px;font-family:inherit}
+.sty-lnk:hover{color:var(--accent);text-decoration:underline}
+.sty-choice{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.sty-choice button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;
+  font:inherit;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 16px;cursor:pointer}
+.sty-choice button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.sty-choice button.pri{border-color:var(--accent);background:var(--accent);color:#fff}
+.sty-choice button.pri:hover{filter:brightness(1.07)}
+.sty-choice .ci{font-size:19px;flex:0 0 auto;line-height:1}
+.sty-choice .cl{font-weight:700;font-size:14.5px;display:block}
+.sty-choice .cs{font-size:12.5px;color:#6b7688;display:block;margin-top:1px;line-height:1.5}
+.sty-choice button.pri .cs{color:rgba(255,255,255,.85)}
+/* header entry pill */
+.sty-pill{font:inherit;font-weight:700;font-size:12px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;
+  white-space:nowrap;margin-right:8px;flex:0 0 auto}
+.sty-pill:hover{filter:brightness(1.07)}
+@media (max-width:700px){
+  .sty-card{padding:24px 20px 18px;border-radius:14px}
+  .sty-h{font-size:21px}.sty-card.lead .sty-h{font-size:25px}
+  .sty-vs{grid-template-columns:1fr}
+  .sty-vs>div:first-child{border-right:0;border-bottom:1px solid var(--line)}
+  .sty-foot{gap:7px}.sty-dots{order:3;width:100%;margin:6px 0 0}
+}
+</style>
+
+<script>
+/* ===== STORY LAYER (narrative orientation, runs ahead of the guided tour) =====
+   Runs BEFORE the tutorial layer script so it can claim the first-run slot: it sets
+   window.STORY.willRun, which the tutorial layer's boot checks before showing its own
+   welcome modal. Self-contained; touches no existing tour step or selector.
+   Session-scoped: the story opens once per browsing session, not once per lifetime, so
+   a prospect arriving fresh always gets the context and a mid-session reload does not
+   nag. ?story=0 skips it, ?story=1 forces it. */
+(function(){
+"use strict";
+var SKEY = "le_story_seen";
+var q = (function(){try{return new URLSearchParams(location.search);}catch(e){return {get:function(){return null;}};}})();
+var force = q.get("story");
+var at = parseInt(q.get("storyat"), 10);          /* ?storyat=3 deep-links one chapter */
+if(!isNaN(at)) force = "1";
+var seen = false;
+try{ seen = sessionStorage.getItem(SKEY) === "1"; }catch(e){}
+var willRun = force === "1" ? true : (force === "0" ? false : !seen);
+
+var STORY_CH = [
+{
+  kicker:"An interactive demo",
+  title:"The LinkedIn&nbsp;Engine",
+  lede:"Before you click anything, here is what this tool is and why it exists. It takes about two minutes, and it will make the rest of the demo make sense.",
+  body:"<p>You can skip straight into the tool if you would rather poke around first. The story is here whenever you want it, behind the <b>\u{1F4D6} The story</b> button at the top of the screen.</p>",
+  choices:[
+    {act:"story",   icon:"\u{1F4D6}", label:"Tell me the story first",  sub:"Why this exists, what it does, and how it differs from using LinkedIn by hand", pri:true},
+    {act:"tour",    icon:"\u{1F393}", label:"Skip to the guided walkthrough", sub:"A step by step tour of the screens, in the order you would really use them"},
+    {act:"explore", icon:"\u{1F5B1}", label:"Let me click around on my own", sub:"Hints stay switched on, so every section keeps a small ? you can open"}
+  ]
+},
+{
+  title:"LinkedIn works. Doing LinkedIn by hand does not scale",
+  lede:"The people you most want to reach delete cold email and answer LinkedIn. That is exactly why the platform is built to resist volume.",
+  body:"<p>Connection requests are capped. Accounts get restricted for looking automated, and the restriction arrives without warning and without appeal.</p>"+
+       "<p>Then there is the quieter failure, the one almost everyone has. You send a request, they accept, and nothing happens next. An accepted connection you never message is a wasted one, and most people are sitting on hundreds of them.</p>",
+  note:"The channel is not the problem. Running it out of your head, in gaps between other work, is the problem."
+},
+{
+  title:"A tool for building relationships on a schedule",
+  lede:"It keeps a funnel of the people worth knowing, warms each one up before you ever reach out, sends requests at a human pace inside a daily budget, tells you exactly who you owe a first message to, and makes sure nobody quietly goes cold.",
+  body:"<p>The whole tool produces one thing: <b>a short list of what to do today</b>. Ten minutes of work, in the right order, on the right people.</p>",
+  flow:[
+    ["Warm","Get on their radar before you ask"],
+    ["Request","Sent at a paced, randomised rhythm"],
+    ["Wait","A patience window while it sits pending"],
+    ["Accepted","They land on your debt list"],
+    ["Intro","A real first message, in your voice"],
+    ["Follow up","Up to three more touches, then they graduate"]
+  ],
+  note:"Every screen in this tool is a window onto one part of that journey. If you remember one thing from this demo, remember that order."
+},
+{
+  title:"Why this beats just using LinkedIn",
+  lede:"LinkedIn has no memory of your intent. It shows you a feed and a pile of connections.",
+  vs:[
+    {h:"LinkedIn on its own", b:"<p>It will not tell you that you accepted forty people last month and messaged six of them.</p><p>It will not tell you that the person who just posted is somebody you meant to reconnect with in March.</p><p>Everything you are trying to run lives in your head, or in a spreadsheet you stopped updating.</p>"},
+    {h:"This tool", b:"<p>Every person sits at a <b>known stage</b>, and moving between stages is the whole job.</p><p>It surfaces the right person at the right moment: the prospect who just became reachable, the connection you owe an intro to, the post worth commenting on today.</p>"}
+  ]
+},
+{
+  title:"Why this is not the usual LinkedIn automation",
+  lede:"Most LinkedIn automation is a volume machine wearing a safety label. It optimises for requests sent per day, which is the exact number LinkedIn watches.",
+  body:"<p>Here the pacing is the point rather than a dial you are trusted to turn down:</p>",
+  list:[
+    "<b>Every prospect soaks.</b> They have to sit on deck for a few business days before a request can go out at all.",
+    "<b>Requests are spaced, never bursted.</b> Randomised intervals inside a daily cap, so the pattern looks like a person.",
+    "<b>Warm-up comes first.</b> A profile view, a like, a comment. People notice who viewed them, so your request arrives from a vaguely familiar name instead of a total stranger, and that measurably raises accept rates.",
+    "<b>The budget responds to reality.</b> A day of acceptances earns a little more room. A day of silence does not.",
+    "<b>Everything automated ships switched off.</b> In the real tool, no background action runs until you deliberately turn it on."
+  ],
+  note:"The goal is not more requests. It is a higher share of requests accepted, from an account that is still in good standing next year."
+},
+{
+  title:"The most valuable screen is the one showing what you owe",
+  lede:"When somebody accepts your request, they land in a column that does not clear until you have actually said something.",
+  body:"<p>Think of it as a debt list. An accepted request with no message after it is the single most common way good outreach is wasted, and it is invisible on LinkedIn itself.</p>"+
+       "<p>Once you send the intro, a short follow-up sequence carries the conversation for up to three more touches, spaced properly, and then the person graduates out into your regular connections rather than sitting in a funnel forever.</p>"
+},
+{
+  title:"Automation that sounds like automation is worse than nothing",
+  lede:"The tool drafts your intros and your comments, but it drafts them in your voice, not in the voice of a sales robot.",
+  body:"<p>It learns from the edits you make. Every time you rewrite a draft before sending it, that correction feeds back in, and the next draft lands closer to how you actually write.</p>"+
+       "<p>Nothing is ever sent without you seeing it. The drafting is there to remove the blank page, not to remove you.</p>",
+  note:"This is also why the tool tracks which messages get replies. Templates compete against each other on real reply rates, so your best opener wins on evidence rather than on taste."
+},
+{
+  title:"What you actually get out of it",
+  lede:"",
+  list:[
+    "<b>A higher accept rate</b>, because your requests do not arrive completely cold.",
+    "<b>An account that stays in good standing</b>, because the pacing is enforced by the tool rather than remembered by you.",
+    "<b>No wasted connections.</b> Everyone who accepts gets a real first message, because the tool will not let you forget them.",
+    "<b>Relationships that do not go cold.</b> The right person surfaces at the moment there is a natural reason to reach out.",
+    "<b>Ten minutes of clear work a day</b>, instead of a vague intention to do more on LinkedIn."
+  ]
+},
+{
+  title:"Where this sits in the bigger picture",
+  lede:"This is the last stage of a longer pipeline, and it is the stage where a name becomes a relationship.",
+  body:"<p><b>Upstream</b>, other tools find companies worth talking to and enrich them into real people. A companion email tool works the broad list, and hands the people worth a real relationship over to this one. You can also just load your own list.</p>"+
+       "<p><b>Here</b>, those people get warmed up, connected with, introduced to you properly, and kept warm.</p>",
+  note:"Everything you are about to see runs on invented sample data. Nothing here touches a real LinkedIn account, and no button can do any harm. Click anything you like."
+},
+{
+  kicker:"That is the why",
+  title:"Now, the how",
+  lede:"You have the thirty thousand foot view. The guided walkthrough goes through the screens in the order you would really use them, and takes about three minutes.",
+  choices:[
+    {act:"tour",    icon:"\u{1F393}", label:"Walk me through the tool", sub:"Guided tour, roughly three minutes, following the funnel from start to finish", pri:true},
+    {act:"explore", icon:"\u{1F5B1}", label:"Let me click around with hints on", sub:"Every section keeps a small ? you can open for a plain English explainer"},
+    {act:"quiet",   icon:"\u{1F910}", label:"No hints, just the tool", sub:"Turns the whole tutorial layer off. The \u{1F393} button in the header brings it back"}
+  ]
+}
+];
+
+var veil = null, i = 0;
+
+function markSeen(){ try{ sessionStorage.setItem(SKEY,"1"); }catch(e){} }
+function esc(){ return null; }
+
+function hasTut(){ return typeof window.TUT === "object" && window.TUT; }
+
+function render(){
+  var c = STORY_CH[i], last = i === STORY_CH.length - 1, lead = i === 0;
+  var dots = STORY_CH.map(function(_,n){
+    return '<i class="'+(n===i?'on':(n<i?'past':''))+'" data-g="'+n+'" title="'+(n+1)+'"></i>';
+  }).join("");
+  var body = "";
+  if(c.lede)   body += '<p class="lede">'+c.lede+'</p>';
+  if(c.body)   body += c.body;
+  if(c.vs)     body += '<div class="sty-vs"><div><h5>'+c.vs[0].h+'</h5>'+c.vs[0].b+'</div>'+
+                       '<div><h5>'+c.vs[1].h+'</h5>'+c.vs[1].b+'</div></div>';
+  if(c.flow)   body += '<div class="sty-flow">'+c.flow.map(function(f,n){
+                       return '<div class="fs"><span class="n">'+(n+1)+'</span><span class="t">'+f[0]+
+                              '</span><span class="d">'+f[1]+'</span></div>';}).join("")+'</div>';
+  if(c.list)   body += '<ul class="sty-ul">'+c.list.map(function(l){return '<li>'+l+'</li>';}).join("")+'</ul>';
+  if(c.after)  body += c.after;
+  if(c.note)   body += '<div class="sty-note">'+c.note+'</div>';
+
+  var foot;
+  if(c.choices){
+    foot = '<div class="sty-choice">'+c.choices.map(function(ch,n){
+      return '<button class="'+(ch.pri?'pri':'')+'" data-do="'+ch.act+'">'+
+             '<span class="ci">'+ch.icon+'</span><span><span class="cl">'+ch.label+'</span>'+
+             (ch.sub?'<span class="cs">'+ch.sub+'</span>':'')+'</span></button>';
+    }).join("")+'</div>'+
+    (lead ? '' : '<div class="sty-foot"><div class="sty-dots">'+dots+'</div>'+
+       '<button class="sty-btn" data-do="back">&lsaquo; Back</button></div>');
+  } else {
+    foot = '<div class="sty-foot"><div class="sty-dots">'+dots+'</div>'+
+      '<button class="sty-lnk" data-do="skip">Skip to the tool</button>'+
+      '<button class="sty-btn" data-do="back"'+(i===0?' disabled':'')+'>&lsaquo; Back</button>'+
+      '<button class="sty-btn pri" data-do="next">'+(last?'Finish':'Next')+' &rsaquo;</button></div>';
+  }
+
+  veil.innerHTML = '<div class="sty-card'+(lead?' lead':'')+(c.wide?' wide':'')+'">'+
+    '<button class="sty-x" data-do="close" title="Close">&times;</button>'+
+    '<p class="sty-kick">'+(c.kicker || ('The story &middot; '+i+' of '+(STORY_CH.length-1)))+'</p>'+
+    '<h3 class="sty-h">'+c.title+'</h3>'+
+    '<div class="sty-b">'+body+'</div>'+ foot + '</div>';
+  veil.scrollTop = 0;
+  var card = veil.firstChild; if(card) card.scrollTop = 0;
+}
+
+function act(name){
+  if(name==="next"){ if(i<STORY_CH.length-1){ i++; render(); } else finish("tour"); }
+  else if(name==="back"){ if(i>0){ i--; render(); } }
+  else if(name==="skip"){ i = STORY_CH.length-1; render(); }
+  else if(name==="close"){ finish("explore"); }
+  else if(name==="tour"){ finish("tour"); }
+  else if(name==="explore"){ finish("explore"); }
+  else if(name==="quiet"){ finish("quiet"); }
+  else if(name==="story"){ i = 1; render(); }
+}
+
+function finish(how){
+  markSeen();
+  close();
+  if(!hasTut()) return;
+  try{
+    if(how==="tour")        window.TUT.start(0);
+    else if(how==="quiet")  window.TUT.off();
+    else                    window.TUT.explore();
+  }catch(e){}
+}
+
+function close(){
+  if(veil && veil.parentNode) veil.parentNode.removeChild(veil);
+  veil = null;
+  document.removeEventListener("keydown", onKey, true);
+}
+
+function onKey(e){
+  if(!veil) return;
+  var t=(document.activeElement||{}).tagName;
+  if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT") return;
+  if(e.key==="ArrowRight"){ e.preventDefault(); act("next"); }
+  else if(e.key==="ArrowLeft"){ e.preventDefault(); act("back"); }
+  else if(e.key==="Escape"){ e.preventDefault(); act("close"); }
+}
+
+function open(start){
+  if(veil) close();
+  i = (typeof start === "number") ? start : 0;
+  veil = document.createElement("div");
+  veil.className = "sty-veil";
+  veil.addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest("[data-do]") : null;
+    if(b){ ev.preventDefault(); act(b.getAttribute("data-do")); return; }
+    var d = ev.target.getAttribute && ev.target.getAttribute("data-g");
+    if(d !== null && d !== undefined){ i = +d; render(); return; }
+    if(ev.target === veil){ /* clicking the backdrop does nothing: this is a deliberate read */ }
+  });
+  document.body.appendChild(veil);
+  render();
+  document.addEventListener("keydown", onKey, true);
+}
+
+/* header entry point, so the story can be replayed at any time */
+function injectPill(){
+  if(document.getElementById("styPill")) return;
+  var anchor = document.getElementById("tutPill");
+  var b = document.createElement("button");
+  b.id = "styPill"; b.className = "sty-pill";
+  b.innerHTML = "\u{1F4D6} The story";
+  b.title = "What this tool is and why it exists, in about two minutes";
+  b.onclick = function(){ open(1); };
+  if(anchor && anchor.parentNode){ anchor.parentNode.insertBefore(b, anchor); return; }
+  var slot = document.getElementById("tutPillSlot") ||
+             document.querySelector(".hdr-pills") || document.querySelector(".topin");
+  if(slot) slot.insertBefore(b, slot.firstChild);
+}
+
+window.STORY = {
+  willRun: willRun,
+  open: open,
+  replay: function(){ open(0); },
+  close: close,
+  chapters: STORY_CH
+};
+
+function boot(){
+  injectPill();
+  /* the tutorial layer may not have injected its pill yet; try once more next frame */
+  requestAnimationFrame(injectPill);
+  setTimeout(injectPill, 400);
+  if(willRun) open(isNaN(at) ? 0 : Math.max(0, Math.min(STORY_CH.length-1, at)));
+}
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+</script>
+
 <!-- ===== TUTORIAL LAYER (engine + content) =====
      First-class onboarding for someone who has NEVER seen this tool. Three modes:
      guided tour (spotlight + card, auto tab-switching), ambient hotspots ("?" badges with
@@ -3795,7 +4144,8 @@ window.openSettings=function(sec){
         onchange="TUT.setMode(this.checked?'on':'off')"><span class="track"></span></label>
       <div class="rinfo"><b>🎓 Tutorial mode</b>
         <div class="muted">Beginner hotspots on every section + per-tab intro cards. Applies immediately (separate from Save).
-        <span class="linkish" onclick="TUT.restart()">↻ Restart guided tour</span></div></div>`;
+        <span class="linkish" onclick="closeModal();STORY.replay()">📖 Replay the story</span>
+        <span class="linkish" style="margin-left:12px" onclick="TUT.restart()">↻ Restart guided tour</span></div></div>`;
     const btnrow=mb.querySelector(":scope>.btnrow");
     mb.insertBefore(row,btnrow||null);
   }
@@ -3821,7 +4171,15 @@ window.TUT={
 
 /* ---- boot ---- */
 syncPill();
-if(mode()===null){setModeVal("on");syncPill();welcome();}      // first run: welcome, layer defaults on
+/* The story layer owns the very first screen of a session: it opens the narrative
+   "what is this and why" card, then hands off to this tour. Only fall back to the old
+   welcome modal if the story layer is absent or has already been seen this session. */
+if(window.STORY&&window.STORY.willRun){
+  if(mode()===null){setModeVal("on");syncPill();}
+  seenTabs.add(ST.tab);
+  if(isOn())attachSpots();
+}
+else if(mode()===null){setModeVal("on");syncPill();welcome();}      // first run: welcome, layer defaults on
 else if(isOn()){attachSpots();maybeShowTabCard(ST.tab);}
 })();
 </script>

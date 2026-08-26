@@ -4135,6 +4135,353 @@ document.addEventListener("keydown",e=>{
   }catch(e){}
 })();
 </script>
+
+<style>
+/* ===== STORY LAYER (narrative orientation, runs ahead of the guided tour) ===== */
+/* flex + margin:auto on the child, NOT align/justify-center: a centred flex item whose
+   content is taller or wider than the veil gets its top and left CLIPPED and becomes
+   unscrollable. margin:auto centres the same way and never clips. */
+.sty-veil{position:fixed;inset:0;z-index:200000;background:rgba(12,17,28,.72);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;padding:28px 20px;overflow:auto}
+.sty-card{position:relative;margin:auto;width:min(700px,100%);max-width:100%;min-width:0;
+  flex:0 1 auto;background:#fff;border-radius:18px;
+  box-shadow:0 30px 80px rgba(10,16,30,.45);padding:30px 34px 22px;
+  font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);
+  animation:styIn .26s cubic-bezier(.2,.8,.3,1)}
+@keyframes styIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.sty-card.wide{width:min(780px,100%)}
+.sty-vs>div{min-width:0}
+.sty-flow{min-width:0}
+.sty-x{position:absolute;top:14px;right:18px;font-size:20px;line-height:1;color:#9aa4b4;
+  cursor:pointer;font-weight:400;background:none;border:0;padding:4px 6px}
+.sty-x:hover{color:var(--ink)}
+.sty-kick{font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--accent);margin:0 0 10px}
+.sty-h{font-size:25px;line-height:1.24;font-weight:750;letter-spacing:-.2px;margin:0 0 14px;
+  max-width:31ch}
+.sty-card.lead .sty-h{font-size:31px;max-width:22ch}
+.sty-b{font-size:15px;line-height:1.68;color:#33405a}
+.sty-b p{margin:0 0 12px}
+.sty-b b{color:var(--ink);font-weight:650}
+.sty-b .lede{font-size:16.5px;line-height:1.6;color:var(--ink)}
+.sty-ul{list-style:none;margin:14px 0 4px;padding:0}
+.sty-ul li{position:relative;padding:0 0 0 25px;margin:0 0 10px;font-size:14.5px;line-height:1.6;color:#33405a}
+.sty-ul li:before{content:"";position:absolute;left:5px;top:9px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);opacity:.55}
+.sty-ul li b{color:var(--ink)}
+/* the "vs" comparison block */
+.sty-vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;margin:16px 0 6px}
+.sty-vs>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:#4a566e}
+.sty-vs>div:first-child{background:#f7f8fa;border-right:1px solid var(--line)}
+.sty-vs h5{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;font-weight:800;color:#7a8598}
+.sty-vs>div:last-child h5{color:var(--accent)}
+.sty-vs b{color:var(--ink)}
+/* the little step-flow diagram */
+.sty-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:7px;margin:18px 0 8px}
+.sty-flow .fs{flex:1 1 88px;min-width:88px;border:1px solid var(--line);border-radius:10px;
+  padding:9px 8px 8px;text-align:center;background:#fbfcfe}
+.sty-flow .fs .n{font-size:9.5px;font-weight:800;letter-spacing:.7px;color:var(--accent);
+  text-transform:uppercase;display:block;margin-bottom:2px}
+.sty-flow .fs .t{font-size:12.5px;font-weight:700;color:var(--ink);display:block;line-height:1.3}
+.sty-flow .fs .d{font-size:11px;color:#6b7688;display:block;line-height:1.4;margin-top:3px}
+.sty-note{margin-top:16px;border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 9px 9px 0;padding:11px 14px;font-size:13.5px;line-height:1.6;color:#33405a}
+.sty-note b{color:var(--ink)}
+/* footer */
+.sty-foot{display:flex;align-items:center;gap:9px;margin-top:22px;padding-top:15px;
+  border-top:1px solid var(--line);flex-wrap:wrap}
+.sty-dots{display:flex;gap:5px;margin-right:auto;align-items:center}
+.sty-dots i{width:6px;height:6px;border-radius:50%;background:#d3d9e3;display:block;
+  transition:background .2s,width .2s;cursor:pointer}
+.sty-dots i.on{background:var(--accent);width:17px;border-radius:3px}
+.sty-dots i.past{background:#9fb0dd}
+.sty-btn{font:inherit;font-weight:650;font-size:13.5px;border-radius:9px;padding:9px 17px;
+  border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
+.sty-btn:hover{border-color:#c3cddf}
+.sty-btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.sty-btn.pri:hover{filter:brightness(1.07)}
+.sty-btn:disabled{opacity:.4;cursor:not-allowed}
+.sty-lnk{font-size:12.5px;font-weight:650;color:var(--muted);cursor:pointer;background:none;
+  border:0;padding:6px 4px;font-family:inherit}
+.sty-lnk:hover{color:var(--accent);text-decoration:underline}
+.sty-choice{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.sty-choice button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;
+  font:inherit;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 16px;cursor:pointer}
+.sty-choice button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.sty-choice button.pri{border-color:var(--accent);background:var(--accent);color:#fff}
+.sty-choice button.pri:hover{filter:brightness(1.07)}
+.sty-choice .ci{font-size:19px;flex:0 0 auto;line-height:1}
+.sty-choice .cl{font-weight:700;font-size:14.5px;display:block}
+.sty-choice .cs{font-size:12.5px;color:#6b7688;display:block;margin-top:1px;line-height:1.5}
+.sty-choice button.pri .cs{color:rgba(255,255,255,.85)}
+/* header entry pill */
+.sty-pill{font:inherit;font-weight:700;font-size:12px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;
+  white-space:nowrap;margin-right:8px;flex:0 0 auto}
+.sty-pill:hover{filter:brightness(1.07)}
+@media (max-width:700px){
+  .sty-card{padding:24px 20px 18px;border-radius:14px}
+  .sty-h{font-size:21px}.sty-card.lead .sty-h{font-size:25px}
+  .sty-vs{grid-template-columns:1fr}
+  .sty-vs>div:first-child{border-right:0;border-bottom:1px solid var(--line)}
+  .sty-foot{gap:7px}.sty-dots{order:3;width:100%;margin:6px 0 0}
+}
+</style>
+
+<script>
+/* ===== STORY LAYER (narrative orientation, runs ahead of the guided tour) =====
+   Runs BEFORE the tutorial layer script so it can claim the first-run slot: it sets
+   window.STORY.willRun, which the tutorial layer's boot checks before showing its own
+   welcome modal. Self-contained; touches no existing tour step or selector.
+   Session-scoped: the story opens once per browsing session, not once per lifetime, so
+   a prospect arriving fresh always gets the context and a mid-session reload does not
+   nag. ?story=0 skips it, ?story=1 forces it. */
+(function(){
+"use strict";
+var SKEY = "oe_story_seen";
+var q = (function(){try{return new URLSearchParams(location.search);}catch(e){return {get:function(){return null;}};}})();
+var force = q.get("story");
+var at = parseInt(q.get("storyat"), 10);          /* ?storyat=3 deep-links one chapter */
+if(!isNaN(at)) force = "1";
+var seen = false;
+try{ seen = sessionStorage.getItem(SKEY) === "1"; }catch(e){}
+var willRun = force === "1" ? true : (force === "0" ? false : !seen);
+
+var STORY_CH = [
+{
+  kicker:"An interactive demo",
+  title:"The Outreach&nbsp;Engine",
+  lede:"Before you click anything, here is what this tool is and why it exists. It takes about two minutes, and it will make the rest of the demo make sense.",
+  body:"<p>You can skip straight into the tool if you would rather poke around first. The story is here whenever you want it, behind the <b>\u{1F4D6} The story</b> button at the top of the screen.</p>",
+  choices:[
+    {act:"story",   icon:"\u{1F4D6}", label:"Tell me the story first",  sub:"Why this exists, what it does, and how it differs from a CRM or a bulk email tool", pri:true},
+    {act:"tour",    icon:"\u{1F393}", label:"Skip to the guided walkthrough", sub:"A step by step tour of the screens, in the order you would really use them"},
+    {act:"explore", icon:"\u{1F5B1}", label:"Let me click around on my own", sub:"Hints stay switched on, so every section keeps a small ? you can open"}
+  ]
+},
+{
+  title:"Cold outreach punishes you for doing more of it",
+  lede:"Every company that sells to other companies ends up doing the same three things: build a list, email the list, follow up. All three fight back.",
+  body:"<p>Lists rot. A large share of the addresses you buy or scrape are already wrong, and every dead address you email is counted against you by the mailbox providers.</p>"+
+       "<p>Volume is the only lever most tools hand you, and volume is exactly the thing that gets your sending domain flagged.</p>"+
+       "<p>Follow-up is where most of the replies actually come from, and it is the first thing a busy human drops.</p>",
+  note:"So the usual ending is predictable. You send more, you land in spam more, and you cannot tell whether the list, the message, or the sending itself is the part that is broken."
+},
+{
+  title:"One place that owns the whole path from a raw list to a real reply",
+  lede:"The Outreach Engine holds your master list of companies and people, helps you cut it down to the prospects worth a conversation, sends at a deliberately careful pace, and stops the moment somebody answers.",
+  body:"<p>It is not a mail blaster with a contact database bolted onto it. The <b>order of operations is the product</b>: refine first, then send slowly, then follow up on time, then get out of the way.</p>",
+  flow:[
+    ["Import","Enriched lists arrive from the list building tools"],
+    ["Refine","Cut the obvious no's in bulk"],
+    ["Rank","Work the best people first, not the alphabet"],
+    ["Campaign","A short sequence, one segment, one address"],
+    ["Reply","Their remaining emails stop instantly"],
+    ["Follow up","Everyone else gets the next touch on time"]
+  ]
+},
+{
+  title:"Why this is not a CRM",
+  lede:"A CRM records what already happened. This decides what happens next.",
+  vs:[
+    {h:"A CRM",  b:"<p>A <b>system of record</b>. You tell it what you did and it remembers. It is built around deals that already exist and people who are already talking to you.</p><p>It will happily let you email four thousand strangers from a brand new domain on a Tuesday afternoon, because policing that was never its job.</p>"},
+    {h:"This tool", b:"<p>A <b>system of judgment</b>, for the stage before a deal exists. Thousands of people you do not know, most of whom you should never email at all.</p><p>Its work is deciding who is worth contacting, who clearly is not, who has gone quiet and needs one more touch, and how much you are allowed to send today.</p>"}
+  ],
+  note:"The two fit together rather than compete. When somebody replies and turns into a real opportunity, that is the point where a CRM earns its keep."
+},
+{
+  title:"Why this is not Mailchimp",
+  lede:"Bulk email platforms are built for an audience that asked to hear from you. Cold outreach is the opposite problem.",
+  body:"<p>A newsletter tool optimises for <b>reach</b>: send more, send faster, prettier templates, bigger lists. That is the right goal when people subscribed on purpose.</p>"+
+       "<p>When the audience did not ask, <b>reputation is the scarce resource</b>, not reach. One careless week of sending can quietly cost you your domain for months, and almost nothing on your screen will tell you it happened.</p>"+
+       "<p>So this tool spends its effort on the unglamorous parts:</p>",
+  list:[
+    "<b>Addresses get verified</b> before they are ever used, so bounces stay near zero.",
+    "<b>New sending addresses warm up</b> over weeks, starting at a trickle, instead of opening at full volume on day one.",
+    "<b>Daily caps per address</b>, so no single mailbox ever looks like a machine.",
+    "<b>Randomised timing</b>, so a day of sending does not arrive as one obvious burst.",
+    "<b>Unsubscribes and bounces are permanent and global.</b> Someone who opted out cannot be reached by any campaign, in any segment, ever again."
+  ]
+},
+{
+  title:"Careful sending is enforced, not remembered",
+  lede:"The guardrails are the reason the tool exists, so they are not optional settings you are trusted to respect.",
+  body:"<p>Before anything goes out, the engine checks the address is verified, the person has not opted out, has not bounced, is not already enrolled in a competing campaign, and that today's budget for that sending address still has room. If any of those fail, the send does not happen.</p>"+
+       "<p>The same discipline runs on the way back. A reply, an unsubscribe or a hard bounce halts that person's remaining steps immediately, so nobody keeps receiving emails after they have already answered you.</p>",
+  note:"That is the difference between outreach that compounds and outreach that burns down the thing it depends on."
+},
+{
+  title:"What you actually get out of it",
+  lede:"",
+  list:[
+    "<b>Your domain survives.</b> Warm-up, caps and guardrails are enforced by the tool rather than by your memory on a busy day.",
+    "<b>You stop emailing people you should not.</b> Opt-outs and bounces are honoured everywhere, automatically.",
+    "<b>Follow-up actually happens.</b> That is where most replies come from, and it is the part people reliably let slip.",
+    "<b>You can see what is working.</b> Reply rate by campaign, by segment and by message, so you are improving copy rather than guessing at it.",
+    "<b>The daily question gets simple.</b> Instead of “who should I email today”, the tool shows you who is due and you approve it."
+  ],
+  note:"None of this is about sending more email. It is about sending less of it, to better people, without setting fire to the channel."
+},
+{
+  title:"Where this sits in the bigger picture",
+  lede:"This is one link in a chain, not the whole chain.",
+  body:"<p><b>Upstream</b>, separate tools find companies that match what you are looking for and enrich them into real people with real, verified addresses. Their output lands here.</p>"+
+       "<p><b>Here</b>, you refine the list, rank it, run campaigns, log replies and follow up.</p>"+
+       "<p><b>Sideways</b>, the strongest prospects get handed to a companion LinkedIn tool, so a relationship can be built in parallel with the emails rather than instead of them.</p>",
+  note:"Everything you are about to see runs on invented sample data. Nothing sends, nothing is real, and no button here can do any harm. Click anything you like."
+},
+{
+  kicker:"That is the why",
+  title:"Now, the how",
+  lede:"You have the thirty thousand foot view. The guided walkthrough goes through the screens in the order you would really use them, and takes about three minutes.",
+  choices:[
+    {act:"tour",    icon:"\u{1F393}", label:"Walk me through the tool", sub:"Guided tour, roughly three minutes, following the real workflow start to finish", pri:true},
+    {act:"explore", icon:"\u{1F5B1}", label:"Let me click around with hints on", sub:"Every section keeps a small ? you can open for a plain English explainer"},
+    {act:"quiet",   icon:"\u{1F910}", label:"No hints, just the tool", sub:"Turns the whole tutorial layer off. The \u{1F393} button in the header brings it back"}
+  ]
+}
+];
+
+var veil = null, i = 0;
+
+function markSeen(){ try{ sessionStorage.setItem(SKEY,"1"); }catch(e){} }
+function esc(){ return null; }
+
+function hasTut(){ return typeof window.TUT === "object" && window.TUT; }
+
+function render(){
+  var c = STORY_CH[i], last = i === STORY_CH.length - 1, lead = i === 0;
+  var dots = STORY_CH.map(function(_,n){
+    return '<i class="'+(n===i?'on':(n<i?'past':''))+'" data-g="'+n+'" title="'+(n+1)+'"></i>';
+  }).join("");
+  var body = "";
+  if(c.lede)   body += '<p class="lede">'+c.lede+'</p>';
+  if(c.body)   body += c.body;
+  if(c.vs)     body += '<div class="sty-vs"><div><h5>'+c.vs[0].h+'</h5>'+c.vs[0].b+'</div>'+
+                       '<div><h5>'+c.vs[1].h+'</h5>'+c.vs[1].b+'</div></div>';
+  if(c.flow)   body += '<div class="sty-flow">'+c.flow.map(function(f,n){
+                       return '<div class="fs"><span class="n">'+(n+1)+'</span><span class="t">'+f[0]+
+                              '</span><span class="d">'+f[1]+'</span></div>';}).join("")+'</div>';
+  if(c.list)   body += '<ul class="sty-ul">'+c.list.map(function(l){return '<li>'+l+'</li>';}).join("")+'</ul>';
+  if(c.after)  body += c.after;
+  if(c.note)   body += '<div class="sty-note">'+c.note+'</div>';
+
+  var foot;
+  if(c.choices){
+    foot = '<div class="sty-choice">'+c.choices.map(function(ch,n){
+      return '<button class="'+(ch.pri?'pri':'')+'" data-do="'+ch.act+'">'+
+             '<span class="ci">'+ch.icon+'</span><span><span class="cl">'+ch.label+'</span>'+
+             (ch.sub?'<span class="cs">'+ch.sub+'</span>':'')+'</span></button>';
+    }).join("")+'</div>'+
+    (lead ? '' : '<div class="sty-foot"><div class="sty-dots">'+dots+'</div>'+
+       '<button class="sty-btn" data-do="back">&lsaquo; Back</button></div>');
+  } else {
+    foot = '<div class="sty-foot"><div class="sty-dots">'+dots+'</div>'+
+      '<button class="sty-lnk" data-do="skip">Skip to the tool</button>'+
+      '<button class="sty-btn" data-do="back"'+(i===0?' disabled':'')+'>&lsaquo; Back</button>'+
+      '<button class="sty-btn pri" data-do="next">'+(last?'Finish':'Next')+' &rsaquo;</button></div>';
+  }
+
+  veil.innerHTML = '<div class="sty-card'+(lead?' lead':'')+(c.wide?' wide':'')+'">'+
+    '<button class="sty-x" data-do="close" title="Close">&times;</button>'+
+    '<p class="sty-kick">'+(c.kicker || ('The story &middot; '+i+' of '+(STORY_CH.length-1)))+'</p>'+
+    '<h3 class="sty-h">'+c.title+'</h3>'+
+    '<div class="sty-b">'+body+'</div>'+ foot + '</div>';
+  veil.scrollTop = 0;
+  var card = veil.firstChild; if(card) card.scrollTop = 0;
+}
+
+function act(name){
+  if(name==="next"){ if(i<STORY_CH.length-1){ i++; render(); } else finish("tour"); }
+  else if(name==="back"){ if(i>0){ i--; render(); } }
+  else if(name==="skip"){ i = STORY_CH.length-1; render(); }
+  else if(name==="close"){ finish("explore"); }
+  else if(name==="tour"){ finish("tour"); }
+  else if(name==="explore"){ finish("explore"); }
+  else if(name==="quiet"){ finish("quiet"); }
+  else if(name==="story"){ i = 1; render(); }
+}
+
+function finish(how){
+  markSeen();
+  close();
+  if(!hasTut()) return;
+  try{
+    if(how==="tour")        window.TUT.start(0);
+    else if(how==="quiet")  window.TUT.off();
+    else                    window.TUT.explore();
+  }catch(e){}
+}
+
+function close(){
+  if(veil && veil.parentNode) veil.parentNode.removeChild(veil);
+  veil = null;
+  document.removeEventListener("keydown", onKey, true);
+}
+
+function onKey(e){
+  if(!veil) return;
+  var t=(document.activeElement||{}).tagName;
+  if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT") return;
+  if(e.key==="ArrowRight"){ e.preventDefault(); act("next"); }
+  else if(e.key==="ArrowLeft"){ e.preventDefault(); act("back"); }
+  else if(e.key==="Escape"){ e.preventDefault(); act("close"); }
+}
+
+function open(start){
+  if(veil) close();
+  i = (typeof start === "number") ? start : 0;
+  veil = document.createElement("div");
+  veil.className = "sty-veil";
+  veil.addEventListener("click", function(ev){
+    var b = ev.target.closest ? ev.target.closest("[data-do]") : null;
+    if(b){ ev.preventDefault(); act(b.getAttribute("data-do")); return; }
+    var d = ev.target.getAttribute && ev.target.getAttribute("data-g");
+    if(d !== null && d !== undefined){ i = +d; render(); return; }
+    if(ev.target === veil){ /* clicking the backdrop does nothing: this is a deliberate read */ }
+  });
+  document.body.appendChild(veil);
+  render();
+  document.addEventListener("keydown", onKey, true);
+}
+
+/* header entry point, so the story can be replayed at any time */
+function injectPill(){
+  if(document.getElementById("styPill")) return;
+  var anchor = document.getElementById("tutPill");
+  var b = document.createElement("button");
+  b.id = "styPill"; b.className = "sty-pill";
+  b.innerHTML = "\u{1F4D6} The story";
+  b.title = "What this tool is and why it exists, in about two minutes";
+  b.onclick = function(){ open(1); };
+  if(anchor && anchor.parentNode){ anchor.parentNode.insertBefore(b, anchor); return; }
+  var slot = document.getElementById("tutPillSlot") ||
+             document.querySelector(".hdr-pills") || document.querySelector(".topin");
+  if(slot) slot.insertBefore(b, slot.firstChild);
+}
+
+window.STORY = {
+  willRun: willRun,
+  open: open,
+  replay: function(){ open(0); },
+  close: close,
+  chapters: STORY_CH
+};
+
+function boot(){
+  injectPill();
+  /* the tutorial layer may not have injected its pill yet; try once more next frame */
+  requestAnimationFrame(injectPill);
+  setTimeout(injectPill, 400);
+  if(willRun) open(isNaN(at) ? 0 : Math.max(0, Math.min(STORY_CH.length-1, at)));
+}
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+})();
+</script>
+
 <!-- ================================================================================
      ===== TUTORIAL LAYER (engine + content) =====
      Self-contained onboarding layer per the shared engine spec (TUTORIAL_LAYER_SPEC):
@@ -4503,7 +4850,8 @@ function injectSettingsRow(){
     <div class="rulerow">
       <label class="switch"><input type="checkbox" ${on?"checked":""} onchange="TUT.toggle()"><span class="track"></span></label>
       <div class="rinfo"><b>Tutorial mode</b><div class="muted">Shows a “?” hotspot on every major section plus a first-visit intro card per tab. The 🎓 pill in the header toggles this too.</div></div>
-      <div class="rright"><span class="tut-link" onclick="closeModal();TUT.welcome()">↻ Restart guided tour</span></div>
+      <div class="rright"><span class="tut-link" onclick="closeModal();STORY.replay()">📖 Replay the story</span>
+      <span class="tut-link" style="margin-left:12px" onclick="closeModal();TUT.start(0)">↻ Restart guided tour</span></div>
     </div>`);
   mb.appendChild(d);
 }
@@ -4546,7 +4894,11 @@ window.TUT={
 
 /* ---------------- boot ---------------- */
 if(on)attachSpots();
-if(firstRun){seenTabs.add(ST.tab);welcome();}   // welcome covers the first tab's intro
+/* The story layer owns the very first screen of a session: it opens the narrative
+   "what is this and why" card, then hands off to this tour. Only fall back to the old
+   welcome modal if the story layer is absent or has already been seen this session. */
+if(window.STORY&&window.STORY.willRun){seenTabs.add(ST.tab);}
+else if(firstRun){seenTabs.add(ST.tab);welcome();}   // welcome covers the first tab's intro
 else if(on)showIntro(ST.tab);
 })();
 </script>
