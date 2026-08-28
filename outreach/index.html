@@ -4293,7 +4293,7 @@ var STORY_CH = [
 },
 {
   title:"It is yours, so there is no meter running on it",
-  lede:"Commercial tools charge per seat, and then again as your list grows. That pricing quietly changes how you work: you start pruning perfectly good contacts to stay inside a tier.",
+  lede:"Commercial tools charge per seat, and then again as your list grows. That pricing changes how you work: you start pruning perfectly good contacts to stay inside a tier.",
   body:"<p>This runs on your own infrastructure, so none of that applies.</p>",
   list:[
     "<b>No per-seat pricing.</b> Everyone on your team who needs it has it.",
@@ -4337,7 +4337,7 @@ var STORY_CH = [
 {
   title:"Why this is not Mailchimp either",
   lede:"Bulk email platforms are built for an audience that asked to hear from you, so they optimise for reach: send more, send faster, bigger lists. When the audience did not ask, reach is not the scarce resource. Your reputation is.",
-  body:"<p>One careless week of sending can quietly cost you your sending domain for months, and almost nothing on your screen will tell you it happened. So the guardrails here are <b>enforced by the tool</b> rather than left to your memory on a busy day:</p>",
+  body:"<p>One careless week of sending can cost you your sending domain for months, and almost nothing on your screen will tell you it happened. So the guardrails here are <b>enforced by the tool</b> rather than left to your memory on a busy day:</p>",
   list:[
     "<b>Addresses get verified</b> before they are ever used, so bounces stay near zero.",
     "<b>New sending addresses warm up</b> over weeks, starting at a trickle rather than opening at full volume on day one.",
@@ -4357,7 +4357,7 @@ var STORY_CH = [
     "<b>Both channels working as one</b>, with the right people routed to the right one and each side aware of the other.",
     "<b>Your domain survives</b>, because warm-up, caps and opt-outs are enforced rather than remembered.",
     "<b>Follow-up actually happens</b>, which is where most replies come from and the first thing people let slip.",
-    "<b>The daily question gets simple.</b> Instead of who should I contact today, the tool shows you who is due."
+    "<b>The daily question stops being a question.</b> Instead of who should I contact today, the tool shows you who is due."
   ],
   note:"None of this is about doing more outreach. It is about doing less of it, to better people, in the right channel, without setting fire to either one."
 },
@@ -4575,110 +4575,110 @@ let raf=0;
 const TUT_STEPS=[
  {id:"orient", tab:"dash", sel:".pipe", pos:"bottom",
   title:"Where this tool fits",
-  body:"This is the <b>outreach stage</b> of a larger prospecting pipeline. Upstream, a List Builder finds companies and an Enrichment tool finds the people, their emails, and their LinkedIn profiles. Everything lands here — the <b>Outreach Engine</b> — where you refine the list and run careful email campaigns. A separate LinkedIn tool handles LinkedIn conversations; you'll see that hand-off later in the tour."},
+  body:"This is the outreach stage of a longer pipeline. Upstream, a list builder finds the companies and an enrichment tool finds the people, their emails and their LinkedIn profiles. It all lands here, in the <b>Outreach Engine</b>, where you refine the list and run the email campaigns. LinkedIn conversations happen in a companion tool, and you will see that hand-off later in the tour."},
  {id:"dash-kpis", tab:"dash", sel:"#v-dash .kpis", fb:"#v-dash", pos:"bottom",
-  title:"The Dashboard — your list at a glance",
-  body:"These cards answer “how healthy is my list?”: how many companies (<b>accounts</b>) and people (<b>contacts</b>) you have, what share of emails are <b>verified</b> as deliverable, how many people are in a campaign, and how many replied. Glance here before any send — a low verified rate or a climbing omitted count means the list needs cleanup before more email goes out."},
+  title:"The Dashboard: your list at a glance",
+  body:"These cards answer one question. Is the list healthy enough to work? How many companies (<b>accounts</b>) and people (<b>contacts</b>) you hold, what share of the emails are <b>verified</b> as deliverable, how many people sit in a campaign, and how many have replied. Check here before any send. A low verified rate, or a climbing omitted count, means the list needs cleaning first."},
  {id:"grain", tab:"list", sel:".seg", fb:".toolbar", pos:"bottom",
   title:"One table, two “grains”",
-  body:"The Master List is every company and person you might reach out to — your system of record. This toggle switches the <b>grain</b>: <b>Contacts</b> shows one row per person, <b>Accounts</b> one row per company. Same data, two zoom levels — edit a company from either side and it updates everywhere."},
+  body:"The Master List holds every company and person you might contact. This toggle switches the <b>grain</b>: <b>Contacts</b> gives you one row per person, <b>Accounts</b> one row per company. Same data at two zoom levels, so a company you edit from either side updates everywhere."},
  {id:"rank", tab:"list", sel:'#listwrap th[title="Rank"]', fb:"#listwrap", pos:"bottom",
   pre:()=>{if(ST.grain!=="contacts")setGrain("contacts");},
-  title:"Rank — who to email next",
-  body:"The list isn't alphabetical — it's sorted by <b>Rank</b>, one number that folds together lead quality, how active the person is on LinkedIn, and how well their company fits what you sell. Higher = better next email. It recalculates as new signals arrive, so the best person to contact is always sitting at the top."},
+  title:"Rank: who to email next",
+  body:"The list is not alphabetical. It sorts by <b>Rank</b>, a single number folding together lead quality, how active the person is on LinkedIn, and how well their company fits what you sell. Higher means a better next email. Rank recalculates as new signals arrive, so the best person to contact is always sitting at the top."},
  {id:"filters", tab:"list", sel:"#builder", fb:".toolbar", pos:"bottom",
   pre:()=>{if(ST.grain!=="contacts")setGrain("contacts");},
   title:"Carving the list into working sets",
-  body:"You rarely work the whole list at once. <b>Quick filters</b> pin dropdowns for the fields you slice by most; the <b>⚲ Filter</b> panel builds precise multi-condition queries; <b>⚡ Presets</b> are one-click starting points like “Verified email”. Filters never delete anything — they only choose what you're looking at right now."},
+  body:"You rarely work the whole list at once. <b>Quick filters</b> pin dropdowns for the fields you cut by most often. The <b>⚲ Filter</b> panel builds precise multi-condition queries. <b>⚡ Presets</b> are one-click starting points like “Verified email”. None of it deletes anything. Filters only choose what you are looking at right now."},
  {id:"views", tab:"list", text:"Saved views", fb:".toolbar", pos:"bottom",
-  title:"Saved views — name a working set",
-  body:"Built a filter combination you'll reuse — say “Owners in Texas, verified, not yet contacted”? Save it as a <b>view</b>. A view remembers your filters, quick filters, sorts, and visible columns. Pick it from this menu tomorrow and you're back exactly where you left off."},
+  title:"Saved views: name a working set",
+  body:"When you build a combination you will use again, say “Owners in Texas, verified, not yet contacted”, save it as a <b>view</b>. It remembers your filters, quick filters, sorts and visible columns. Pick it from this menu tomorrow and you are back where you left off."},
  {id:"bulk", tab:"list", sel:"#bulkbar", fb:"#listwrap", pos:"top",
   pre:()=>{if(ST.grain!=="contacts")setGrain("contacts");pageRows().slice(0,2).forEach(r=>ST.sel.add(key(r)));renderBulk();},
   post:()=>{ST.sel.clear();renderBulk();},
   title:"Refine as you work",
-  body:"Tick a few checkboxes and this bar appears with actions for the whole selection: <b>Omit</b> the junk (with a reason), <b>Tag</b>, mark reviewed, add to a campaign, or sync to LinkedIn. Omitting isn't deleting — omitted rows move to the Omitted view and can always be restored. The <b>⚑ Refinement</b> button up top tallies your omit reasons and suggests filters from the patterns, so cleanup gets easier over time."},
+  body:"Tick a few checkboxes and this bar appears, with actions for the whole selection: <b>Omit</b> the junk (with a reason), <b>Tag</b>, mark reviewed, add to a campaign, or sync to LinkedIn. Omitting is not deleting. Omitted rows move to the Omitted view and can be restored at any point. The <b>⚑ Refinement</b> button up top counts your omit reasons and suggests filters from the patterns it sees, so each pass of cleanup takes less work than the last."},
  {id:"drawer", tab:"list", sel:"#drawer", pos:"left",
   pre:()=>{const c=contacts.find(x=>!x._deleted&&x.status==="active")||contacts[0];openContact(c.id);},
   post:()=>closeDrawer(),
-  title:"The contact drawer — everything about one person",
-  body:"Click any name to open this panel: pipeline stage, lead score, email and its verification status, LinkedIn activity, notes, follow-ups, campaign history, and the company's details. Almost every field is editable right here — change it and the table updates instantly. During real conversations, this is where you live."},
+  title:"The contact drawer: everything about one person",
+  body:"Click any name to open this panel: pipeline stage, lead score, the email and its verification status, LinkedIn activity, notes, follow-ups, campaign history and the company's details. Nearly every field is editable here, and the table updates the moment you change one. Once real conversations start, this is the screen you spend your time in."},
  {id:"lisync", tab:"list", sel:"#lisyncbtn", fb:".toolbar", pos:"bottom",
   pre:()=>{if(ST.grain!=="contacts")setGrain("contacts");},
   title:"Handing prospects to the LinkedIn tool",
-  body:"Email isn't the only channel. This button opens a ready-made queue — best prospects first, already-synced people hidden — and one click on <b>sync</b> pushes a contact into the companion <b>LinkedIn Engine</b>, a separate tool that manages connection requests and LinkedIn conversations. The two stay in sync automatically; no exporting spreadsheets back and forth."},
+  body:"Email is not the only channel. This button opens a ready-made queue with the best prospects first and anyone already synced hidden. One click on <b>sync</b> pushes a contact into the companion <b>LinkedIn Engine</b>, which handles connection requests and LinkedIn conversations. The two tools stay current with each other on their own. No spreadsheets moving back and forth."},
  {id:"followups", tab:"follow", sel:"#v-follow .kpis", fb:"#v-follow", pos:"bottom",
-  title:"Follow-ups — never lose a thread",
-  body:"When someone replies “ask me next month”, that promise lives here as a dated task tied to the contact. Overdue items float to the top and show on the tab badge. Most deals close in the follow-up, not the first email — this tab is what makes following up reliable instead of hopeful."},
+  title:"Follow-ups: the promises you made",
+  body:"When someone replies “ask me next month”, that becomes a dated task tied to their record, and it lives here. Overdue items rise to the top and show on the tab badge. Most deals close on a follow-up rather than a first email, and this tab is the difference between following up reliably and meaning to."},
  {id:"camplist", tab:"camp", sel:".clist", fb:"#v-camp", pos:"right",
-  title:"Campaigns — organized sending",
-  body:"A <b>campaign</b> is one email <b>sequence</b> sent to one <b>segment</b> of your list from one address. This rail lists them — click one to open it. Campaigns can be <b>grouped</b> so each person is enrolled in only one within a group, and nobody gets the same intro twice. “+N new” means new contacts now match a segment and can be enrolled with one click."},
+  title:"Campaigns: organized sending",
+  body:"A <b>campaign</b> is one email <b>sequence</b>, sent to one <b>segment</b> of your list, from one address. This rail lists them. Click one to open it. Campaigns can be <b>grouped</b> so a person is enrolled in only one campaign within a group, which is what stops anyone getting the same intro twice. “+N new” means fresh contacts now match a segment and can be enrolled with one click."},
  {id:"templates", tab:"camp", text:"Email sequence", fb:"#v-camp", pos:"top",
   pre:()=>{ST.camp=0;renderCamp();},
-  title:"The email sequence — a multi-step drip",
-  body:"Each campaign is a <b>sequence</b> of steps that send automatically, a set number of days apart (weekends skipped). Merge tags like <code>{{first_name}}</code> and <code>{{agency}}</code> fill from each contact's record. Edit or add steps with <b>✎ Edit sequence</b>. The instant someone replies, unsubscribes or bounces, their remaining steps stop — so the drip only ever reaches people who haven't answered yet."},
+  title:"The email sequence: a multi-step drip",
+  body:"Each campaign is a <b>sequence</b> of steps that send on their own, a set number of days apart, skipping weekends. Merge tags like <code>{{first_name}}</code> and <code>{{agency}}</code> fill from each contact's record. Add or change steps with <b>✎ Edit sequence</b>. The moment someone replies, unsubscribes or bounces, their remaining steps stop, so the drip only ever reaches people who have not answered."},
  {id:"warmup", tab:"camp", text:"Schedule & automation", fb:"#v-camp", pos:"top",
   pre:()=>{ST.camp=0;renderCamp();},
-  title:"🌱 Schedule & automation — armed auto-send with warm-up",
-  body:"Flip the <b>master switch</b> on and the campaign <b>sends itself</b> on the days and hour you choose — no manual batches — staying under a daily <b>cap</b>. That ramping cap is the <b>warm-up</b>: a new sending address must start small (~10/day) and climb over weeks, or mailbox providers flag it as spam. Steps still stop the instant someone replies, unsubscribes or bounces. It's the single most important deliverability habit, and it's built in."},
+  title:"🌱 Schedule & automation: auto-send with warm-up",
+  body:"Turn the <b>master switch</b> on and the campaign <b>sends itself</b> on the days and hour you pick, with no manual batches, staying under a daily <b>cap</b>. That rising cap is the <b>warm-up</b>. A new sending address has to start at a trickle, around ten a day, and climb over weeks. Open at full volume instead and mailbox providers read it as spam. Steps still stop the instant someone replies, unsubscribes or bounces. It protects your sending domain more than anything else here, and the tool enforces it rather than leaving it to your memory."},
  {id:"sending", tab:"camp", sel:"#sndRun", fb:".sendbox", pos:"top",
   pre:()=>{ST.camp=0;renderCamp();},
-  title:"Send due steps — manual, paced, stoppable",
-  body:"Prefer to send by hand instead of arming the schedule? This box shows how many steps are <b>due today</b>; <b>▶ Send due now</b> runs them as a <b>paced batch</b> with live progress you can stop at any point. Send yourself a <b>test</b> first to check merge tags. Every send passes the global guardrails, and the unsubscribe link + CAN-SPAM footer are appended automatically — that discipline is what keeps your sending domain trusted."},
+  title:"Send due steps: manual, paced, stoppable",
+  body:"If you would rather send by hand than arm the schedule, this box shows how many steps are <b>due today</b>. <b>▶ Send due now</b> runs them as a <b>paced batch</b> with live progress, and you can stop it at any point. Send yourself a <b>test</b> first to check the merge tags. Every send passes the global guardrails, and the unsubscribe link and CAN-SPAM footer are added for you."},
  {id:"ses", tab:"camp", sel:".card.seshealth", fb:"#v-camp", pos:"bottom",
-  title:"Sending health — the two numbers that matter",
-  body:"Amazon SES (the email service) watches two rates. <b>Bounce rate</b>: over ~5% triggers a review, ~10% can pause your sending entirely. <b>Complaint rate</b> (people clicking “spam”): keep it under 0.1%. This card shows both — for the whole AWS account, this app, and per sending domain — in plain colors: green is fine, amber means slow down, red means stop and clean the list before sending more."},
+  title:"Sending health: the two numbers that matter",
+  body:"Amazon SES, the service that carries the mail, watches two rates. <b>Bounce rate</b>: above about 5% brings a review, and around 10% can pause your sending outright. <b>Complaint rate</b>, meaning people hitting “spam”: keep it under 0.1%. This card shows both for the whole AWS account, for this app, and per sending domain. Green is fine, amber means slow down, red means stop and clean the list before another email goes out."},
  {id:"recipients", tab:"camp", text:"Recipients", fb:"#v-camp", pos:"top",
   pre:()=>{ST.camp=0;renderCamp();},
-  title:"Recipients & replies — how a sequence ends",
-  body:"Everyone enrolled shows here by <b>sequence status</b>. When someone replies or starts a conversation, mark them <b>Replied</b> or <b>Not interested</b> (or set their stage on the contact) and the engine <b>immediately stops</b> their remaining steps. Unsubscribes and hard bounces stop on their own. This is how careful sending stays careful — nobody keeps getting emails after they've answered. Global guardrails (never contact unsubscribed, require verified email) live in <b>⚙ Campaign settings</b>, where the Tutorial toggle sits too."},
+  title:"Recipients & replies: how a sequence ends",
+  body:"Everyone enrolled appears here by <b>sequence status</b>. When someone replies or starts a conversation, mark them <b>Replied</b> or <b>Not interested</b>, or set their stage on the contact record, and the engine <b>stops their remaining steps at once</b>. Unsubscribes and hard bounces stop on their own. Nobody keeps receiving email after they have answered. The global guardrails, never contact an unsubscribe and require a verified email, live in <b>⚙ Campaign settings</b>, along with the Tutorial toggle."},
  {id:"wrapup", tab:"*", sel:"#tutPill", pos:"bottom",
   title:"🎓 That's the tour",
-  body:"The whole workflow: import an enriched list → refine it → work the best people by rank → campaign with warm-up and guardrails → reply → follow up. This <b>🎓 pill</b> toggles tutorial mode: leave it on and every section keeps a small <b>?</b> hotspot you can click for a refresher; turn it off when the training wheels get in the way. Replay this tour anytime from ⚙ Campaign settings."}
+  body:"The whole workflow in one line: import an enriched list → refine it → work the best people by rank → campaign with warm-up and guardrails → reply → follow up. This <b>🎓 pill</b> switches tutorial mode on and off. Left on, every section keeps a small <b>?</b> you can click for a refresher. Turn it off once the hints stop earning their place. You can replay this tour whenever you like from ⚙ Campaign settings."}
 ];
 
 /* ---------------- content: ambient hotspots ---------------- */
 const TUT_SPOTS=[
  {tab:"*",    sel:"#gact", title:"⚡ LinkedIn-activity progress",
-  body:"How much of the list the background LinkedIn-activity enrichment has covered. It drips along on its own and feeds each contact's Rank; email sending never waits on it. Click the pill to jump to the Dashboard card."},
+  body:"How much of the list the background LinkedIn-activity enrichment has covered. It drips along on its own and feeds each contact's Rank. Email sending never waits on it. Click the pill to jump to the Dashboard card."},
  {tab:"dash", sel:"#v-dash .kpis", tourStep:"dash-kpis", title:"List health KPIs",
   body:"Six numbers that say whether the list is ready to work: accounts, contacts, % verified emails, how many are in a campaign, reply rate, and how many you've cut."},
  {tab:"dash", sel:"#actdash", title:"⚡ LinkedIn activity enrichment",
-  body:"A slow background worker checks each contact's LinkedIn profile for recent activity (via Unipile). Active people rank higher. ▶ runs the drip, ⏸ pauses it — and email is never blocked on it."},
+  body:"A slow background worker checks each contact's LinkedIn profile for recent activity (via Unipile). Active people rank higher. ▶ runs the drip and ⏸ pauses it. Email is never blocked on either."},
  {tab:"list", sel:".seg", tourStep:"grain", title:"Contacts vs Accounts",
-  body:"Two views of the same list: one row per person, or one row per company. Everything else on this page — filters, columns, sorts — follows the grain you pick."},
+  body:"Two views of the same list: one row per person, or one row per company. Everything else on the page, filters, columns and sorts, follows the grain you pick."},
  {tab:"list", text:"Refinement", tourStep:"bulk", title:"⚑ Refinement",
-  body:"Your omit history. Every omit records a reason; when a pattern builds up (say “franchise” ×12) this suggests turning the reason into a filter so that junk stops reaching you."},
+  body:"Your omit history. Every omit records a reason, and when a pattern builds up (say “franchise” ×12) this suggests turning that reason into a filter, so the junk stops reaching you at all."},
  {tab:"list", sel:"#lisyncbtn", tourStep:"lisync", title:"🔗 LinkedIn hand-off",
-  body:"Opens the hand-off queue: best prospects on top, already-synced hidden. Click sync on a row to push that person into the companion LinkedIn Engine — the row leaves the queue on its own."},
+  body:"Opens the hand-off queue: best prospects on top, anyone already synced hidden. Click sync on a row to push that person into the companion LinkedIn Engine. The row leaves the queue on its own."},
  {tab:"list", sel:"#builder", tourStep:"filters", title:"Quick filters & presets",
-  body:"Quick filters are pinned dropdowns for your favorite fields; ⚲ Filter builds precise multi-condition queries; ⚡ Presets are one-click starting points. Filters only change what you see — nothing is deleted."},
+  body:"Quick filters are pinned dropdowns for the fields you use most. ⚲ Filter builds precise multi-condition queries. ⚡ Presets are one-click starting points. Filters only change what you see. Nothing is deleted."},
  {tab:"list", text:"Saved views", tourStep:"views", title:"★ Saved views",
   body:"Save the current filters + sorts + columns as a named view and jump back to it anytime. “Update view ●” appears when you've drifted from the saved definition."},
  {tab:"follow", sel:"#v-follow .kpis", tourStep:"followups", title:"Follow-up buckets",
-  body:"Open promises, bucketed by urgency. Overdue floats to the top and shows on the tab badge — work this list daily and no thread ever goes cold."},
+  body:"Open promises, bucketed by urgency. Overdue rises to the top and shows on the tab badge. Work this list daily and nothing goes cold."},
  {tab:"camp", sel:".clist", tourStep:"camplist", title:"Campaign list",
-  body:"Every campaign with its sender, status, and live stats. Groups keep one enrollment per person; “+N new” means new contacts now match that segment. Click one to open it."},
+  body:"Every campaign with its sender, status and live stats. Groups keep one enrollment per person. “+N new” means new contacts now match that segment. Click one to open it."},
  {tab:"camp", text:"Schedule & automation", tourStep:"warmup", title:"🌱 Schedule & automation",
-  body:"Arm the master switch and the campaign sends itself on your chosen days/hour, under a daily cap. That ramping cap is the warm-up — new addresses must start small or mailbox providers flag them as spam. Steps stop the instant someone replies, unsubscribes or bounces."},
+  body:"Turn the master switch on and the campaign sends itself on your chosen days and hour, under a daily cap. That rising cap is the warm-up: a new address has to start small or mailbox providers read it as spam. Steps stop the instant someone replies, unsubscribes or bounces."},
  {tab:"camp", sel:"#sndRun", tourStep:"sending", title:"Send due steps",
-  body:"Manual alternative to arming the schedule: this shows how many steps are due today. ▶ sends them as a paced batch with live progress you can stop; the unsubscribe link + CAN-SPAM footer are appended automatically."},
+  body:"The manual alternative to arming the schedule. This shows how many steps are due today, and ▶ sends them as a paced batch with live progress you can stop. The unsubscribe link and CAN-SPAM footer are added for you."},
  {tab:"camp", sel:".card.seshealth", tourStep:"ses", title:"SES sending health",
-  body:"Your sending reputation — whole AWS account, this app, and per domain. Keep bounces under ~5% and spam complaints under 0.1% — cross the thresholds and Amazon can pause your sending entirely."},
+  body:"Your sending reputation across the whole AWS account, this app, and each domain. Keep bounces under about 5% and spam complaints under 0.1%. Cross either threshold and Amazon can pause your sending outright."},
  {tab:"camp", text:"Recipients", tourStep:"recipients", title:"Recipients & replies",
-  body:"Everyone enrolled, by sequence status. Mark someone Replied or Not interested and the engine stops their remaining steps immediately; unsubscribes and hard bounces stop on their own. Global guardrails and the Tutorial toggle live in ⚙ Campaign settings."}
+  body:"Everyone enrolled, by sequence status. Mark someone Replied or Not interested and the engine stops their remaining steps at once. Unsubscribes and hard bounces stop on their own. Global guardrails and the Tutorial toggle live in ⚙ Campaign settings."}
 ];
 
 /* ---------------- content: tab intro cards (once per tab per session) ---------------- */
 const TUT_TABS=[
  {tab:"dash",  step:"dash-kpis", title:"Dashboard",
-  body:"Your health check. The cards up top summarize the list, the charts break it down, and the ⚡ card tracks the background LinkedIn enrichment. Start here each session to see what changed."},
+  body:"Your health check. The cards up top summarize the list, the charts break it down, and the ⚡ card shows how far the background LinkedIn enrichment has got. Start here each session to see what changed."},
  {tab:"list",  step:"grain", title:"Master List",
-  body:"Every company and person in one table — the system of record. Filter and rank it to pick who to contact, omit and tag to keep it clean, and open any name for the full picture."},
+  body:"Every company and person in one table. Filter and rank it to pick who to contact, omit and tag to keep it clean, and open any name for the full picture."},
  {tab:"follow", step:"followups", title:"Follow-ups",
-  body:"Dated promises tied to contacts. “Ask me next month” lives here so it actually happens — overdue items float to the top and count on the tab badge."},
+  body:"Dated promises tied to contacts. “Ask me next month” lives here so it actually happens. Overdue items rise to the top and count on the tab badge."},
  {tab:"camp",  step:"camplist", title:"Campaigns",
-  body:"Where email goes out — carefully. Segments choose who, the email sequence says what, and armed auto-send with warm-up caps + guardrails + SES health protect your sending domain."}
+  body:"Where email goes out, carefully. The segment chooses who, the sequence says what, and warm-up caps, guardrails and SES health keep your sending domain intact."}
 ];
 
 /* ---------------- guided tour engine ---------------- */
@@ -4762,7 +4762,7 @@ function endTour(finished){
   const top=document.querySelector(".top");if(top)top.classList.remove("tut-lift");
   if(typeof renderTabs==="function")renderTabs();
   schedule();
-  if(finished&&on&&typeof toast==="function")toast("Tour done — hints stay on. Click any ? badge, or toggle 🎓 in the header.","ok");
+  if(finished&&on&&typeof toast==="function")toast("Tour done. Hints stay on: click any ? badge, or toggle 🎓 in the header.","ok");
 }
 
 /* ---------------- ambient hotspots ---------------- */
@@ -4775,7 +4775,7 @@ function attachSpots(){
     const t=tutFind(sp);if(!t)return;
     const r=t.getBoundingClientRect();if(!r.width&&!r.height)return;
     const b=N("button","tut-spot","?");
-    b.title=sp.title+" — click for a hint";b.dataset.sel=sp.sel;
+    b.title=sp.title+" (click for a hint)";b.dataset.sel=sp.sel;
     b.style.left=(window.scrollX+r.right-8)+"px";
     b.style.top=(window.scrollY+r.top-8)+"px";
     b.onclick=e=>{e.stopPropagation();openMini(sp,b);};
@@ -4843,7 +4843,7 @@ function updatePill(){
   const p=document.getElementById("tutPill");if(!p)return;
   p.className="tut-pill"+(on?"":" off");
   p.innerHTML="🎓 Tutorial "+(on?"ON":"OFF");
-  p.title=on?"Tutorial mode is ON — hotspots + tab intros. Click to turn off.":"Tutorial mode is OFF. Click to turn hints back on.";
+  p.title=on?"Tutorial mode is ON. Hotspots and tab intros are showing. Click to turn off.":"Tutorial mode is OFF. Click to turn hints back on.";
 }
 (function injectPill(){
   const slot=document.getElementById("tutPillSlot");   // new home: top-left of the crumbrow row
