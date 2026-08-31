@@ -31,6 +31,8 @@
   .go{font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:7px}
   .card:nth-child(2) .tag{background:color-mix(in srgb,var(--accent-2) 16%,transparent);color:var(--accent-2)}
   .card:nth-child(2) .go{color:var(--accent-2)}
+  .card:nth-child(3) .tag{background:color-mix(in srgb,#f08c2e 16%,transparent);color:#f08c2e}
+  .card:nth-child(3) .go{color:#f08c2e}
   .note{margin-top:44px;padding:16px 18px;border:1px dashed var(--edge);border-radius:12px;
         color:var(--muted);font-size:14px;line-height:1.5}
   footer{color:var(--muted);font-size:13px;text-align:center;padding:28px 24px;border-top:1px solid var(--edge)}
@@ -39,7 +41,7 @@
 <body>
   <div class="wrap">
     <p class="kicker">Interactive Prototypes</p>
-    <h1>Two working prototypes to click through</h1>
+    <h1>Working prototypes to click through</h1>
     <p class="lede">These are clickable prototypes that run entirely in your browser. No login,
       no install, nothing to set up. Each one opens with a short story explaining what the tool is and
       why it exists, then walks you through it. They use sample data, so you can click anything.</p>
@@ -59,6 +61,15 @@
         <h2>LinkedIn outreach</h2>
         <p>Warm prospects up, send connection requests at a pace that will not get your account
            restricted, and never leave an accepted connection without a first message.</p>
+        <span class="go">Open demo &rarr;</span>
+      </a>
+
+      <a class="card" href="./proposal/">
+        <span class="tag">Proposal Engine</span>
+        <h2>Proposal builder</h2>
+        <p>Build a client-ready proposal from settings instead of a copied document: fees total
+           themselves, sections renumber themselves, your brand and standard wording carry over,
+           and the output is a print-perfect PDF. Click any block on the page to edit it.</p>
         <span class="go">Open demo &rarr;</span>
       </a>
     </div>

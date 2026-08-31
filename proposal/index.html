@@ -1,0 +1,4018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal Engine Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600;700;800&family=Ovo&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   EDITOR UI STYLES
+   ============================================================ */
+:root {
+  --navy: #10466A;
+  --navy-dark: #0C3550;
+  --orange: #F55C00;
+  --orange-light: #FF6C14;
+  --text: #464646;
+  --text-light: #6B7280;
+  --bg-light: #F7F8FA;
+  --border: #E2E6EC;
+  --white: #FFFFFF;
+  --sidebar-w: 380px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Mulish', sans-serif;
+  color: var(--text);
+  background: #E8EAED;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* --- Top Bar --- */
+.topbar {
+  height: 52px;
+  background: var(--navy-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.topbar-title {
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar-title img { height: 28px; }
+.topbar-tabs { display: flex; gap: 4px; }
+.topbar-tab {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  font-family: 'Mulish', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.15s;
+  position: relative;
+  top: 1px;
+}
+.topbar-tab:hover { color: rgba(255,255,255,0.8); }
+.topbar-tab.active {
+  background: #E8EAED;
+  color: var(--navy);
+}
+.topbar-actions { display: flex; gap: 8px; }
+.topbar-btn {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.topbar-btn:hover { opacity: 0.85; }
+.btn-save { background: var(--navy); color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+.btn-load { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); }
+.btn-pdf { background: var(--orange); color: var(--white); }
+
+/* --- Pipeline View --- */
+.pipeline-view {
+  display: none;
+  width: 100%;
+  height: calc(100vh - 52px);
+  margin-top: 52px;
+  overflow-y: auto;
+  background: var(--bg-light);
+  padding: 30px 40px;
+}
+.pipeline-view.active { display: block; }
+.pipeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.pipeline-header h2 {
+  font-family: 'Ovo', serif;
+  font-size: 24px;
+  color: var(--navy);
+}
+.pipeline-stats {
+  display: flex;
+  gap: 24px;
+}
+.pipeline-stat {
+  text-align: center;
+  padding: 16px 24px;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  min-width: 140px;
+}
+.pipeline-stat .stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.pipeline-stat .stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pipeline-stat.won .stat-value { color: #2a7d3f; }
+.pipeline-stat.lost .stat-value { color: #c0392b; }
+.pipeline-stat.pending .stat-value { color: var(--orange); }
+.pipeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.pipeline-table th {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--bg-light);
+  border-bottom: 2px solid var(--border);
+}
+.pipeline-table td {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.pipeline-table tr:last-child td { border-bottom: none; }
+.pipeline-table tr:hover td { background: #f0f4f8; }
+.pipeline-table td input,
+.pipeline-table td select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 12px;
+  width: 100%;
+}
+.pipeline-table td select { width: auto; min-width: 90px; }
+.pipeline-table td input[type="date"] { width: auto; min-width: 130px; }
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-draft { background: #E2E6EC; color: #555; }
+.status-sent { background: #FFF3E0; color: #E65100; }
+.status-won { background: #E8F5E9; color: #2E7D32; }
+.status-lost { background: #FFEBEE; color: #C62828; }
+.pipeline-actions-cell { white-space: nowrap; }
+.pipeline-actions-cell button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: 'Mulish', sans-serif;
+  color: var(--text-light);
+}
+.pipeline-actions-cell button:hover { background: var(--bg-light); color: var(--navy); }
+.pipeline-empty {
+  text-align: center;
+  padding: 60px 40px;
+  color: var(--text-light);
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.pipeline-empty p { font-size: 14px; margin-bottom: 8px; }
+.pipeline-empty small { font-size: 12px; }
+
+/* --- Layout --- */
+.app-layout {
+  display: flex;
+  height: calc(100vh - 52px);
+  margin-top: 52px;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 0;
+}
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.editor-section {
+  border-bottom: 1px solid var(--border);
+}
+.editor-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: var(--bg-light);
+  transition: background 0.15s;
+}
+.editor-section-header:hover { background: #EDF0F4; }
+.editor-section-header .arrow {
+  font-size: 10px;
+  color: var(--text-light);
+  transition: transform 0.2s;
+}
+.editor-section.open .arrow { transform: rotate(90deg); }
+.editor-section-body {
+  display: none;
+  padding: 14px 18px 18px;
+}
+.editor-section.open .editor-section-body { display: block; }
+
+/* --- Form controls --- */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.field-input, .field-textarea, .field-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.15s;
+}
+.field-input:focus, .field-textarea:focus { border-color: var(--navy); outline: none; }
+.field-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+.toggle-row {
+  display: flex;
+  flex-wrap: wrap;   /* lets .inline-edit drop to its own full-width line below the row */
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.toggle-row input[type="checkbox"] {
+  accent-color: var(--orange);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+.toggle-row label { cursor: pointer; flex: 1; }
+.toggle-row .toggle-edit-btn {
+  font-size: 11px;
+  color: var(--orange);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inline-edit {
+  display: none;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--bg-light);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+/* Open panels sit BELOW the row at full sidebar width, so the row label
+   keeps its space instead of being squashed into a narrow column. */
+.inline-edit.open {
+  display: block;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+}
+.inline-edit .field { margin-bottom: 8px; }
+
+/* --- Drag handle --- */
+.drag-handle {
+  cursor: grab;
+  padding: 0 4px;
+  color: #aab2bd;
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+  font-weight: 700;
+  letter-spacing: -2px;
+}
+.drag-handle:hover { color: var(--navy); }
+.drag-handle:active { cursor: grabbing; }
+.draggable-row { transition: background 0.12s, border-color 0.12s; }
+.draggable-row.dragging { opacity: 0.4; }
+.draggable-row.drag-over-top { border-top: 2px solid var(--orange); margin-top: -2px; }
+.draggable-row.drag-over-bottom { border-bottom: 2px solid var(--orange); margin-bottom: -2px; }
+
+/* --- Rich text editor --- */
+.richtext-toolbar {
+  display: flex;
+  gap: 2px;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+.richtext-toolbar button {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: var(--bg-light);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'Mulish', sans-serif;
+}
+.richtext-toolbar button:hover { background: var(--border); }
+.richtext-editor {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 0 4px 4px 4px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  outline: none;
+  background: var(--white);
+}
+.richtext-editor:focus { border-color: var(--navy); }
+.richtext-editor p { margin-bottom: 8px; }
+.richtext-editor p:last-child { margin-bottom: 0; }
+
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  background: none;
+  color: var(--orange);
+  font-family: 'Mulish', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.add-btn:hover { background: var(--bg-light); }
+
+.remove-btn {
+  font-size: 14px;
+  color: #ccc;
+  cursor: pointer;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+.remove-btn:hover { color: #e74c3c; }
+
+.ref-image-field { flex-direction: column; align-items: stretch !important; gap: 6px; }
+.ref-image-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ref-image-controls .field-input { flex: 1; min-width: 160px; }
+.ref-image-thumb {
+  width: 64px; height: 48px; object-fit: cover;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg-light); flex-shrink: 0;
+}
+.ref-image-thumb-empty {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--text-light); text-align: center;
+}
+.upload-btn {
+  font-family: 'Mulish', sans-serif;
+  font-size: 11px; font-weight: 700;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.upload-btn:hover { background: var(--bg-light); }
+.remove-btn-sm {
+  font-size: 11px; font-weight: 600;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--text-light);
+  cursor: pointer;
+}
+.remove-btn-sm:hover { color: #e74c3c; border-color: #e74c3c; }
+
+.template-edit-banner {
+  margin: 0 18px 12px;
+  padding: 10px 12px;
+  background: #fff6d6;
+  border: 1px solid #e0c766;
+  border-left: 4px solid #c9a227;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: 'Mulish', sans-serif;
+  font-size: 12px;
+  color: #5a4200;
+}
+.tmpl-banner-label { font-weight: 600; }
+.tmpl-banner-actions { margin-left: auto; display: flex; gap: 6px; }
+.tmpl-banner-actions button {
+  font-family: 'Mulish', sans-serif;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 10px;
+  border: 1px solid #c9a227;
+  border-radius: 3px;
+  background: #fff;
+  color: #5a4200;
+  cursor: pointer;
+}
+.tmpl-banner-actions button:hover { background: #fff0b3; }
+.tmpl-banner-actions button:first-child {
+  background: #c9a227; color: #fff; border-color: #c9a227;
+}
+.tmpl-banner-actions button:first-child:hover { background: #b88d1e; }
+
+.defaults-link {
+  font-size: 10px;
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.defaults-link:hover { color: var(--navy); }
+
+/* --- Proposal select dropdown --- */
+.proposal-select-bar {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+.proposal-select-bar select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 13px;
+}
+.proposal-select-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.proposal-select-actions button {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--white);
+  font-family: 'Mulish', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+.proposal-select-actions button:hover { background: var(--bg-light); }
+#btn-mark-complete {
+  background: var(--white) !important;
+  color: var(--orange) !important;
+  border-color: var(--orange) !important;
+  opacity: 0.7;
+  transition: all 0.15s;
+}
+#btn-mark-complete:hover {
+  background: var(--orange) !important;
+  color: var(--white) !important;
+  opacity: 1;
+}
+#btn-mark-complete.completed {
+  background: var(--orange) !important;
+  color: var(--white) !important;
+  opacity: 1;
+}
+
+/* --- Preview area --- */
+.preview-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  background: #E8EAED;
+}
+.preview-area::-webkit-scrollbar { width: 8px; }
+.preview-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+/* ============================================================
+   PROPOSAL STYLES
+   ============================================================ */
+#proposal-preview .page {
+  max-width: 850px;
+  margin: 0 auto 30px;
+  background: var(--white);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  height: 1100px;
+  page-break-after: always;
+  overflow: visible;
+  position: relative;
+}
+/* Overflow warning: red bottom border when content exceeds page */
+#proposal-preview .page.overflow {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08), 0 3px 0 0 #e74c3c;
+}
+#proposal-preview .page.overflow::after {
+  content: '⚠ Content exceeds page — split into additional page';
+  position: absolute;
+  bottom: -28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e74c3c;
+  letter-spacing: 0.3px;
+}
+#proposal-preview .page.overflow { margin-bottom: 50px; }
+#proposal-preview .page:last-child { page-break-after: avoid; }
+
+#proposal-preview .header-bar {
+  background: var(--navy);
+  background-image: linear-gradient(120deg, var(--navy-dark), var(--navy) 60%, #1B5B85);
+  background-size: cover;
+  background-position: center;
+  padding: 30px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+#proposal-preview .header-bar.flat-blue {
+  background-image: none;
+}
+#proposal-preview .header-bar::before {
+  display: none;
+}
+#proposal-preview .header-bar .logo-area {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 10px;
+}
+#proposal-preview .header-bar .logo-icon { height: 44px; width: auto; }
+#proposal-preview .header-bar .logo-text { font-family: 'Ovo', serif; font-size: 22px; color: #fff; letter-spacing: 1px; }
+#proposal-preview .header-bar .header-date {
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9);
+  position: relative; z-index: 1; letter-spacing: 0.5px;
+}
+
+#proposal-preview .page-body { flex: 1; padding: 60px 50px 30px; }
+
+/* Cover */
+#proposal-preview .cover-hero {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center; padding: 60px 50px;
+}
+#proposal-preview .cover-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 16px;
+}
+#proposal-preview .cover-title {
+  font-family: 'Ovo', serif; font-size: 46px; font-weight: 400;
+  color: var(--navy); line-height: 1.15; margin-bottom: 10px;
+}
+#proposal-preview .cover-subtitle {
+  font-family: 'Ovo', serif; font-size: 22px; font-weight: 400;
+  color: var(--text-light); margin-bottom: 30px;
+}
+#proposal-preview .cover-intro { font-size: 15px; color: var(--text); max-width: 560px; line-height: 1.7; }
+#proposal-preview .cover-meta {
+  margin-top: 50px; display: flex; gap: 40px;
+}
+#proposal-preview .cover-meta-item {
+  border-left: 3px solid var(--orange); padding-left: 14px;
+}
+#proposal-preview .cover-meta-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-light); margin-bottom: 3px;
+}
+#proposal-preview .cover-meta-value {
+  font-family: 'Ovo', serif; font-size: 20px; color: var(--navy);
+}
+#proposal-preview .cover-footer {
+  padding: 24px 50px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-light);
+  display: flex; justify-content: space-between;
+}
+
+/* Section headings */
+#proposal-preview .section-number {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 6px; display: block;
+}
+#proposal-preview h2 {
+  font-family: 'Ovo', serif; font-size: 32px; font-weight: 400;
+  color: var(--navy); margin-bottom: 6px; line-height: 1.2;
+}
+#proposal-preview .section-divider {
+  width: 45px; height: 3px; background: var(--orange);
+  margin: 12px 0 24px; border: none;
+}
+#proposal-preview .section-number { margin-top: 60px; }
+#proposal-preview .page-body > .section-number:first-child { margin-top: 0; }
+#proposal-preview h3 {
+  font-family: 'Ovo', serif; font-size: 20px; font-weight: 400;
+  color: var(--navy); margin: 28px 0 10px;
+}
+#proposal-preview h4 {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin: 20px 0 6px; letter-spacing: 0.3px;
+}
+#proposal-preview p { margin-bottom: 12px; font-size: 14px; line-height: 1.65; }
+#proposal-preview .overview-content { font-size: 14px; line-height: 1.65; margin-bottom: 12px; }
+#proposal-preview .compact-top .overview-content > *:first-child { margin-top: 0 !important; }
+#proposal-preview .overview-content p { margin-bottom: 12px; }
+#proposal-preview .overview-content div { margin-bottom: 12px; }
+#proposal-preview p:last-child { margin-bottom: 0; }
+#proposal-preview a { color: var(--orange); text-decoration: none; }
+
+/* Pricing */
+#proposal-preview .pricing-hero {
+  background: var(--navy); border-radius: 8px; padding: 28px 32px;
+  margin: 24px 0; display: flex; align-items: center;
+  justify-content: space-between; gap: 24px;
+}
+#proposal-preview .pricing-hero-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 4px;
+}
+#proposal-preview .pricing-hero-amount {
+  font-family: 'Ovo', serif; font-size: 38px; color: var(--white);
+}
+#proposal-preview .pricing-hero-alt {
+  font-size: 13px; color: rgba(255,255,255,0.65); text-align: right;
+}
+#proposal-preview .pricing-hero-alt strong {
+  display: block; font-family: 'Ovo', serif; font-size: 24px;
+  color: var(--orange-light); font-weight: 400;
+}
+
+#proposal-preview .fee-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+#proposal-preview .fee-table tr { border-bottom: 1px solid var(--border); }
+#proposal-preview .fee-table tr:last-child { border-bottom: none; }
+#proposal-preview .fee-table td { padding: 10px 0; font-size: 14px; }
+#proposal-preview .fee-table td:first-child { font-weight: 600; }
+#proposal-preview .fee-table td:last-child {
+  text-align: right; font-weight: 700; color: var(--navy); font-size: 14px;
+}
+#proposal-preview .fee-table .fee-note td { font-style: italic; font-weight: 400; color: var(--text-light); font-size: 13px; }
+#proposal-preview .footnote {
+  font-size: 12px; color: var(--text-light); margin-top: 12px;
+  padding-top: 12px; border-top: none; line-height: 1.6;
+}
+
+/* Phases */
+#proposal-preview .phase-item {
+  display: grid; grid-template-columns: 170px 1fr; gap: 0 20px;
+  border-bottom: 1px solid var(--border); padding: 16px 0;
+}
+#proposal-preview .phase-item:first-child { padding-top: 0; }
+#proposal-preview .phase-item:last-child { border-bottom: none; }
+#proposal-preview .phase-label {
+  font-size: 11px; font-weight: 800; color: var(--orange);
+  text-transform: uppercase; letter-spacing: 1px; padding-top: 2px;
+}
+#proposal-preview .phase-desc { font-size: 14px; line-height: 1.6; }
+#proposal-preview .phase-na { color: var(--text-light); font-style: italic; }
+
+/* Process cards */
+#proposal-preview .process-card {
+  background: var(--bg-light); border-radius: 6px; padding: 26px 28px;
+  margin: 24px 0; border-left: 4px solid var(--orange);
+}
+#proposal-preview .process-card:first-child { margin-top: 16px; }
+#proposal-preview .process-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 18px; }
+#proposal-preview .process-card p { font-size: 14px; margin-bottom: 10px; line-height: 1.65; }
+#proposal-preview .process-card .card-link {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--orange); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;
+}
+
+/* Schedule table */
+#proposal-preview .schedule-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  margin: 20px 0; border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+#proposal-preview .schedule-table thead th {
+  background: var(--navy); color: var(--white);
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 10px 16px; text-align: left;
+}
+#proposal-preview .schedule-table tbody tr:nth-child(even) { background: var(--bg-light); }
+#proposal-preview .schedule-table td {
+  padding: 12px 16px; font-size: 14px; vertical-align: top;
+}
+#proposal-preview .schedule-table td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; }
+#proposal-preview .schedule-table td:nth-child(2) { color: var(--text-light); }
+#proposal-preview .schedule-table ul { margin: 0; padding-left: 0; list-style: none; }
+#proposal-preview .schedule-table ul li { margin-bottom: 3px; }
+
+/* Content migration inventory */
+/* Fixed layout so the column widths are set by these rules, not by whatever
+   happens to be typed in a note. A one-word note and a full paragraph produce
+   the same table, and editing a note in place never shifts the columns. */
+#proposal-preview .inventory-table { table-layout: fixed; }
+#proposal-preview .inventory-table td:first-child { font-weight: 600; white-space: normal; }
+#proposal-preview .inventory-table th:nth-child(2) { width: 200px; text-align: center; }
+#proposal-preview .inventory-table td:nth-child(2) {
+  width: 200px; color: var(--navy); font-weight: 700; text-align: center;
+}
+#proposal-preview .inventory-table .inventory-total td {
+  border-top: 2px solid var(--navy); font-weight: 800; background: var(--white);
+}
+/* With the optional notes column on, the count column gives up its width so a
+   note reads as a sentence instead of a stack of single words. */
+#proposal-preview .inventory-table.has-notes th:first-child,
+#proposal-preview .inventory-table.has-notes td:first-child { width: 32%; }
+/* Fixed layout means the header can no longer push this column wider, so let
+   "Approximate Count" wrap onto two lines and keep nowrap for the numbers. */
+#proposal-preview .inventory-table.has-notes th:nth-child(2) { width: 130px; white-space: normal; }
+#proposal-preview .inventory-table.has-notes td:nth-child(2) { width: 130px; white-space: nowrap; }
+#proposal-preview .inventory-table .inventory-note {
+  font-size: 13px; font-weight: 400; color: var(--text-light); line-height: 1.5;
+  white-space: normal; overflow-wrap: break-word; word-break: normal; hyphens: auto;
+}
+#proposal-preview .migration-note { font-size: 13px; }
+
+/* Billing */
+#proposal-preview .billing-grid { display: flex; gap: 0; margin: 20px 0; }
+#proposal-preview .billing-step {
+  flex: 1; text-align: center; padding: 16px 10px; position: relative;
+}
+#proposal-preview .billing-step::after {
+  content: ''; position: absolute; top: 24px; right: 0;
+  width: 1px; height: 36px; background: var(--border);
+}
+#proposal-preview .billing-step:last-child::after { display: none; }
+#proposal-preview .billing-pct {
+  font-family: 'Ovo', serif; font-size: 28px; color: var(--navy); margin-bottom: 4px;
+}
+#proposal-preview .billing-label { font-size: 11px; font-weight: 600; color: var(--text-light); line-height: 1.4; }
+
+/* Deliverables */
+#proposal-preview .deliverables-list {
+  list-style: none; padding: 0; margin: 16px 0; counter-reset: deliverable;
+}
+#proposal-preview .deliverables-list li {
+  counter-increment: deliverable; padding: 14px 0 14px 36px;
+  border-bottom: 1px solid var(--border); font-size: 14px;
+  position: relative; line-height: 1.65;
+}
+#proposal-preview .deliverables-list li:last-child { border-bottom: none; }
+#proposal-preview .deliverables-list li::before {
+  content: counter(deliverable); position: absolute; left: 0; top: 14px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--navy); color: var(--white);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Scope bullets */
+#proposal-preview .scope-list { list-style: none; padding: 0; margin: 12px 0; }
+#proposal-preview .scope-list li {
+  padding: 6px 0 6px 22px; position: relative; font-size: 14px; line-height: 1.6;
+}
+#proposal-preview .scope-list li::before {
+  content: ''; position: absolute; left: 4px; top: 13px;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--orange);
+}
+
+/* Callout */
+#proposal-preview .callout {
+  background: var(--bg-light); border-radius: 6px; padding: 18px 22px;
+  margin: 18px 0; border: 1px solid var(--border);
+}
+#proposal-preview .callout h4 { margin-top: 0; }
+#proposal-preview .callout p { font-size: 13px; }
+
+/* Team */
+#proposal-preview .team-member {
+  margin: 28px 0; padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 90px 1fr; gap: 28px;
+}
+#proposal-preview .team-member:first-of-type { margin-top: 16px; }
+#proposal-preview .team-member:last-of-type { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+#proposal-preview .team-photo-img {
+  width: 90px; height: 90px; border-radius: 50%;
+  object-fit: cover; border: 3px solid var(--border);
+}
+#proposal-preview .team-name {
+  font-family: 'Ovo', serif; font-size: 18px; color: var(--navy); margin-bottom: 2px;
+}
+#proposal-preview .team-role {
+  font-size: 11px; font-weight: 700; color: var(--orange);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+#proposal-preview .team-bio { font-size: 14px; line-height: 1.65; }
+
+/* References */
+#proposal-preview .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin: 18px 0; }
+#proposal-preview .ref-card {
+  border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+}
+#proposal-preview .ref-screenshot {
+  width: 100%; height: 235px; object-fit: cover; object-position: top center;
+  display: block; border-bottom: 3px solid var(--orange);
+}
+#proposal-preview .ref-screenshot-placeholder {
+  width: 100%; aspect-ratio: 16 / 10;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px;
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+  border-bottom: 3px solid var(--orange);
+  color: rgba(255,255,255,0.5); font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+#proposal-preview .ref-screenshot-placeholder .placeholder-url {
+  color: rgba(255,255,255,0.85); font-family: 'Ovo', serif;
+  font-size: 16px; letter-spacing: 0; text-transform: none;
+}
+#proposal-preview .ref-card-body {
+  padding: 16px 18px;
+  background: var(--navy);
+}
+#proposal-preview .ref-org { font-family: 'Ovo', serif; font-size: 15px; color: var(--white); margin-bottom: 3px; }
+#proposal-preview .ref-url { font-size: 11px; color: var(--orange-light); margin-bottom: 2px; display: block; }
+#proposal-preview .ref-phone { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+#proposal-preview .ref-contact-name { font-size: 12px; font-weight: 700; color: var(--white); }
+#proposal-preview .ref-contact-title { font-size: 11px; color: rgba(255,255,255,0.6); }
+#proposal-preview .ref-contact-email { font-size: 11px; color: var(--orange-light); }
+
+/* Signature */
+#proposal-preview .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin: 24px 0; }
+#proposal-preview .sig-block-header { font-family: 'Ovo', serif; font-size: 18px; color: var(--navy); margin-bottom: 4px; }
+#proposal-preview .sig-block-info { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 24px; }
+#proposal-preview .sig-line { border-bottom: 0.5px solid var(--text); margin-bottom: 4px; height: 30px; }
+#proposal-preview .sig-label {
+  font-size: 10px; font-weight: 600; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px;
+}
+
+/* Page footer */
+#proposal-preview .page-footer {
+  padding: 12px 50px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10px; color: var(--text-light); letter-spacing: 0.5px;
+}
+#proposal-preview .page-footer .footer-line { width: 24px; height: 2px; background: var(--orange); }
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  @page { size: letter; margin: 0; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .topbar, .sidebar, .pipeline-view { display: none !important; }
+  body { background: white !important; overflow: visible; height: auto; margin: 0; padding: 0; }
+  .app-layout { display: block; height: auto; margin-top: 0; }
+  .preview-area { padding: 0; overflow: visible; background: white !important; }
+
+  /* Each .page starts a new print page. Content flows naturally. */
+  #proposal-preview .page {
+    box-shadow: none; margin: 0; border-radius: 0;
+    max-width: 100%; width: 100%;
+    page-break-before: always;
+    background: white !important;
+  }
+  #proposal-preview .page:first-child { page-break-before: auto; }
+  #proposal-preview .page:last-child { page-break-after: avoid; }
+
+  /* Header */
+  #proposal-preview .header-bar { padding: 24px 60px; }
+
+  /* Body */
+  #proposal-preview .page-body { padding: 40px 60px 20px; }
+
+  /* Cover */
+  #proposal-preview .cover-hero { padding: 50px 60px; }
+  #proposal-preview .cover-footer { padding: 16px 60px; }
+
+  /* Footer stays with content -- never splits off alone */
+  #proposal-preview .page-footer { padding: 10px 60px; break-inside: avoid; page-break-inside: avoid; }
+
+  /* === Compact spacing === */
+  #proposal-preview .section-number { margin-top: 36px !important; margin-bottom: 4px !important; }
+  #proposal-preview .page-body > .section-number:first-child { margin-top: 0 !important; }
+  #proposal-preview h2 { margin-bottom: 4px !important; font-size: 28px !important; }
+  #proposal-preview .section-divider { margin: 8px 0 16px !important; }
+  #proposal-preview h3 { margin: 18px 0 8px !important; font-size: 18px !important; }
+  #proposal-preview h4 { margin: 14px 0 4px !important; }
+  #proposal-preview p { margin-bottom: 8px !important; font-size: 13px !important; }
+
+  /* Pricing */
+  #proposal-preview .pricing-hero { padding: 18px 26px !important; margin: 14px 0 !important; }
+  #proposal-preview .pricing-hero-amount { font-size: 30px !important; }
+  #proposal-preview .fee-table td { padding: 7px 0 !important; font-size: 13px !important; }
+  #proposal-preview .footnote { margin-top: 6px !important; padding-top: 6px !important; font-size: 11px !important; border-top: none !important; }
+
+  /* Phases */
+  #proposal-preview .phase-item { padding: 8px 0 !important; gap: 0 16px !important; }
+  #proposal-preview .phase-label { font-size: 10px !important; }
+  #proposal-preview .phase-desc { font-size: 13px !important; line-height: 1.45 !important; }
+
+  /* Process cards */
+  #proposal-preview .process-card { padding: 18px 22px !important; margin: 16px 0 !important; }
+  #proposal-preview .process-card h3 { font-size: 15px !important; margin-bottom: 6px !important; }
+  #proposal-preview .process-card p { font-size: 13px !important; margin-bottom: 6px !important; line-height: 1.5 !important; }
+  #proposal-preview .process-card .card-link { font-size: 10px !important; margin-top: 2px !important; }
+
+  /* Schedule */
+  #proposal-preview .schedule-table td { padding: 8px 12px !important; font-size: 12px !important; }
+  #proposal-preview .schedule-table thead th { padding: 7px 12px !important; font-size: 9px !important; }
+  #proposal-preview .schedule-table ul li { margin-bottom: 1px !important; font-size: 12px !important; }
+
+  /* Billing */
+  #proposal-preview .billing-grid { margin: 8px 0 !important; }
+  #proposal-preview .billing-pct { font-size: 22px !important; margin-bottom: 2px !important; }
+  #proposal-preview .billing-label { font-size: 9px !important; }
+  #proposal-preview .billing-step { padding: 10px 6px !important; }
+
+  /* Scope */
+  #proposal-preview .scope-list li { padding: 3px 0 3px 22px !important; font-size: 12px !important; line-height: 1.4 !important; }
+  #proposal-preview .scope-list li::before { top: 10px !important; width: 6px !important; height: 6px !important; }
+
+  /* Callout */
+  #proposal-preview .callout { padding: 12px 16px !important; margin: 12px 0 !important; }
+  #proposal-preview .callout p { font-size: 12px !important; }
+
+  /* Deliverables */
+  #proposal-preview .deliverables-list li { padding: 6px 0 6px 30px !important; font-size: 12px !important; line-height: 1.45 !important; }
+  #proposal-preview .deliverables-list li::before { width: 18px !important; height: 18px !important; font-size: 9px !important; top: 7px !important; }
+
+  /* References */
+  #proposal-preview .ref-screenshot { height: 190px !important; }
+  #proposal-preview .ref-grid { gap: 40px !important; margin: 12px 0 !important; }
+  #proposal-preview .ref-card-body { padding: 10px 12px !important; }
+  #proposal-preview .ref-org { font-size: 12px !important; margin-bottom: 2px !important; }
+  #proposal-preview .ref-url, #proposal-preview .ref-phone { font-size: 9px !important; }
+  #proposal-preview .ref-contact-name { font-size: 10px !important; }
+  #proposal-preview .ref-contact-title, #proposal-preview .ref-contact-email { font-size: 9px !important; }
+  #proposal-preview .ref-phone { margin-bottom: 3px !important; }
+
+  /* Team */
+  #proposal-preview .team-member { margin: 18px 0 !important; padding-bottom: 18px !important; grid-template-columns: 70px 1fr !important; gap: 20px !important; }
+  #proposal-preview .team-member:first-of-type { margin-top: 12px !important; }
+  #proposal-preview .team-name { font-size: 15px !important; }
+  #proposal-preview .team-role { font-size: 9px !important; margin-bottom: 3px !important; }
+  #proposal-preview .team-bio { font-size: 13px !important; line-height: 1.55 !important; }
+  #proposal-preview .team-photo-img { width: 70px !important; height: 70px !important; }
+  #proposal-preview .compact-top .overview-content > *:first-child { margin-top: 0 !important; }
+
+  /* Signature: hairline rules */
+  #proposal-preview .sig-line { border-bottom: 0.5px solid #464646 !important; height: 22px !important; margin-bottom: 3px !important; }
+  #proposal-preview .sig-label { margin-bottom: 12px !important; font-size: 9px !important; }
+  #proposal-preview .sig-grid { gap: 40px !important; margin-top: 24px !important; }
+  #proposal-preview .sig-block-header { font-size: 15px !important; }
+  #proposal-preview .sig-block-info { font-size: 11px !important; min-height: 44px; margin-bottom: 14px !important; }
+
+  /* All horizontal rules: hairline */
+  #proposal-preview .fee-table tr { border-bottom: 0.5pt solid #E2E6EC !important; }
+  #proposal-preview .phase-item { border-bottom: 0.5pt solid #E2E6EC !important; }
+  #proposal-preview .page-footer { border-top: 0.5pt solid #E2E6EC !important; }
+  #proposal-preview .cover-footer { border-top: 0.5pt solid #E2E6EC !important; }
+  #proposal-preview .footnote { border-top: none !important; }
+  #proposal-preview .team-member { border-bottom: 0.5pt solid #E2E6EC !important; }
+
+  /* Keep blocks together */
+  #proposal-preview .process-card, #proposal-preview .pricing-hero,
+  #proposal-preview .fee-table, #proposal-preview .phase-item,
+  #proposal-preview .phases-grid, #proposal-preview .schedule-table,
+  #proposal-preview .billing-grid, #proposal-preview .callout,
+  #proposal-preview .team-member, #proposal-preview .ref-card,
+  #proposal-preview .ref-grid, #proposal-preview .sig-grid,
+  #proposal-preview .deliverables-list li, #proposal-preview .deliverables-list {
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  #proposal-preview .section-number, #proposal-preview h2,
+  #proposal-preview .section-divider, #proposal-preview h3,
+  #proposal-preview h4 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-title">
+      Proposal Engine
+    </div>
+    <div class="topbar-tabs">
+      <button class="topbar-tab active" onclick="switchTab('editor')" id="tab-editor">Editor</button>
+      <button class="topbar-tab" onclick="switchTab('pipeline')" id="tab-pipeline">Pipeline</button>
+    </div>
+  </div>
+  <div class="topbar-actions" id="editor-actions">
+    <button class="topbar-btn btn-load" onclick="exportJSON()">Export JSON</button>
+    <button class="topbar-btn btn-load" onclick="emergencyExport()" title="Download current in-memory data as JSON without touching localStorage">Backup Now</button>
+    <button class="topbar-btn btn-load" onclick="document.getElementById('import-file').click()">Import JSON</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="topbar-btn btn-save" onclick="saveProposal()">Save</button>
+    <button class="topbar-btn btn-pdf" onclick="generatePDF()" title="Opens a clean print window. For best results, use: node generate-pdf.js output.pdf">Generate PDF</button>
+  </div>
+  <div class="topbar-actions" id="pipeline-actions" style="display:none">
+    <button class="topbar-btn btn-load" onclick="exportPipelineCSV()">Export CSV</button>
+  </div>
+</div>
+
+<!-- PIPELINE VIEW -->
+<div class="pipeline-view" id="pipeline-view"></div>
+
+<!-- MAIN LAYOUT -->
+<div class="app-layout" id="editor-view">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <!-- Proposal selector -->
+    <div class="proposal-select-bar">
+      <select id="proposal-selector" onchange="loadProposal(this.value)">
+        <option value="__new__">+ New Proposal</option>
+      </select>
+      <div class="proposal-select-actions">
+        <button onclick="renameProposal()">Rename</button>
+        <button onclick="duplicateProposal()">Duplicate</button>
+        <button onclick="deleteProposal()">Delete</button>
+        <button onclick="markComplete()" id="btn-mark-complete">&#x2714; Complete</button>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <span class="field-label">Start from template</span>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <select id="template-selector" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:3px;font-family:'Mulish',sans-serif;font-size:12px">
+            <option value="">Default</option>
+          </select>
+          <button onclick="newFromTemplate()" style="padding:5px 10px;border:1px solid var(--border);border-radius:3px;background:var(--white);font-family:'Mulish',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">New</button>
+        </div>
+        <div class="proposal-select-actions" style="margin-top:4px">
+          <button onclick="saveAsTemplate()">Save as Template</button>
+          <button onclick="editTemplate()">Edit</button>
+          <button onclick="renameTemplate()">Rename</button>
+          <button onclick="deleteTemplate()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template edit mode banner -->
+    <div id="template-edit-banner" class="template-edit-banner" style="display:none">
+      <span class="tmpl-banner-label">Editing template:</span>
+      <strong id="template-edit-name"></strong>
+      <div class="tmpl-banner-actions">
+        <button onclick="saveTemplateEdits()">Save Template</button>
+        <button onclick="exitTemplateEdit()">Done</button>
+      </div>
+    </div>
+
+    <!-- Editor sections built by JS -->
+    <div id="editor-sections"></div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-area">
+    <div id="proposal-preview"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DEFAULT DATA
+// ============================================================
+const DEFAULTS_KEY = 'pe-defaults';
+
+function getCustomDefaults() {
+  try { return JSON.parse(localStorage.getItem(DEFAULTS_KEY)); } catch { return null; }
+}
+
+function getDefaultData() {
+  const hardcoded = getHardcodedDefaults();
+  const custom = getCustomDefaults();
+  if (custom) {
+    // Merge custom overrides into hardcoded defaults
+    Object.keys(custom).forEach(key => {
+      if (key === 'meta') {
+        // Merge meta fields individually (preserve clientName, date, version)
+        Object.keys(custom.meta).forEach(mk => {
+          hardcoded.meta[mk] = JSON.parse(JSON.stringify(custom.meta[mk]));
+        });
+      } else {
+        hardcoded[key] = JSON.parse(JSON.stringify(custom[key]));
+      }
+    });
+  }
+  return hardcoded;
+}
+
+function getHardcodedDefaults() {
+  return {
+    meta: {
+      clientName: "Client Name",
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      preparedBy: "Alex Rivera",
+      subtitle: "Pricing and Schedule",
+      intro: "This proposal includes our fee and schedule for the redesign of the [Client] website. Deliverables and project schedule are included below.",
+      headerStyle: "classic"
+    },
+    brand: {
+      company: "Acme Studio",
+      logo: "",
+      address1: "123 Example Street",
+      address2: "Anytown, ST 00000",
+      email: "hello@acmestudio.com",
+      website: "acmestudio.com",
+      termsUrl: "acmestudio.com/project-terms",
+      supportTermsUrl: "acmestudio.com/terms",
+      teamIntro: "Acme Studio is a focused web design practice. We plan, design, and build websites for organizations whose sites carry real programs, collections, and events, and we stay on after launch to keep them healthy."
+    },
+    pricing: {
+      altFee: { enabled: true, label: "With Branding" },
+      lineItems: [
+        { label: "Strategy / Discovery / Prototype", amount: 5000, altAmount: 5000, enabled: true },
+        { label: "Design", desc: "", amount: 7500, altAmount: 12500, enabled: true },
+        { label: "Development", desc: "Utilizing the WordPress framework", amount: 30000, altAmount: 30000, enabled: true },
+        { label: "Content Migration", desc: "Migration of existing site content", amount: 5000, altAmount: 5000, enabled: true },
+        { label: "QA / Launch", desc: "", amount: 2500, altAmount: 2500, enabled: true }
+      ],
+      hourlyRate: "$160/hr"
+    },
+    phases: [
+      { label: "Prototyping", desc: "A browser-based clickable prototype provides a robust demonstration of the site\u2019s content, structure, and functionality.", enabled: true, na: false },
+      { label: "Design", desc: "Homepage, component page, and internal page design mockups express brand standards throughout the site.", enabled: true, na: false },
+      { label: "Beta Development", desc: "We apply designs to the prototype ensuring all templates and components are set with global styling and optimized for mobile responsive views.", enabled: true, na: false },
+      { label: "Content Migration/Creation", desc: "We train you how to use the platform and provide workshops guiding you through the content creation/migration process. We are available to help with this process at our hourly rate.", enabled: true, na: false },
+      { label: "Site Testing & Launch", desc: "As we test backend code, your team follows our front-end checklists and submits bug reports.", enabled: true, na: false },
+      { label: "Post-Launch Support", desc: "We provide monthly proactive updates to WordPress, theme, and plugins, plus requested maintenance as needed.", enabled: true, na: false }
+    ],
+    contentMigration: {
+      intro: "<p>We migrate the majority of your existing website content into the new site, matching each page and content type to its new template and components.</p><p>Your team is responsible for providing any new content the redesign calls for: rewritten page copy, new photography, and sections that do not exist on the current site. During the beta phase we train your team on the platform and provide workshops, so you can add and edit content directly on the site.</p><p>Content you create after our migration is complete and before the site goes live is added by your team. We are available to help with that work at our hourly rate.</p>",
+      inventoryTitle: "Current Site Content Inventory",
+      inventoryIntro: "Our initial review of your current site found roughly the content below. These are approximate counts rather than an exact audit, and they set the basis for the content migration included in our fee.",
+      showTotal: true,
+      showNotes: false,
+      items: [
+        { label: "Base pages", count: "TBD", note: "", enabled: true },
+        { label: "Exhibitions", count: "TBD", enabled: true },
+        { label: "Events", count: "TBD", enabled: true },
+        { label: "News / blog posts", count: "TBD", enabled: true },
+        { label: "Publications", count: "TBD", enabled: false },
+        { label: "Collection items", count: "TBD", enabled: false },
+        { label: "Staff / people profiles", count: "TBD", enabled: false },
+        { label: "Resources / downloads (PDFs)", count: "TBD", enabled: false }
+      ],
+      note: "<p>If the actual content runs well beyond these counts, or content types come to light that are not listed here, we will let you know and quote the additional migration before starting it. See the Extra Scope section for how we handle changes of this kind.</p>"
+    },
+    overview: ["<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>"],
+    process: [
+      { title: "Prototype Before Design", text: "Our discovery process replaces static wireframes with a live website prototype: a browser-based demonstration of the site\u2019s content, structure, and functionality. Prototypes stay visually plain on purpose, keeping the focus on information architecture, content modeling, and dynamic features, so you react to something real instead of guessing from diagrams.", linkText: "", linkUrl: "", enabled: true },
+      { title: "Low Code / No Code Platform", text: "The WordPress ecosystem offers a vast array of built-in features, extensions, and plugins that let us deploy dynamic websites without costly custom code. This approach reduces your reliance on any one developer\u2019s code and positions your site to benefit from professionally supported products over time.", linkText: "", linkUrl: "", enabled: true },
+      { title: "A Framework Built for Content", text: "Our framework provides the basic theme infrastructure of a site plus a wide set of content presentation options and dynamic features. Serialized content such as events, articles, and collections gets structured templates, so the people who run the site can publish without a developer.", linkText: "", linkUrl: "", enabled: true }
+    ],
+    plugins: [
+      { name: "Hello Theme", desc: "Hello is a highly efficient and fast loading theme designed to work with the Elementor theme building suite.", enabled: true },
+      { name: "Elementor Pro (plus key Add-ons)", desc: "Elementor is our selected front-end visual editor/theme editor. As an industry leader, many plugin developers provide Elementor support and custom Elementor elements.", enabled: true },
+      { name: "Gravity Forms", desc: "Form transactions are a critical component of any website. Gravity Forms is a leading form plugin provider, with a wide set of additional add-on capabilities and customizations.", enabled: true },
+      { name: "Other Plugins", desc: "We maintain a set of additional plugins that power our websites: Advanced Custom Fields, Yoast (SEO), Updraft (backup), and others.", enabled: true },
+      { name: "WooCommerce", desc: "WooCommerce provides a powerful, customizable e-commerce platform for selling tickets, memberships, or merchandise.", enabled: false },
+      { name: "Modern Events Calendar", desc: "Modern Events Calendar provides a comprehensive event management system with multiple display options and booking capabilities.", enabled: false }
+    ],
+    pluginCost: "$35 per month",
+    deliverables: [
+      { text: "This site will contain up to 50\u201360 base pages, in addition to unlimited serialized posts such as event pages, exhibition posts, and resource pages.", enabled: true },
+      { text: "Approximately 8\u201310 content components will be provided.", enabled: true },
+      { text: "We will provide a unique custom homepage template, a components-driven page template, a single page and post template, an enriched story template, an events template, and up to three additional custom templates as needed.", enabled: true },
+      { text: "Website will be mobile responsive and provide all necessary SEO elements. It will perform in all modern browsers. (We do not support Internet Explorer since Microsoft has ended support in favor of Edge.)", enabled: true },
+      { text: "Media components will be built for PDF, JPEG, PNG, GIF, MP4 (video), and MP3 (audio) files.", enabled: true },
+      { text: "Website will minimally meet WCAG 2.2 A level accessibility standards. 2.2 AA can also be provided, but may increase costs and may require a third party to perform a full audit.", enabled: true },
+      { text: "We will produce custom training videos using your site\u2019s specific administrative backend.", enabled: true },
+      { text: "We recommend WP Engine for hosting. Prices vary based on their shared or dedicated server platforms.", enabled: true }
+    ],
+    schedule: {
+      title: "5\u20137 Months",
+      intro: "While our typical projects range from 5\u20137 months, each party\u2019s responsiveness and availability is needed to stay on schedule and budget.",
+      note: "This schedule assumes feedback will be received three business days after each initial milestone presentation, two business days after revisions, and one business day for any additional revisions.",
+      phases: [
+        { name: "1: Strategy / Discovery", duration: "2 months", milestones: "Page inventory\nInformation Architecture Workshop\nNavigation structure" },
+        { name: "2: Design", duration: "2 months", milestones: "Homepage design\nComponents design\nInterior page designs" },
+        { name: "3: Beta", duration: "1\u00BD months (plus content time)", milestones: "Design application\nSet global styles and responsive states\nContent migration\nContent management training" },
+        { name: "4: Testing / Launch", duration: "2 weeks", milestones: "QA and testing\nClient performs front-end testing\nOur team performs backend testing\nSite launch" }
+      ]
+    },
+    billing: [
+      { pct: "20%", label: "Deposit\nProject Start" },
+      { pct: "20%", label: "Prototype\nCompletion" },
+      { pct: "20%", label: "Design\nRelease" },
+      { pct: "30%", label: "Beta\nRelease" },
+      { pct: "10%", label: "QA\nCompletion" }
+    ],
+    extraScope: { enabled: true },
+    ongoingSupport: {
+      blocks: [
+        { heading: "Proactive Support Plan — $100/month", body: "<p>Our proactive support plan keeps your WordPress site healthy and secure. It includes WordPress core updates, plugin updates, and routine security checks. Our support plans are offered on a <strong>month-to-month</strong> basis with no long-term contracts &mdash; you can pause or cancel at any time.</p>" },
+        { heading: "Hourly Support — $160/hr", body: "<p>Beyond proactive maintenance, support plan clients have access to our team for all other support needs at our hourly rate of <strong>$160/hr</strong>. We bill in <strong>15-minute</strong> increments and invoice on a <strong>quarterly</strong> basis.</p>" },
+        { heading: "Plugin License Management — $35/month", body: "<p>As referenced in the Details section, our standard set of premium plugins is provided under our plugin management fee of <strong>$35/month</strong>. Plugins unique to your site for which we do not hold a developer license are not covered by this fee; those license costs are passed through to you directly at the publisher&rsquo;s rate.</p>" },
+        { heading: "Hosting", body: "<p>Hosting is not included in our fees and should be planned as a recurring long-term cost of website ownership. We generally recommend <strong>WP Engine</strong>. Their shared server environments typically run <strong>$75&ndash;$150/month</strong>, with dedicated environments generally falling in the <strong>$750&ndash;$1,500/month</strong> range. Other hosting providers are available; please factor hosting into your long-term cost projections.</p>" }
+      ]
+    },
+    team: [
+      { name: "Alex Rivera", role: "Principal & Digital Strategist", bio: "Alex has led web projects for twenty years and works directly with every client, shaping each project from initial strategy through information architecture, prototyping, and platform architecture. Replace this bio with your own in the sidebar\u2019s Team section.", image: "", enabled: true },
+      { name: "Jordan Lee", role: "Creative Director", bio: "Jordan directs the design process, starting with a brand workshop that helps clients express their goals by comparing examples and building a common visual vocabulary. Replace this bio with your own.", image: "", enabled: true },
+      { name: "Sam Patel", role: "Lead Developer", bio: "Sam builds the custom integrations a project needs and provides ongoing support for client websites, from new customizations to server, DNS, and third party platform work. Replace this bio with your own.", image: "", enabled: true }
+    ],
+    references: [
+      { org: "Meridian History Center", url: "meridianhistory.example.org", phone: "(555) 201-4477", contactName: "Dana Whitfield", contactTitle: "Executive Director", contactEmail: "dana@meridianhistory.example.org", image: "", enabled: true },
+      { org: "Lakeside Art Center", url: "lakesideart.example.org", phone: "(555) 318-9020", contactName: "Priya Nair", contactTitle: "Communications Director", contactEmail: "priya@lakesideart.example.org", image: "", enabled: true },
+      { org: "Harbor Science Museum", url: "harborscience.example.org", phone: "(555) 642-7731", contactName: "Marcus Webb", contactTitle: "Digital Manager", contactEmail: "marcus@harborscience.example.org", image: "", enabled: true },
+      { org: "Riverbend Botanical Garden", url: "riverbendgarden.example.org", phone: "(555) 884-2196", contactName: "Elena Cho", contactTitle: "Marketing Manager", contactEmail: "elena@riverbendgarden.example.org", image: "", enabled: true }
+    ],
+    terms: { enabled: true },
+    sections: {
+      pricing: true,
+      phases: true,
+      overview: true,
+      contentMigration: true,
+      process: true,
+      plugins: true,
+      deliverables: true,
+      schedule: true,
+      extraScope: true,
+      ongoingSupport: true,
+      team: true,
+      references: true,
+      terms: true
+    }
+  };
+}
+
+let data = getDefaultData();
+let currentProposalId = null;
+let currentTemplateId = null;
+
+// ============================================================
+// RENDER PROPOSAL
+// ============================================================
+function render() {
+  const d = data;
+  if (!d.brand) d.brand = getHardcodedDefaults().brand;   // proposals saved before the brand block
+  const fmtNum = (n) => `$${Number(n).toLocaleString('en-US')}`;
+  const enabledLI = d.pricing.lineItems.filter(li => li.enabled);
+  const baseFeeTotal = enabledLI.reduce((sum, li) => sum + Number(li.amount || 0), 0);
+  const altFeeTotal = enabledLI.reduce((sum, li) => sum + Number(li.altAmount || li.amount || 0), 0);
+  let pageNum = 1;
+
+  // Helpers
+  const headerStyleClass = d.meta.headerStyle === 'flat-blue' ? ' flat-blue' : '';
+  const headerBar = (showDate) => `
+    <div class="header-bar${headerStyleClass}">
+      <div class="logo-area">
+        ${d.brand.logo ? `<img class="logo-icon" src="${d.brand.logo}" alt="${d.brand.company}">` : `<span class="logo-text">${d.brand.company}</span>`}
+      </div>
+      ${showDate ? `<span class="header-date">${d.meta.date}</span>` : ''}
+    </div>`;
+
+  const pageFooter = (num) => `
+    <div class="page-footer">
+      <span>${d.meta.clientName} Website Design Proposal</span>
+      <div class="footer-line"></div>
+      <span>Page ${num}</span>
+    </div>`;
+
+  const sectionHead = (num, label, title) => `
+    <span class="section-number">${num} &mdash; ${label}</span>
+    <h2>${title}</h2>
+    <hr class="section-divider">`;
+
+  let html = '';
+
+  // PAGE 1: COVER
+  html += `<div class="page">
+    ${headerBar(true)}
+    <div class="cover-hero">
+      <span class="cover-label">Website Design Proposal</span>
+      <h1 class="cover-title">${d.meta.clientName}</h1>
+      <p class="cover-subtitle">${d.meta.subtitle}</p>
+      <div class="cover-intro">${d.meta.intro}</div>
+      <div class="cover-meta">
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Project Fee</div>
+          <div class="cover-meta-value">${fmtNum(baseFeeTotal)}</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Timeline</div>
+          <div class="cover-meta-value">${d.schedule.title}</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-label">Prepared By</div>
+          <div class="cover-meta-value">${d.meta.preparedBy}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cover-footer">
+      <span>${d.brand.company} &middot; ${d.brand.address1}, ${d.brand.address2}</span>
+      <span>${d.brand.email} &middot; ${d.brand.website}</span>
+    </div>
+  </div>`;
+
+  // Ensure sections object exists (backward compat with old saved proposals)
+  const sec = d.sections || {};
+  const s = (key) => sec[key] !== false; // default true if missing
+  let sn = 0; // auto section number
+  const enabledProcess = d.process.filter(p => p.enabled);
+  const enabledPlugins = d.plugins.filter(p => p.enabled);
+  const enabledDeliverables = d.deliverables.filter(dl => dl.enabled);
+  const enabledTeam = d.team.filter(t => t.enabled);
+  const enabledRefs = d.references.filter(r => r.enabled);
+
+  // PRICING + PHASES
+  if (s('pricing')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Pricing', 'Project Fee')}
+      <div class="pricing-hero">
+        <div>
+          <div class="pricing-hero-label">Base Project Fee</div>
+          <div class="pricing-hero-amount">${fmtNum(baseFeeTotal)}</div>
+        </div>
+        ${d.pricing.altFee.enabled ? `<div class="pricing-hero-alt">
+          ${d.pricing.altFee.label}
+          <strong>${fmtNum(altFeeTotal)}</strong>
+        </div>` : ''}
+      </div>
+      <table class="fee-table">
+        ${enabledLI.map(li => {
+          const showAlt = d.pricing.altFee.enabled && Number(li.altAmount) !== Number(li.amount);
+          const amtDisplay = showAlt ? `${fmtNum(li.amount)} / ${fmtNum(li.altAmount)}` : fmtNum(li.amount);
+          return `<tr><td>${li.label}${li.desc ? ` <span style="font-weight:400;color:var(--text-light)">${li.desc}</span>` : ''}</td><td>${amtDisplay}</td></tr>`;
+        }).join('')}
+        <tr class="fee-note"><td>Out of scope project changes, alterations, additions*</td><td style="font-style:italic">${d.pricing.hourlyRate}</td></tr>
+      </table>
+      <p class="footnote">* We recommend setting aside 10&ndash;15% of a project&rsquo;s initial budget for unforeseen changes and out-of-scope additions.${s('extraScope') ? ' See the &ldquo;Extra Scope&rdquo; section for details.' : ''}</p>
+      ${d.pricing.note ? `<div class="callout">${d.pricing.note}</div>` : ''}
+    </div>${pageFooter(pageNum)}</div>`;
+
+    // PHASES — separate page
+    if (s('phases')) {
+      sn++; const pn2 = String(sn).padStart(2,'0');
+      pageNum++;
+      html += `<div class="page">${headerBar(false)}<div class="page-body">
+        ${sectionHead(pn2, 'Phases', 'Project Phases')}
+        <div class="phases-grid">
+          ${d.phases.filter(p => p.enabled).map(p => `<div class="phase-item"><div class="phase-label">${p.label}</div><div class="phase-desc">${p.na ? `<span class="phase-na">${p.desc}</span>` : p.desc}</div></div>`).join('')}
+        </div>
+      </div>${pageFooter(pageNum)}</div>`;
+    }
+  }
+
+  // OVERVIEW (supports multiple pages)
+  if (s('overview')) {
+    // Backward compat: convert string to array
+    const overviewPages = Array.isArray(d.overview) ? d.overview : [d.overview];
+    sn++; const pn = String(sn).padStart(2,'0');
+    overviewPages.forEach((text, oi) => {
+      pageNum++;
+      const compactTop = oi > 0 && data.overviewCompactTop && data.overviewCompactTop[oi];
+      html += `<div class="page">${headerBar(false)}<div class="page-body${compactTop ? ' compact-top' : ''}">
+        ${oi === 0 ? sectionHead(pn, 'Overview', 'Project Overview') : ''}
+        <div class="overview-content">${text}</div>
+      </div>${pageFooter(pageNum)}</div>`;
+    });
+  }
+
+  // CONTENT MIGRATION
+  if (s('contentMigration')) {
+    ensureContentMigration();
+    const cm = data.contentMigration;
+    const cmItems = (cm.items || []).filter(it => it.enabled);
+    const cmTotal = cmItems.reduce((sum, it) => {
+      const n = parseInt(String(it.count).replace(/[^0-9]/g, ''), 10);
+      return sum + (isNaN(n) ? 0 : n);
+    }, 0);
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Content', 'Content Migration')}
+      <div class="overview-content">${cm.intro || ''}</div>
+      ${cmItems.length ? `
+      <h3>${cm.inventoryTitle || ''}</h3>
+      ${cm.inventoryIntro ? `<p>${cm.inventoryIntro}</p>` : ''}
+      <table class="schedule-table inventory-table${cm.showNotes ? ' has-notes' : ''}">
+        <thead><tr><th>Content Type</th><th>Approximate Count</th>${cm.showNotes ? `<th>Notes</th>` : ''}</tr></thead>
+        <tbody>
+          ${cmItems.map(it => `<tr><td>${it.label}</td><td>${it.count}</td>${cm.showNotes ? `<td class="inventory-note">${it.note || ''}</td>` : ''}</tr>`).join('')}
+          ${cm.showTotal !== false && cmTotal > 0 ? `<tr class="inventory-total"><td>Total items (approximate)</td><td>${cmTotal.toLocaleString('en-US')}</td>${cm.showNotes ? `<td></td>` : ''}</tr>` : ''}
+        </tbody>
+      </table>` : ''}
+      ${cm.note ? `<div class="callout migration-note">${cm.note}</div>` : ''}
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // PROCESS
+  if (s('process') && enabledProcess.length) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Process', 'Process Overview')}
+      ${enabledProcess.map(p => `<div class="process-card"><h3>${p.title}</h3><p>${p.text}</p>${p.linkText ? `<a href="${p.linkUrl}" class="card-link">${p.linkText}</a>` : ''}</div>`).join('')}
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // PLUGINS (Details)
+  if (s('plugins')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Details', 'Details & Deliverables')}
+      <p>Your WordPress stack will likely include the following platforms:</p>
+      ${enabledPlugins.map(p => `<h4>${p.name}</h4><p>${p.desc}</p>`).join('')}
+      <div class="callout">
+        <h4>Estimated Annual Plugin License Costs</h4>
+        <p>Our standard set of plugins are provided by ${d.brand.company} under our plugin management fee of <strong>${d.pluginCost}</strong>. Any custom plugin license costs will be passed through to the client. Plugins continue to operate when licenses are not renewed, but updates and support become unavailable.</p>
+      </div>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // DELIVERABLES
+  if (s('deliverables') && enabledDeliverables.length) {
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      <h3 style="margin-top:0">Project Deliverables</h3>
+      <ol class="deliverables-list">
+        ${enabledDeliverables.map(dl => `<li>${dl.text}</li>`).join('')}
+      </ol>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // SCHEDULE & BILLING
+  if (s('schedule')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Schedule', `Project Schedule: ${d.schedule.title}`)}
+      <p>${d.schedule.intro}</p>
+      <p style="font-size:13px;color:var(--text-light);font-style:italic">${d.schedule.note}</p>
+      <table class="schedule-table">
+        <thead><tr><th>Phase</th><th>Duration</th><th>Project Milestones</th></tr></thead>
+        <tbody>
+          ${d.schedule.phases.map(p => `<tr><td>${p.name}</td><td>${p.duration}</td><td><ul>${p.milestones.split('\n').map(m => `<li>${m}</li>`).join('')}</ul></td></tr>`).join('')}
+        </tbody>
+      </table>
+      <h3>Billing Schedule</h3>
+      <div class="billing-grid">
+        ${d.billing.map(b => `<div class="billing-step"><div class="billing-pct">${b.pct}</div><div class="billing-label">${b.label.replace('\n','<br>')}</div></div>`).join('')}
+      </div>
+      <p class="footnote" style="border-top:none;padding-top:0"><strong>NOTE:</strong> We submit invoices 30 days prior to payment due dates to give your accounts payable 30 days to process.</p>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // EXTRA SCOPE
+  if (s('extraScope')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Scope', 'Extra Scope')}
+      <p>The scope of web development projects inevitably changes over the course of a project&rsquo;s schedule. There are aspects to this project&rsquo;s goals which we cannot anticipate until the prototype and design take shape, and the process of content creation and migration begins. Our prototyping process is designed to anticipate and adapt to most necessary changes.</p>
+      <p>However, some requirements and solutions that have not yet been contemplated in this proposal will fall outside the fee provided. For this reason, we recommend that our clients anticipate and set aside <strong>10&ndash;15% of the initial budget</strong> for extra scope additions. All extra scope work is billed on an hourly basis (<strong>${d.pricing.hourlyRate}</strong>).</p>
+      <h3>Our Pledge</h3>
+      <p>${d.brand.company} will quickly make known any changes or additions that fall into the extra scope category throughout the planning, design, and development process. We will explain why certain changes fall outside of scope, and whenever possible, offer alternatives to keep the project as close to its original budget as possible.</p>
+      <h3>Examples of scope changes:</h3>
+      <ul class="scope-list">
+        <li>Addition of content components, features, plugins, or custom templates after the prototyping phase</li>
+        <li>The selection of design concepts that require custom artwork, icons, or original photography</li>
+        <li>Design changes after design approval</li>
+        <li>The addition of low-level design after the design phase</li>
+        <li>The substitution or customization of plugins due to low-level client preferences or requirements</li>
+      </ul>
+      <h3>Expenses, Licenses, Third Party Platforms</h3>
+      <p>Hard costs and expenses (e.g., travel and lodging, if needed) associated with the project will be billed separately. Plugin license fees, artwork and stock photography licensing, font licensing, or third party marketing platform fees will also be billed separately.</p>
+      <p>Whenever possible ${d.brand.company} utilizes plugins that offer unlimited developer licenses. ${d.brand.company} offers the use of our developer licensed plugins under our monthly plugin license management fee. (Note: if, at some future point, you opt out of our proactive support plan, you will need to secure individual licenses to your plugins.)</p>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // ONGOING SUPPORT
+  if (s('ongoingSupport')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    const blocks = (d.ongoingSupport && Array.isArray(d.ongoingSupport.blocks)) ? d.ongoingSupport.blocks : [];
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Support', 'Ongoing Support')}
+      ${blocks.map((b, i) => `<h3${i === 0 ? ' style="margin-top:0"' : ''}>${b.heading || ''}</h3>${b.body || ''}`).join('')}
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // TEAM
+  if (s('team') && enabledTeam.length) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Team', d.brand.company + ' Team')}
+      <p style="margin-bottom:30px">${d.brand.teamIntro}</p>
+      ${enabledTeam.map(t => { const ti = resolveImg(t.image); return `<div class="team-member">${ti ? `<img class="team-photo-img" src="${ti}" alt="${t.name}">` : ''}<div class="team-info"><div class="team-name">${t.name}</div><div class="team-role">${t.role}</div><p class="team-bio">${t.bio}</p></div></div>`; }).join('')}
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // REFERENCES
+  if (s('references') && enabledRefs.length) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'References', 'References')}
+      <div class="ref-grid">
+        ${enabledRefs.map(r => { const ri = resolveImg(r.image); return `<div class="ref-card">
+          ${ri ? `<img class="ref-screenshot" src="${ri}" alt="${r.org} Homepage">` : `<div class="ref-screenshot-placeholder">
+            <span>Homepage Screenshot</span>
+            <span class="placeholder-url">${r.url}</span>
+          </div>`}
+          <div class="ref-card-body">
+            <div class="ref-org">${r.org}</div>
+            <a href="https://${r.url}" class="ref-url">${r.url}</a>
+            <div class="ref-phone">${r.phone}</div>
+            <div class="ref-contact-name">${r.contactName}</div>
+            <div class="ref-contact-title">${r.contactTitle}</div>
+            <a href="mailto:${r.contactEmail}" class="ref-contact-email">${r.contactEmail}</a>
+          </div>
+        </div>`; }).join('')}
+      </div>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  // TERMS
+  if (s('terms')) {
+    sn++; const pn = String(sn).padStart(2,'0');
+    pageNum++;
+    html += `<div class="page">${headerBar(false)}<div class="page-body">
+      ${sectionHead(pn, 'Approval', 'Project Terms and Approval')}
+      <p>Please review our project terms at <a href="https://${d.brand.termsUrl}">${d.brand.termsUrl}</a>, and our terms for ongoing proactive support at <a href="https://${d.brand.supportTermsUrl}">${d.brand.supportTermsUrl}</a>. Accepting this project affirms that you have read and agree to these terms.</p>
+      <div class="sig-grid" style="margin-top:40px">
+        <div class="sig-block">
+          <div class="sig-block-header">Client</div>
+          <div class="sig-block-info">&nbsp;</div>
+          <div class="sig-line"></div><div class="sig-label">Name</div>
+          <div class="sig-line"></div><div class="sig-label">Title</div>
+          <div class="sig-line"></div><div class="sig-label">Signature</div>
+          <div class="sig-line"></div><div class="sig-label">Date</div>
+        </div>
+        <div class="sig-block">
+          <div class="sig-block-header">${d.brand.company}</div>
+          <div class="sig-block-info">${d.brand.address1}<br>${d.brand.address2}<br>${d.brand.email}</div>
+          <div class="sig-line"></div><div class="sig-label">Name</div>
+          <div class="sig-line"></div><div class="sig-label">Title</div>
+          <div class="sig-line"></div><div class="sig-label">Signature</div>
+          <div class="sig-line"></div><div class="sig-label">Date</div>
+        </div>
+      </div>
+    </div>${pageFooter(pageNum)}</div>`;
+  }
+
+  document.getElementById('proposal-preview').innerHTML = html;
+
+  // Check each page for overflow and flag it
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#proposal-preview .page').forEach(pg => {
+      // Compare scrollHeight (actual content) to clientHeight (visible area = 1100px)
+      if (pg.scrollHeight > pg.clientHeight + 5) {
+        pg.classList.add('overflow');
+      } else {
+        pg.classList.remove('overflow');
+      }
+    });
+  });
+
+  autoSave();
+}
+
+// ============================================================
+// BUILD EDITOR SIDEBAR
+// ============================================================
+function buildEditor() {
+  const el = document.getElementById('editor-sections');
+  let html = '';
+
+  // --- Cover ---
+  html += editorSection('Cover', true, `
+    ${field('Client Name', 'text', 'meta.clientName')}
+    ${field('Date', 'text', 'meta.date')}
+    <div style="font-size:11px;color:var(--text-light);margin-top:-8px;margin-bottom:8px">Version: <strong>v${data.meta.version || 1}</strong></div>
+    ${field('Prepared By', 'text', 'meta.preparedBy')}
+    ${field('Subtitle', 'text', 'meta.subtitle')}
+    <div class="field"><span class="field-label">Intro Text</span>
+      <div class="richtext-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+        <button type="button" id="intro-code-toggle-btn" onclick="toggleIntroCodeView()" style="margin-left:auto;font-size:10px;font-style:normal">&lt;/&gt;</button>
+      </div>
+      <div class="richtext-editor" contenteditable="true" id="intro-editor" style="min-height:80px" oninput="data.meta.intro=this.innerHTML;render()" onblur="data.meta.intro=this.innerHTML;render()">${data.meta.intro}</div>
+      <textarea class="field-textarea" id="intro-code" style="display:none;font-family:monospace;font-size:12px;min-height:80px;white-space:pre-wrap" oninput="data.meta.intro=this.value;render()" onblur="data.meta.intro=this.value;render()"></textarea>
+    </div>
+  `, 'cover');
+
+  // --- Brand (the firm sending the proposal) ---
+  html += editorSection('Brand', false, `
+    ${field('Company name', 'text', 'brand.company')}
+    ${field('Logo image path (optional, blank = text logo)', 'text', 'brand.logo')}
+    ${field('Address line 1', 'text', 'brand.address1')}
+    ${field('Address line 2', 'text', 'brand.address2')}
+    ${field('Email', 'text', 'brand.email')}
+    ${field('Website', 'text', 'brand.website')}
+    ${field('Project terms URL', 'text', 'brand.termsUrl')}
+    ${field('Support terms URL', 'text', 'brand.supportTermsUrl')}
+    ${field('Team page intro', 'textarea', 'brand.teamIntro')}
+  `);
+
+  // --- Sections (include/exclude) ---
+  const secData = data.sections || {};
+  const secToggle = (key, label) => {
+    const checked = secData[key] !== false ? 'checked' : '';
+    return `<div class="toggle-row"><input type="checkbox" ${checked} onchange="if(!data.sections)data.sections={};data.sections['${key}']=this.checked;render()"><label>${label}</label></div>`;
+  };
+  html += editorSection('Sections', true, `
+    <span class="field-label">Include in proposal</span>
+    ${secToggle('pricing','Pricing & Fees')}
+    ${secToggle('phases','Project Phases')}
+    ${secToggle('overview','Project Overview')}
+    ${secToggle('contentMigration','Content Migration')}
+    ${secToggle('process','Process Overview')}
+    ${secToggle('plugins','Plugins & Details')}
+    ${secToggle('deliverables','Project Deliverables')}
+    ${secToggle('schedule','Schedule & Billing')}
+    ${secToggle('extraScope','Extra Scope')}
+    ${secToggle('ongoingSupport','Ongoing Support')}
+    ${secToggle('team','Team')}
+    ${secToggle('references','References')}
+    ${secToggle('terms','Terms & Approval')}
+  `);
+
+  // --- Pricing ---
+  html += editorSection('Pricing', false, `
+    ${field('Hourly Rate', 'text', 'pricing.hourlyRate')}
+    ${field('Fee Page Note (optional, HTML — renders as a callout box under the fee table)', 'textarea', 'pricing.note')}
+    <div class="field">
+      <div class="toggle-row">
+        <input type="checkbox" id="altfee-toggle" ${data.pricing.altFee.enabled ? 'checked' : ''} onchange="data.pricing.altFee.enabled=this.checked;document.getElementById('altfee-fields').style.display=this.checked?'':'none';rebuildPricingItems();render()">
+        <label for="altfee-toggle">Show alternate fee option</label>
+      </div>
+      <div id="altfee-fields" style="margin-top:8px;${data.pricing.altFee.enabled ? '' : 'display:none'}">
+        <div class="field"><span class="field-label">Label</span><input class="field-input" value="${escAttr(data.pricing.altFee.label)}" onchange="data.pricing.altFee.label=this.value;render()"></div>
+      </div>
+    </div>
+    <div class="field" id="pricing-total" style="padding:8px 0;font-size:13px;color:var(--navy);font-weight:700"></div>
+    <div class="field"><span class="field-label">Line Items</span>
+    <div id="pricing-items"></div>
+    <button class="add-btn" onclick="addPricingItem()">+ Add Line Item</button></div>
+  `, 'pricing');
+
+  // --- Phases ---
+  html += editorSection('Phases', false, `<div id="phases-editor"></div>`, 'phases');
+
+  // --- Overview ---
+  html += editorSection('Project Overview', false, `
+    <div id="overview-pages-editor"></div>
+    <button class="add-btn" onclick="addOverviewPage()">+ Add Additional Overview Page</button>
+  `, 'overview');
+
+  // --- Content Migration ---
+  ensureContentMigration();
+  html += editorSection('Content Migration', false, `
+    <div class="field"><span class="field-label">Intro Text</span>
+      <div class="richtext-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+        <button type="button" id="cm-intro-code-btn" onclick="toggleMigrationCodeView('intro')" style="margin-left:auto;font-size:10px;font-style:normal">&lt;/&gt;</button>
+      </div>
+      <div class="richtext-editor" contenteditable="true" id="cm-intro-editor" style="min-height:110px" oninput="data.contentMigration.intro=this.innerHTML;render()" onblur="data.contentMigration.intro=this.innerHTML;render()">${data.contentMigration.intro || ''}</div>
+      <textarea class="field-textarea" id="cm-intro-code" style="display:none;font-family:monospace;font-size:12px;min-height:110px;white-space:pre-wrap" oninput="data.contentMigration.intro=this.value;render()" onblur="data.contentMigration.intro=this.value;render()"></textarea>
+    </div>
+    ${field('Inventory Heading', 'text', 'contentMigration.inventoryTitle')}
+    ${field('Inventory Intro', 'textarea', 'contentMigration.inventoryIntro')}
+    <div class="field"><span class="field-label">Content Inventory (counts appear exactly as typed)</span>
+      <div id="migration-items"></div>
+      <button class="add-btn" onclick="addMigrationItem()">+ Add Content Type</button>
+      <div class="toggle-row" style="margin-top:8px">
+        <input type="checkbox" ${data.contentMigration.showTotal !== false ? 'checked' : ''} onchange="data.contentMigration.showTotal=this.checked;render()">
+        <label>Show total row (adds up the numeric counts)</label>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" ${data.contentMigration.showNotes ? 'checked' : ''} onchange="data.contentMigration.showNotes=this.checked;rebuildContentMigration();render()">
+        <label>Add a Notes column (a note per content type)</label>
+      </div>
+    </div>
+    <div class="field"><span class="field-label">Closing Note (renders as a callout box)</span>
+      <div class="richtext-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+        <button type="button" id="cm-note-code-btn" onclick="toggleMigrationCodeView('note')" style="margin-left:auto;font-size:10px;font-style:normal">&lt;/&gt;</button>
+      </div>
+      <div class="richtext-editor" contenteditable="true" id="cm-note-editor" style="min-height:80px" oninput="data.contentMigration.note=this.innerHTML;render()" onblur="data.contentMigration.note=this.innerHTML;render()">${data.contentMigration.note || ''}</div>
+      <textarea class="field-textarea" id="cm-note-code" style="display:none;font-family:monospace;font-size:12px;min-height:80px;white-space:pre-wrap" oninput="data.contentMigration.note=this.value;render()" onblur="data.contentMigration.note=this.value;render()"></textarea>
+    </div>
+  `, 'contentMigration');
+
+  // --- Process ---
+  html += editorSection('Process', false, `<div id="process-editor"></div>`, 'process');
+
+  // --- Plugins ---
+  html += editorSection('Plugins', false, `
+    <div id="plugins-editor"></div>
+    <button class="add-btn" onclick="addPlugin()">+ Add Plugin</button>
+  `, 'plugins');
+
+  // --- Deliverables ---
+  html += editorSection('Deliverables', false, `
+    <div id="deliverables-editor"></div>
+    <button class="add-btn" onclick="addDeliverable()">+ Add Deliverable</button>
+  `, 'deliverables');
+
+  // --- Schedule ---
+  html += editorSection('Schedule', false, `
+    ${field('Timeline Title', 'text', 'schedule.title')}
+    <div class="field"><span class="field-label">Schedule Overview</span>
+      <div class="richtext-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+        <button type="button" id="sched-code-toggle-btn" onclick="toggleSchedCodeView()" style="margin-left:auto;font-size:10px;font-style:normal">&lt;/&gt;</button>
+      </div>
+      <div class="richtext-editor" contenteditable="true" id="sched-intro-editor" style="min-height:80px" oninput="data.schedule.intro=this.innerHTML;render()" onblur="data.schedule.intro=this.innerHTML;render()">${data.schedule.intro}</div>
+      <textarea class="field-textarea" id="sched-intro-code" style="display:none;font-family:monospace;font-size:12px;min-height:80px;white-space:pre-wrap" oninput="data.schedule.intro=this.value;render()" onblur="data.schedule.intro=this.value;render()"></textarea>
+    </div>
+    <div id="schedule-editor"></div>
+    <button class="add-btn" onclick="addSchedulePhase()">+ Add Phase</button>
+  `, 'schedule');
+
+  // --- Billing ---
+  html += editorSection('Billing', false, `
+    <div id="billing-editor"></div>
+    <button class="add-btn" onclick="addBillingStep()">+ Add Step</button>
+  `, 'billing');
+
+  // --- Extra Scope (no editable fields, controlled by Sections toggle) ---
+
+  // --- Ongoing Support ---
+  ensureOngoingSupport();
+  html += editorSection('Ongoing Support', false, `
+    <div id="ongoing-support-editor"></div>
+    <button class="add-btn" onclick="addOngoingSupportBlock()">+ Add Block</button>
+  `, 'ongoingSupport');
+
+  // --- Team ---
+  html += editorSection('Team', false, `<div id="team-editor"></div>`, 'team');
+
+  // --- References ---
+  html += editorSection('References', false, `
+    <div id="refs-editor"></div>
+    <button class="add-btn" onclick="addReference()">+ Add Reference</button>
+  `, 'references');
+
+  // --- Terms (no editable fields, controlled by Sections toggle) ---
+
+  el.innerHTML = html;
+  // Build dynamic sub-editors
+  rebuildPricingItems();
+  rebuildOverviewPages();
+  rebuildContentMigration();
+  rebuildPhases();
+  rebuildProcess();
+  rebuildPlugins();
+  rebuildDeliverables();
+  rebuildSchedule();
+  rebuildBilling();
+  rebuildTeam();
+  rebuildRefs();
+  rebuildOngoingSupport();
+}
+
+function ensureOngoingSupport() {
+  if (!data.ongoingSupport || !Array.isArray(data.ongoingSupport.blocks)) {
+    data.ongoingSupport = {
+      blocks: [
+        { heading: "Proactive Support Plan — $100/month", body: "<p>Our proactive support plan keeps your WordPress site healthy and secure. It includes WordPress core updates, plugin updates, and routine security checks. Our support plans are offered on a <strong>month-to-month</strong> basis with no long-term contracts — you can pause or cancel at any time.</p>" },
+        { heading: "Hourly Support — $160/hr", body: "<p>Beyond proactive maintenance, support plan clients have access to our team for all other support needs at our hourly rate of <strong>$160/hr</strong>. We bill in <strong>15-minute</strong> increments and invoice on a <strong>quarterly</strong> basis.</p>" },
+        { heading: "Plugin License Management — $35/month", body: "<p>As referenced in the Details section, our standard set of premium plugins is provided under our plugin management fee of <strong>$35/month</strong>. Plugins unique to your site for which we do not hold a developer license are not covered by this fee; those license costs are passed through to you directly at the publisher’s rate.</p>" },
+        { heading: "Hosting", body: "<p>Hosting is not included in our fees and should be planned as a recurring long-term cost of website ownership. We generally recommend <strong>WP Engine</strong>. Their shared server environments typically run <strong>$75–$150/month</strong>, with dedicated environments generally falling in the <strong>$750–$1,500/month</strong> range. Other hosting providers are available; please factor hosting into your long-term cost projections.</p>" }
+      ]
+    };
+  }
+}
+
+function rebuildOngoingSupport() {
+  const el = document.getElementById('ongoing-support-editor');
+  if (!el) return;
+  ensureOngoingSupport();
+  el.innerHTML = data.ongoingSupport.blocks.map((b, i) => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:6px">
+      ${DRAG_HANDLE_HTML}
+      <div style="flex:1;min-width:0">
+        <div class="field"><span class="field-label">Heading</span><input class="field-input" value="${escAttr(b.heading || '')}" onchange="data.ongoingSupport.blocks[${i}].heading=this.value;render()"></div>
+        <div class="field"><span class="field-label">Body</span>
+          <div class="richtext-toolbar">
+            <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+          </div>
+          <div class="richtext-editor" contenteditable="true" style="min-height:80px" oninput="data.ongoingSupport.blocks[${i}].body=this.innerHTML;render()" onblur="data.ongoingSupport.blocks[${i}].body=this.innerHTML;render()">${b.body || ''}</div>
+        </div>
+        <button class="remove-btn" onclick="data.ongoingSupport.blocks.splice(${i},1);rebuildOngoingSupport();render()">✖ Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'ongoingSupport.blocks', rebuildOngoingSupport);
+}
+
+function addOngoingSupportBlock() {
+  ensureOngoingSupport();
+  data.ongoingSupport.blocks.push({ heading: "New Heading", body: "<p>New body text.</p>" });
+  rebuildOngoingSupport(); render();
+}
+
+// ============================================================
+// EDITOR HELPERS
+// ============================================================
+function editorSection(title, open, content, defaultsKey) {
+  const defaultsLink = defaultsKey
+    ? `<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border);text-align:right"><a href="#" onclick="saveSectionDefault('${defaultsKey}');return false" class="defaults-link">Set as default</a><a href="#" onclick="resetSectionDefault('${defaultsKey}');return false" class="defaults-link" style="margin-left:10px;color:#c0392b">Reset</a></div>`
+    : '';
+  return `<div class="editor-section ${open ? 'open' : ''}">
+    <div class="editor-section-header" onclick="this.parentElement.classList.toggle('open')">
+      ${title} <span class="arrow">\u25B6</span>
+    </div>
+    <div class="editor-section-body">${content}${defaultsLink}</div>
+  </div>`;
+}
+
+function field(label, type, path, extra='') {
+  const val = getPath(data, path);
+  if (type === 'textarea') {
+    return `<div class="field"><span class="field-label">${label}</span><textarea class="field-textarea" ${extra} onchange="setPath(data,'${path}',this.value);render()" oninput="setPath(data,'${path}',this.value);render()">${val || ''}</textarea></div>`;
+  }
+  return `<div class="field"><span class="field-label">${label}</span><input class="field-input" type="text" value="${escAttr(val)}" onchange="setPath(data,'${path}',this.value);render()" ${extra}></div>`;
+}
+
+function getPath(obj, path) {
+  return path.split('.').reduce((o, k) => o && o[k], obj);
+}
+
+function setPath(obj, path, val) {
+  const keys = path.split('.');
+  const last = keys.pop();
+  const target = keys.reduce((o, k) => o[k], obj);
+  target[last] = val;
+}
+
+function escAttr(s) { return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+let codeViewActive = false;
+let introCodeViewActive = false;
+
+function toggleIntroCodeView() {
+  const editor = document.getElementById('intro-editor');
+  const code = document.getElementById('intro-code');
+  const btn = document.getElementById('intro-code-toggle-btn');
+  introCodeViewActive = !introCodeViewActive;
+  if (introCodeViewActive) {
+    code.value = data.meta.intro;
+    editor.style.display = 'none';
+    code.style.display = '';
+    btn.style.background = 'var(--navy)';
+    btn.style.color = 'white';
+  } else {
+    data.meta.intro = code.value;
+    editor.innerHTML = data.meta.intro;
+    editor.style.display = '';
+    code.style.display = 'none';
+    btn.style.background = '';
+    btn.style.color = '';
+    render();
+  }
+}
+
+function toggleCodeView() {
+  const editor = document.getElementById('overview-editor');
+  const code = document.getElementById('overview-code');
+  const btn = document.getElementById('code-toggle-btn');
+  codeViewActive = !codeViewActive;
+  if (codeViewActive) {
+    code.value = data.overview;
+    editor.style.display = 'none';
+    code.style.display = '';
+    btn.style.background = 'var(--navy)';
+    btn.style.color = 'white';
+  } else {
+    data.overview = code.value;
+    editor.innerHTML = data.overview;
+    editor.style.display = '';
+    code.style.display = 'none';
+    btn.style.background = '';
+    btn.style.color = '';
+    render();
+  }
+}
+function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// Generic drag-and-drop reordering for any list editor.
+// containerEl: parent whose direct children are the rows.
+// arrayPath: dot-path into `data` for the array being reordered (e.g. 'pricing.lineItems').
+// rebuildFn: function to redraw the editor list after reorder.
+// onSwap (optional): called as onSwap(from, to) BEFORE rebuildFn, lets caller keep paired arrays in sync.
+const DRAG_HANDLE_HTML = '<span class="drag-handle" title="Drag to reorder">&#9776;</span>';
+function enableRowDrag(containerEl, arrayPath, rebuildFn, onMove) {
+  if (!containerEl) return;
+  const arr = arrayPath.split('.').reduce((o, k) => o && o[k], data);
+  if (!Array.isArray(arr)) return;
+  Array.from(containerEl.children).forEach((row, i) => {
+    row.classList.add('draggable-row');
+    row.dataset.idx = i;
+    // Find the row's own drag handle (not one nested inside an inline-edit panel).
+    const handle = row.querySelector('.drag-handle');
+    if (!handle || handle.closest('.inline-edit')) return;
+    // Only enable dragging when the user grabs the handle, so clicking inputs/text inside the row still selects normally.
+    handle.addEventListener('mousedown', () => {
+      row.setAttribute('draggable', 'true');
+      // Always clear draggable on the next mouseup anywhere, even if the user releases off the handle.
+      document.addEventListener('mouseup', () => row.setAttribute('draggable', 'false'), { once: true });
+    });
+    row.addEventListener('dragstart', (e) => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(i));
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      row.setAttribute('draggable', 'false');
+      containerEl.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(r => {
+        r.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+    });
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const rect = row.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height / 2;
+      row.classList.toggle('drag-over-top', before);
+      row.classList.toggle('drag-over-bottom', !before);
+    });
+    row.addEventListener('dragleave', () => {
+      row.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const from = Number(e.dataTransfer.getData('text/plain'));
+      const rect = row.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height / 2;
+      let to = Number(row.dataset.idx);
+      if (!before) to += 1;
+      // Adjust for the splice we're about to do
+      if (from < to) to -= 1;
+      if (Number.isNaN(from) || from === to) {
+        row.classList.remove('drag-over-top', 'drag-over-bottom');
+        return;
+      }
+      const [moved] = arr.splice(from, 1);
+      arr.splice(to, 0, moved);
+      if (typeof onMove === 'function') onMove(from, to);
+      if (typeof rebuildFn === 'function') rebuildFn();
+      render();
+    });
+  });
+}
+
+// --- Dynamic list builders ---
+
+// Toggle an inline edit panel open/closed and reflect state in the button label.
+function toggleInlineEdit(btn) {
+  const panel = btn.nextElementSibling;
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  btn.textContent = open ? 'Save' : 'Edit';
+}
+
+// Update a collapsed row's summary label in place \u2014 lets you edit field-to-field
+// without rebuilding (which would collapse the panel and drop focus).
+function syncRowLabel(inputEl, text) {
+  const row = inputEl.closest('.toggle-row');
+  if (!row) return;
+  const label = row.querySelector('label');
+  if (label) label.textContent = text;
+}
+
+// Capture / restore which inline edit panels are open across an innerHTML rebuild
+// (structural changes like remove/reorder shouldn't collapse other open rows).
+function captureOpenRows(el) {
+  const open = new Set();
+  if (el) Array.from(el.children).forEach((row, i) => {
+    const ie = row.querySelector('.inline-edit');
+    if (ie && ie.classList.contains('open')) open.add(i);
+  });
+  return open;
+}
+function restoreOpenRows(el, open) {
+  if (!el || !open || !open.size) return;
+  Array.from(el.children).forEach((row, i) => {
+    if (!open.has(i)) return;
+    const ie = row.querySelector('.inline-edit');
+    if (ie) ie.classList.add('open');
+    const btn = row.querySelector('.toggle-edit-btn');
+    if (btn) btn.textContent = 'Save';
+  });
+}
+
+function updatePricingTotal() {
+  const totalEl = document.getElementById('pricing-total');
+  if (!totalEl) return;
+  const showAlt = data.pricing.altFee.enabled;
+  const enabled = data.pricing.lineItems.filter(li => li.enabled);
+  const base = enabled.reduce((s, li) => s + Number(li.amount || 0), 0);
+  const alt = enabled.reduce((s, li) => s + Number(li.altAmount || li.amount || 0), 0);
+  totalEl.innerHTML = showAlt
+    ? `Total: $${base.toLocaleString('en-US')} / $${alt.toLocaleString('en-US')} (${data.pricing.altFee.label})`
+    : `Total: $${base.toLocaleString('en-US')}`;
+}
+
+function rebuildPricingItems() {
+  const el = document.getElementById('pricing-items');
+  if (!el) return;
+  const openRows = captureOpenRows(el);
+  const showAlt = data.pricing.altFee.enabled;
+  el.innerHTML = data.pricing.lineItems.map((li, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${li.enabled ? 'checked' : ''} onchange="data.pricing.lineItems[${i}].enabled=this.checked;updatePricingTotal();render()">
+      <label>${escHtml(li.label)}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><span class="field-label">Label</span><input class="field-input" value="${escAttr(li.label)}" onchange="data.pricing.lineItems[${i}].label=this.value;syncRowLabel(this,this.value);render()"></div>
+        <div class="field"><span class="field-label">Description</span><input class="field-input" value="${escAttr(li.desc||'')}" onchange="data.pricing.lineItems[${i}].desc=this.value;render()"></div>
+        <div style="display:flex;gap:8px">
+          <div class="field" style="flex:1"><span class="field-label">${showAlt ? 'Base Amount' : 'Amount'}</span><input class="field-input" type="number" value="${li.amount}" onchange="data.pricing.lineItems[${i}].amount=Number(this.value);${showAlt ? '' : 'data.pricing.lineItems['+i+'].altAmount=Number(this.value);'}updatePricingTotal();render()"></div>
+          ${showAlt ? `<div class="field" style="flex:1"><span class="field-label">Alt Amount</span><input class="field-input" type="number" value="${li.altAmount}" onchange="data.pricing.lineItems[${i}].altAmount=Number(this.value);updatePricingTotal();render()"></div>` : ''}
+        </div>
+        <button class="remove-btn" onclick="data.pricing.lineItems.splice(${i},1);rebuildPricingItems();render()">\u2716 Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'pricing.lineItems', rebuildPricingItems);
+  restoreOpenRows(el, openRows);
+  updatePricingTotal();
+}
+
+function addPricingItem() {
+  data.pricing.lineItems.push({ label: "New Item", desc: "", amount: 0, altAmount: 0, enabled: true });
+  rebuildPricingItems(); render();
+}
+
+function rebuildOverviewPages() {
+  const el = document.getElementById('overview-pages-editor');
+  if (!el) return;
+  // Backward compat: convert string to array
+  if (!Array.isArray(data.overview)) data.overview = [data.overview || ''];
+
+  // Ensure overviewCompactTop array exists
+  if (!data.overviewCompactTop) data.overviewCompactTop = [];
+
+  el.innerHTML = data.overview.map((text, i) => `
+    <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="display:flex;align-items:center;gap:4px">
+          ${i > 0 ? DRAG_HANDLE_HTML : ''}
+          <span class="field-label" style="margin:0">${i === 0 ? 'Overview Text (Page 1)' : 'Page ' + (i + 1)}</span>
+        </span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${i > 0 ? `<label style="font-size:11px;color:var(--text-light);display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" ${data.overviewCompactTop[i] ? 'checked' : ''} onchange="data.overviewCompactTop[${i}]=this.checked;render()"> Compact top</label>` : ''}
+          ${i > 0 ? `<button class="remove-btn" onclick="data.overview.splice(${i},1);data.overviewCompactTop.splice(${i},1);rebuildOverviewPages();render()" title="Remove this page">\u2716</button>` : ''}
+        </div>
+      </div>
+      <div class="richtext-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('italic')"><i>I</i></button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="wrapOverviewParagraphs(${i})" title="Wrap each paragraph in &lt;p&gt; tags" style="font-size:10px;font-style:normal">&para; &lt;p&gt;</button>
+        <button type="button" id="ov-code-btn-${i}" onclick="toggleOverviewCodeView(${i})" style="margin-left:auto;font-size:10px;font-style:normal">&lt;/&gt;</button>
+      </div>
+      <div class="richtext-editor" contenteditable="true" id="ov-editor-${i}" oninput="data.overview[${i}]=this.innerHTML;render()" onblur="data.overview[${i}]=this.innerHTML;render()">${text}</div>
+      <textarea class="field-textarea" id="ov-code-${i}" style="display:none;font-family:monospace;font-size:12px;min-height:120px;white-space:pre-wrap" oninput="data.overview[${i}]=this.value;render()" onblur="data.overview[${i}]=this.value;render()"></textarea>
+    </div>
+  `).join('');
+  // Keep overviewCompactTop in sync with overview on reorder.
+  enableRowDrag(el, 'overview', rebuildOverviewPages, (from, to) => {
+    if (!Array.isArray(data.overviewCompactTop)) return;
+    const [m] = data.overviewCompactTop.splice(from, 1);
+    data.overviewCompactTop.splice(to, 0, m);
+  });
+}
+
+function addOverviewPage() {
+  if (!Array.isArray(data.overview)) data.overview = [data.overview || ''];
+  data.overview.push('<p>Continue overview text here...</p>');
+  rebuildOverviewPages();
+  render();
+}
+
+function toggleOverviewCodeView(idx) {
+  const editor = document.getElementById('ov-editor-' + idx);
+  const code = document.getElementById('ov-code-' + idx);
+  const btn = document.getElementById('ov-code-btn-' + idx);
+  const isCode = code.style.display !== 'none';
+  if (!isCode) {
+    code.value = data.overview[idx];
+    editor.style.display = 'none';
+    code.style.display = '';
+    btn.style.background = 'var(--navy)';
+    btn.style.color = 'white';
+  } else {
+    data.overview[idx] = code.value;
+    editor.innerHTML = data.overview[idx];
+    editor.style.display = '';
+    code.style.display = 'none';
+    btn.style.background = '';
+    btn.style.color = '';
+    render();
+  }
+}
+
+// Split the overview text into paragraphs (on blank lines, or single lines as
+// a fallback) and wrap each one in <p>...</p>. Strips any existing <p> wrappers
+// first so it's safe to click repeatedly without double-wrapping. Works whether
+// the editor is in rich-text or code view.
+function wrapOverviewParagraphs(idx) {
+  const editor = document.getElementById('ov-editor-' + idx);
+  const code = document.getElementById('ov-code-' + idx);
+  const inCode = code.style.display !== 'none';
+  const raw = inCode ? code.value : (data.overview[idx] || '');
+  let s = String(raw).trim();
+  // Drop existing paragraph wrappers so we re-paragraph from scratch.
+  s = s.replace(/<\/?p[^>]*>/gi, '\n\n');
+  // Prefer splitting on blank lines; fall back to single newlines.
+  let blocks = s.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  if (blocks.length <= 1) blocks = s.split(/\n+/).map(b => b.trim()).filter(Boolean);
+  const wrapped = blocks.map(b => '<p>' + b + '</p>').join('\n');
+  data.overview[idx] = wrapped;
+  if (inCode) code.value = wrapped;
+  editor.innerHTML = wrapped;
+  render();
+}
+
+function ensureContentMigration() {
+  if (!data.contentMigration || typeof data.contentMigration !== 'object' || !Array.isArray(data.contentMigration.items)) {
+    const base = getHardcodedDefaults().contentMigration;
+    if (!data.contentMigration || typeof data.contentMigration !== 'object') {
+      data.contentMigration = JSON.parse(JSON.stringify(base));
+    } else if (!Array.isArray(data.contentMigration.items)) {
+      data.contentMigration.items = JSON.parse(JSON.stringify(base.items));
+    }
+  }
+  // Notes column added 2026-08-28. Proposals and saved defaults stored before that
+  // carry neither the flag nor the per-row field, so backfill both. Off by default:
+  // switching a column on inside an already-quoted proposal is not ours to decide.
+  const cm = data.contentMigration;
+  if (typeof cm.showNotes !== 'boolean') cm.showNotes = false;
+  cm.items.forEach(it => { if (typeof it.note !== 'string') it.note = ''; });
+}
+
+function rebuildContentMigration() {
+  const el = document.getElementById('migration-items');
+  if (!el) return;
+  ensureContentMigration();
+  const openRows = captureOpenRows(el);
+  el.innerHTML = data.contentMigration.items.map((it, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${it.enabled ? 'checked' : ''} onchange="data.contentMigration.items[${i}].enabled=this.checked;render()">
+      <label>${escHtml(it.label)}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><span class="field-label">Content Type</span><input class="field-input" value="${escAttr(it.label)}" onchange="data.contentMigration.items[${i}].label=this.value;syncRowLabel(this,this.value);render()"></div>
+        <div class="field"><span class="field-label">Approximate Count</span><input class="field-input" value="${escAttr(it.count)}" onchange="data.contentMigration.items[${i}].count=this.value;render()"></div>
+        ${data.contentMigration.showNotes ? `<div class="field"><span class="field-label">Notes</span><textarea class="field-textarea" style="min-height:54px" onchange="data.contentMigration.items[${i}].note=this.value;render()" oninput="data.contentMigration.items[${i}].note=this.value;render()">${escHtml(it.note || '')}</textarea></div>` : ''}
+        <button class="remove-btn" onclick="data.contentMigration.items.splice(${i},1);rebuildContentMigration();render()">\u2716 Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'contentMigration.items', rebuildContentMigration);
+  restoreOpenRows(el, openRows);
+}
+
+function addMigrationItem() {
+  ensureContentMigration();
+  data.contentMigration.items.push({ label: "New Content Type", count: "TBD", note: "", enabled: true });
+  rebuildContentMigration(); render();
+}
+
+function toggleMigrationCodeView(which) {
+  const editor = document.getElementById('cm-' + which + '-editor');
+  const code = document.getElementById('cm-' + which + '-code');
+  const btn = document.getElementById('cm-' + which + '-code-btn');
+  if (!editor || !code) return;
+  if (code.style.display === 'none') {
+    code.value = data.contentMigration[which] || '';
+    code.style.display = ''; editor.style.display = 'none';
+    if (btn) btn.classList.add('active');
+  } else {
+    editor.innerHTML = data.contentMigration[which] || '';
+    code.style.display = 'none'; editor.style.display = '';
+    if (btn) btn.classList.remove('active');
+  }
+}
+
+function rebuildPhases() {
+  const el = document.getElementById('phases-editor');
+  if (!el) return;
+  const openRows = captureOpenRows(el);
+  el.innerHTML = data.phases.map((p, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="data.phases[${i}].enabled=this.checked;render()">
+      <label>${escHtml(p.label)}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><span class="field-label">Label</span><input class="field-input" value="${escAttr(p.label)}" onchange="data.phases[${i}].label=this.value;syncRowLabel(this,this.value);render()"></div>
+        <div class="field"><span class="field-label">Description</span><textarea class="field-textarea" onchange="data.phases[${i}].desc=this.value;render()">${p.desc}</textarea></div>
+        <div class="toggle-row"><input type="checkbox" ${p.na ? 'checked' : ''} onchange="data.phases[${i}].na=this.checked;render()"><label>Show as N/A (italic)</label></div>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'phases', rebuildPhases);
+  restoreOpenRows(el, openRows);
+}
+
+function rebuildProcess() {
+  const el = document.getElementById('process-editor');
+  if (!el) return;
+  el.innerHTML = data.process.map((p, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="data.process[${i}].enabled=this.checked;render()">
+      <label>${escHtml(p.title)}</label>
+    </div>`).join('');
+  enableRowDrag(el, 'process', rebuildProcess);
+}
+
+function rebuildPlugins() {
+  const el = document.getElementById('plugins-editor');
+  if (!el) return;
+  const openRows = captureOpenRows(el);
+  el.innerHTML = data.plugins.map((p, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="data.plugins[${i}].enabled=this.checked;render()">
+      <label>${escHtml(p.name)}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><span class="field-label">Name</span><input class="field-input" value="${escAttr(p.name)}" onchange="data.plugins[${i}].name=this.value;syncRowLabel(this,this.value);render()"></div>
+        <div class="field"><span class="field-label">Description</span><textarea class="field-textarea" onchange="data.plugins[${i}].desc=this.value;render()">${p.desc}</textarea></div>
+        <button class="remove-btn" onclick="data.plugins.splice(${i},1);rebuildPlugins();render()">\u2716 Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'plugins', rebuildPlugins);
+  restoreOpenRows(el, openRows);
+}
+
+function addPlugin() {
+  data.plugins.push({ name: "New Plugin", desc: "Description of the plugin.", enabled: true });
+  rebuildPlugins(); render();
+}
+
+function rebuildDeliverables() {
+  const el = document.getElementById('deliverables-editor');
+  if (!el) return;
+  const openRows = captureOpenRows(el);
+  el.innerHTML = data.deliverables.map((dl, i) => `
+    <div class="toggle-row" style="align-items:flex-start">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" style="margin-top:4px" ${dl.enabled ? 'checked' : ''} onchange="data.deliverables[${i}].enabled=this.checked;render()">
+      <label style="font-size:12px;line-height:1.4">${escHtml(dl.text).substring(0, 80)}${dl.text.length > 80 ? '...' : ''}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><textarea class="field-textarea" rows="3" onchange="data.deliverables[${i}].text=this.value;syncRowLabel(this,this.value.substring(0,80)+(this.value.length>80?'...':''));render()">${dl.text}</textarea></div>
+        <button class="remove-btn" onclick="data.deliverables.splice(${i},1);rebuildDeliverables();render()">\u2716 Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'deliverables', rebuildDeliverables);
+  restoreOpenRows(el, openRows);
+}
+
+function addDeliverable() {
+  data.deliverables.push({ text: "New deliverable item.", enabled: true });
+  rebuildDeliverables(); render();
+}
+
+function rebuildSchedule() {
+  const el = document.getElementById('schedule-editor');
+  if (!el) return;
+  el.innerHTML = data.schedule.phases.map((p, i) => `
+    <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:6px">
+      ${DRAG_HANDLE_HTML}
+      <div style="flex:1">
+        <div class="field"><span class="field-label">Phase Name</span><input class="field-input" value="${escAttr(p.name)}" onchange="data.schedule.phases[${i}].name=this.value;render()"></div>
+        <div class="field"><span class="field-label">Duration</span><input class="field-input" value="${escAttr(p.duration)}" onchange="data.schedule.phases[${i}].duration=this.value;render()"></div>
+        <div class="field"><span class="field-label">Milestones (one per line)</span><textarea class="field-textarea" rows="3" onchange="data.schedule.phases[${i}].milestones=this.value;render()">${p.milestones}</textarea></div>
+        <button class="remove-btn" onclick="data.schedule.phases.splice(${i},1);rebuildSchedule();render()">\u2716 Remove Phase</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'schedule.phases', rebuildSchedule);
+}
+
+function addSchedulePhase() {
+  data.schedule.phases.push({ name: "New Phase", duration: "TBD", milestones: "Milestone 1\nMilestone 2" });
+  rebuildSchedule(); render();
+}
+
+function rebuildBilling() {
+  const el = document.getElementById('billing-editor');
+  if (!el) return;
+  el.innerHTML = data.billing.map((b, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input class="field-input" style="width:50px" value="${escAttr(b.pct)}" onchange="data.billing[${i}].pct=this.value;render()">
+      <input class="field-input" style="flex:1" value="${escAttr(b.label.replace('\n',' / '))}" onchange="data.billing[${i}].label=this.value.replace(' / ','\\n');render()">
+      <button class="remove-btn" onclick="data.billing.splice(${i},1);rebuildBilling();render()">\u2716</button>
+    </div>`).join('');
+  enableRowDrag(el, 'billing', rebuildBilling);
+}
+
+function addBillingStep() {
+  data.billing.push({ pct: "20%", label: "Milestone\nLabel" });
+  rebuildBilling(); render();
+}
+
+function rebuildTeam() {
+  const el = document.getElementById('team-editor');
+  if (!el) return;
+  el.innerHTML = data.team.map((t, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${t.enabled ? 'checked' : ''} onchange="data.team[${i}].enabled=this.checked;render()">
+      <label>${escHtml(t.name)}</label>
+    </div>`).join('');
+  enableRowDrag(el, 'team', rebuildTeam);
+}
+
+function rebuildRefs() {
+  const el = document.getElementById('refs-editor');
+  if (!el) return;
+  const openRows = captureOpenRows(el);
+  el.innerHTML = data.references.map((r, i) => `
+    <div class="toggle-row">
+      ${DRAG_HANDLE_HTML}
+      <input type="checkbox" ${r.enabled ? 'checked' : ''} onchange="data.references[${i}].enabled=this.checked;render()">
+      <label>${escHtml(r.org)}</label>
+      <button class="toggle-edit-btn" onclick="toggleInlineEdit(this)">Edit</button>
+      <div class="inline-edit">
+        <div class="field"><span class="field-label">Organization</span><input class="field-input" value="${escAttr(r.org)}" onchange="data.references[${i}].org=this.value;syncRowLabel(this,this.value);render()"></div>
+        <div class="field"><span class="field-label">URL</span><input class="field-input" value="${escAttr(r.url)}" onchange="data.references[${i}].url=this.value;render()"></div>
+        <div class="field"><span class="field-label">Phone</span><input class="field-input" value="${escAttr(r.phone)}" onchange="data.references[${i}].phone=this.value;render()"></div>
+        <div class="field"><span class="field-label">Contact Name</span><input class="field-input" value="${escAttr(r.contactName)}" onchange="data.references[${i}].contactName=this.value;render()"></div>
+        <div class="field"><span class="field-label">Contact Title</span><input class="field-input" value="${escAttr(r.contactTitle)}" onchange="data.references[${i}].contactTitle=this.value;render()"></div>
+        <div class="field"><span class="field-label">Contact Email</span><input class="field-input" value="${escAttr(r.contactEmail)}" onchange="data.references[${i}].contactEmail=this.value;render()"></div>
+        <div class="field ref-image-field">
+          <span class="field-label">Image</span>
+          <div class="ref-image-controls">
+            ${(() => { const ri = resolveImg(r.image); return ri ? `<img class="ref-image-thumb" src="${escAttr(ri)}" alt="">` : `<div class="ref-image-thumb ref-image-thumb-empty">No image</div>`; })()}
+            <input class="field-input" value="${escAttr(r.image && r.image.indexOf('idb:') === 0 ? '(uploaded image)' : (r.image || ''))}" placeholder="images/filename.jpg" onchange="if(this.value!=='(uploaded image)')data.references[${i}].image=this.value;rebuildRefs();render()" ${r.image && r.image.indexOf('idb:') === 0 ? 'readonly style=\"background:#f5f5f5;font-style:italic\"' : ''}>
+            <label class="upload-btn">Upload\u2026<input type="file" accept="image/*" style="display:none" onchange="uploadRefImage(${i}, this.files[0])"></label>
+            ${r.image ? `<button class="remove-btn-sm" onclick="clearRefImage(${i})">Clear</button>` : ''}
+          </div>
+        </div>
+        <button class="remove-btn" onclick="data.references.splice(${i},1);rebuildRefs();render()">\u2716 Remove</button>
+      </div>
+    </div>`).join('');
+  enableRowDrag(el, 'references', rebuildRefs);
+  restoreOpenRows(el, openRows);
+}
+
+function clearRefImage(i) {
+  const cur = data.references[i] && data.references[i].image;
+  if (typeof cur === 'string' && cur.indexOf('idb:') === 0) {
+    imgDbDelete(cur.slice(4));
+  }
+  data.references[i].image = '';
+  rebuildRefs(); render();
+}
+
+function uploadRefImage(i, file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const id = newImgId();
+    imgDbPut(id, dataUrl).then(() => {
+      data.references[i].image = 'idb:' + id;
+      rebuildRefs();
+      render();
+    }).catch(err => {
+      alert('Image upload failed: ' + (err && err.message ? err.message : err));
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function addReference() {
+  data.references.push({ org: "New Organization", url: "example.org", phone: "(000) 000-0000", contactName: "Contact Name", contactTitle: "Title", contactEmail: "email@example.org", enabled: true });
+  rebuildRefs(); render();
+}
+
+// ============================================================
+// IMAGE STORE (IndexedDB) — keeps uploaded images out of localStorage
+// ============================================================
+// Images uploaded by the user are stored in IndexedDB (gigabyte-class quota)
+// instead of inlined as base64 in localStorage (~5 MB cap).
+// In the proposal data, an uploaded image is referenced as 'idb:<id>'.
+// On export, idb: references are inlined back to base64 so the JSON stays portable.
+const IMG_DB_NAME = 'pe-images';
+const IMG_STORE = 'images';
+let _imgDb = null;
+const _imgCache = new Map();        // id -> data URL (resolved)
+const _imgPending = new Set();      // ids currently being loaded
+let _imgReloadTimer = null;
+
+function imgDbOpen() {
+  if (_imgDb) return Promise.resolve(_imgDb);
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) { reject(new Error('IndexedDB not available')); return; }
+    const req = indexedDB.open(IMG_DB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(IMG_STORE)) db.createObjectStore(IMG_STORE);
+    };
+    req.onsuccess = (e) => { _imgDb = e.target.result; resolve(_imgDb); };
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+function imgDbPut(id, dataUrl) {
+  return imgDbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IMG_STORE, 'readwrite');
+    tx.objectStore(IMG_STORE).put(dataUrl, id);
+    tx.oncomplete = () => { _imgCache.set(id, dataUrl); resolve(); };
+    tx.onerror = (e) => reject(e.target.error);
+  }));
+}
+
+function imgDbGet(id) {
+  if (_imgCache.has(id)) return Promise.resolve(_imgCache.get(id));
+  return imgDbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IMG_STORE, 'readonly');
+    const req = tx.objectStore(IMG_STORE).get(id);
+    req.onsuccess = () => {
+      if (req.result) _imgCache.set(id, req.result);
+      resolve(req.result || '');
+    };
+    req.onerror = (e) => reject(e.target.error);
+  }));
+}
+
+function imgDbDelete(id) {
+  return imgDbOpen().then(db => new Promise((resolve) => {
+    const tx = db.transaction(IMG_STORE, 'readwrite');
+    tx.objectStore(IMG_STORE).delete(id);
+    tx.oncomplete = () => { _imgCache.delete(id); resolve(); };
+    tx.onerror = () => resolve(); // best-effort
+  }));
+}
+
+// Load every image in the store into memory so render() can use them synchronously.
+function imgDbPrimeCache() {
+  return imgDbOpen().then(db => new Promise((resolve) => {
+    const tx = db.transaction(IMG_STORE, 'readonly');
+    const store = tx.objectStore(IMG_STORE);
+    const req = store.openCursor();
+    req.onsuccess = (e) => {
+      const cur = e.target.result;
+      if (cur) {
+        _imgCache.set(cur.key, cur.value);
+        cur.continue();
+      } else {
+        resolve();
+      }
+    };
+    req.onerror = () => resolve();
+  })).catch(() => {});
+}
+
+function newImgId() {
+  return 'img_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// Synchronously resolve an image URL. If it's an idb: reference and the cache
+// doesn't have it yet, kicks off an async load and schedules a re-render.
+function resolveImg(url) {
+  if (!url || typeof url !== 'string') return '';
+  if (url.indexOf('idb:') === 0) {
+    const id = url.slice(4);
+    if (_imgCache.has(id)) return _imgCache.get(id);
+    // Not cached yet — load in background and re-render when ready.
+    if (!_imgPending.has(id)) {
+      _imgPending.add(id);
+      imgDbGet(id).then(() => {
+        _imgPending.delete(id);
+        if (_imgReloadTimer) return;
+        _imgReloadTimer = setTimeout(() => {
+          _imgReloadTimer = null;
+          if (typeof render === 'function') render();
+          if (typeof rebuildRefs === 'function') rebuildRefs();
+          if (typeof rebuildTeam === 'function') rebuildTeam();
+        }, 50);
+      }).catch(() => { _imgPending.delete(id); });
+    }
+    return '';
+  }
+  return url;
+}
+
+// Walk a proposal-shaped object and move any inline base64 images into IndexedDB,
+// replacing them with idb: references. Returns true if anything changed.
+function migrateInlineImagesToIdb(d) {
+  if (!d) return Promise.resolve(false);
+  const tasks = [];
+  let changed = false;
+  function visit(obj, key) {
+    const v = obj && obj[key];
+    if (typeof v === 'string' && v.indexOf('data:image') === 0) {
+      const id = newImgId();
+      tasks.push(imgDbPut(id, v).then(() => { obj[key] = 'idb:' + id; changed = true; }));
+    }
+  }
+  (d.references || []).forEach(r => visit(r, 'image'));
+  (d.team || []).forEach(t => visit(t, 'image'));
+  return Promise.all(tasks).then(() => changed);
+}
+
+// Walk a proposal and inline any idb: references back to base64. Used on export.
+function inlineIdbImagesForExport(d) {
+  const copy = JSON.parse(JSON.stringify(d));
+  const tasks = [];
+  function visit(obj, key) {
+    const v = obj && obj[key];
+    if (typeof v === 'string' && v.indexOf('idb:') === 0) {
+      tasks.push(imgDbGet(v.slice(4)).then(url => { if (url) obj[key] = url; }));
+    }
+  }
+  (copy.references || []).forEach(r => visit(r, 'image'));
+  (copy.team || []).forEach(t => visit(t, 'image'));
+  return Promise.all(tasks).then(() => copy);
+}
+
+// One-shot migration over everything stored in localStorage.
+function migrateAllStoredImagesToIdb() {
+  return imgDbOpen().then(() => {
+    const proposals = getProposals();
+    const proposalIds = Object.keys(proposals);
+    let proposalsChanged = false;
+    const proposalTasks = proposalIds.map(id =>
+      migrateInlineImagesToIdb(proposals[id]).then(c => { if (c) proposalsChanged = true; })
+    );
+    return Promise.all(proposalTasks).then(() => {
+      if (proposalsChanged) safeLocalStorageWrite(STORAGE_KEY, JSON.stringify(proposals), { silent: true });
+      const tpls = getTemplates();
+      let tplsChanged = false;
+      const tplTasks = Object.keys(tpls).map(id =>
+        migrateInlineImagesToIdb(tpls[id]).then(c => { if (c) tplsChanged = true; })
+      );
+      return Promise.all(tplTasks).then(() => {
+        if (tplsChanged) safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(tpls), { silent: true });
+        // Also migrate any custom defaults (e.g. team images saved as defaults)
+        const defaults = getCustomDefaults();
+        if (defaults) {
+          return migrateInlineImagesToIdb(defaults).then(c => {
+            if (c) safeLocalStorageWrite(DEFAULTS_KEY, JSON.stringify(defaults), { silent: true });
+          });
+        }
+      });
+    });
+  }).catch(err => console.warn('Image migration skipped:', err));
+}
+
+// ============================================================
+// SAVE / LOAD / EXPORT / IMPORT
+// ============================================================
+const STORAGE_KEY = 'pe-proposals';
+
+function getProposals() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+
+// Wrap any localStorage write so we surface quota errors instead of silently failing.
+function safeLocalStorageWrite(key, value, opts) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (err) {
+    const isQuota = err && (err.name === 'QuotaExceededError' || err.code === 22 || /quota/i.test(String(err.message)));
+    if (opts && opts.silent) {
+      console.error('localStorage write failed for key', key, err);
+      return false;
+    }
+    if (isQuota) {
+      const sizeMB = (value.length / (1024 * 1024)).toFixed(2);
+      // Offer an immediate emergency download so no work is lost.
+      const dl = confirm(
+        'Save failed: browser localStorage is full.\n\n' +
+        'Your proposal data is ' + sizeMB + ' MB. The browser cap is typically 5–10 MB per site.\n' +
+        'The most common cause is uploaded reference/team images stored as base64.\n\n' +
+        'Click OK to immediately download a JSON backup of your current work.\n' +
+        'Then either remove some uploaded images or delete unused saved proposals.'
+      );
+      if (dl) emergencyExport();
+    } else {
+      alert('Save failed: ' + (err && err.message ? err.message : err));
+    }
+    return false;
+  }
+}
+
+function emergencyExport() {
+  const slug = (data.meta && data.meta.clientName ? data.meta.clientName : 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+  // Inline idb: image references back to base64 so the rescue file is fully portable.
+  inlineIdbImagesForExport(data).then(portable => {
+    try {
+      const blob = new Blob([JSON.stringify(portable, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'RESCUE-' + slug + '-' + Date.now() + '.json';
+      a.click();
+    } catch (e) {
+      console.error('Emergency export failed', e);
+      alert('Emergency export also failed. Open DevTools console and run: copy(JSON.stringify(data))');
+    }
+  }).catch(() => {
+    // Fall back to in-memory data without idb resolution if IndexedDB is broken.
+    try {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'RESCUE-' + slug + '-' + Date.now() + '.json';
+      a.click();
+    } catch (e) {
+      alert('Emergency export failed. Open DevTools console and run: copy(JSON.stringify(data))');
+    }
+  });
+}
+
+function saveProposal(silent) {
+  if (currentTemplateId) { saveTemplateEdits(); return; }
+  if (!currentProposalId) {
+    const name = prompt('Proposal name:', data.meta.clientName || 'Untitled');
+    if (!name) return;
+    currentProposalId = name;
+  }
+  const proposals = getProposals();
+  proposals[currentProposalId] = JSON.parse(JSON.stringify(data));
+  const serialized = JSON.stringify(proposals);
+  if (!safeLocalStorageWrite(STORAGE_KEY, serialized)) return;
+  safeLocalStorageWrite(STORAGE_KEY + '-last', currentProposalId, { silent: true });
+  refreshProposalSelector();
+  document.getElementById('proposal-selector').value = currentProposalId;
+  if (!silent) {
+    const btn = document.querySelector('.btn-save');
+    const orig = btn.textContent;
+    btn.textContent = 'SAVED!';
+    btn.style.background = '#2a7d3f';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+  }
+}
+
+function autoSave() {
+  if (currentProposalId) {
+    const proposals = getProposals();
+    proposals[currentProposalId] = JSON.parse(JSON.stringify(data));
+    // Silent here — autoSave fires constantly; we don't want a popup on every keystroke.
+    // The next manual Save / Export will surface the issue.
+    const ok = safeLocalStorageWrite(STORAGE_KEY, JSON.stringify(proposals), { silent: true });
+    if (ok) safeLocalStorageWrite(STORAGE_KEY + '-last', currentProposalId, { silent: true });
+    return ok;
+  }
+  return true;
+}
+
+function loadProposal(id) {
+  // Auto-save current work before switching
+  if (currentProposalId) autoSave();
+  // Loading a proposal exits template edit mode
+  if (currentTemplateId) { currentTemplateId = null; updateTemplateEditBanner(); }
+
+  if (id === '__new__') {
+    data = getDefaultData();
+    if (data.meta) data.meta.date = todayDateString();
+    currentProposalId = null;
+    buildEditor(); render();
+    updateCompleteButton();
+    return;
+  }
+  const proposals = getProposals();
+  if (proposals[id]) {
+    data = JSON.parse(JSON.stringify(proposals[id]));
+    currentProposalId = id;
+    safeLocalStorageWrite(STORAGE_KEY + '-last', id, { silent: true });
+    buildEditor(); render();
+    updateCompleteButton();
+  }
+}
+
+function updateCompleteButton() {
+  const btn = document.getElementById('btn-mark-complete');
+  if (!btn) return;
+  if (currentProposalId) {
+    const items = getPipeline();
+    const inPipeline = items.find(it => it.name === currentProposalId);
+    if (inPipeline) {
+      btn.classList.add('completed');
+      btn.innerHTML = '&#x2714; In Pipeline';
+    } else {
+      btn.classList.remove('completed');
+      btn.innerHTML = '&#x2714; Complete';
+    }
+  } else {
+    btn.classList.remove('completed');
+    btn.innerHTML = '&#x2714; Complete';
+  }
+}
+
+function refreshProposalSelector() {
+  const sel = document.getElementById('proposal-selector');
+  const proposals = getProposals();
+  sel.innerHTML = '<option value="__new__">+ New Proposal</option>';
+  Object.keys(proposals).forEach(k => {
+    sel.innerHTML += `<option value="${escAttr(k)}">${escHtml(k)}</option>`;
+  });
+  if (currentProposalId) sel.value = currentProposalId;
+}
+
+function renameProposal() {
+  if (!currentProposalId) return;
+  const name = prompt('New name:', currentProposalId);
+  if (!name || name === currentProposalId) return;
+  const proposals = getProposals();
+  proposals[name] = proposals[currentProposalId];
+  delete proposals[currentProposalId];
+  safeLocalStorageWrite(STORAGE_KEY, JSON.stringify(proposals));
+  currentProposalId = name;
+  refreshProposalSelector();
+}
+
+function duplicateProposal() {
+  const name = prompt('Name for duplicate:', (currentProposalId || data.meta.clientName) + ' (copy)');
+  if (!name) return;
+  const proposals = getProposals();
+  proposals[name] = JSON.parse(JSON.stringify(data));
+  safeLocalStorageWrite(STORAGE_KEY, JSON.stringify(proposals));
+  currentProposalId = name;
+  refreshProposalSelector();
+}
+
+function deleteProposal() {
+  if (!currentProposalId) return;
+  if (!confirm(`Delete "${currentProposalId}"?`)) return;
+  const proposals = getProposals();
+  delete proposals[currentProposalId];
+  safeLocalStorageWrite(STORAGE_KEY, JSON.stringify(proposals));
+  currentProposalId = null;
+  data = getDefaultData();
+  refreshProposalSelector();
+  buildEditor(); render();
+}
+
+function exportJSON() {
+  // Auto-increment version on each export
+  if (!data.meta.version) data.meta.version = 1;
+  else data.meta.version++;
+
+  // Download FIRST — this never fails on quota and guarantees the user gets their file.
+  // Inline any idb: image references back to base64 so the file is portable.
+  const slug = (data.meta.clientName || 'proposal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+  inlineIdbImagesForExport(data).then(portable => {
+    try {
+      const blob = new Blob([JSON.stringify(portable, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${slug}-proposal-v${data.meta.version}.json`;
+      a.click();
+    } catch (e) {
+      alert('Export failed: ' + (e && e.message ? e.message : e));
+      return;
+    }
+    // Then continue with the post-export persistence.
+    exportJSONPostSave();
+  });
+}
+
+function exportJSONPostSave() {
+
+  // Then try to persist the version bump and pipeline entry. If localStorage is full
+  // we still got the file out, so we just surface a warning.
+  if (currentProposalId) {
+    const ok = autoSave();
+    if (!ok) {
+      alert('JSON file downloaded, but the version bump could not be saved to your browser ' +
+            '(localStorage is full). Consider removing uploaded images or deleting old saved proposals.');
+    } else {
+      try { addToPipeline(currentProposalId); } catch (e) { console.warn('addToPipeline failed', e); }
+    }
+  }
+
+  // Update version display
+  render();
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      // Move any inline base64 images out of the proposal data and into IndexedDB
+      // before storing in localStorage — otherwise we re-create the quota problem.
+      migrateInlineImagesToIdb(parsed).then(() => {
+        data = parsed;
+        currentProposalId = data.meta.clientName || null;
+        buildEditor(); render();
+        if (currentProposalId) saveProposal();
+      });
+    } catch (err) { alert('Invalid JSON file'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function generatePDF() {
+  // Open a clean print window with ONLY the proposal (no sidebar/editor)
+  const clientName = data.meta.clientName || 'Client';
+  const previewHtml = document.getElementById('proposal-preview').innerHTML;
+
+  // Collect all stylesheets from the current page
+  const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+  const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.outerHTML).join('\n');
+
+  const printDoc = `<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>Proposal - ${clientName}</title>
+${links}
+${styles}
+<style>
+  /* Print window: remove editor UI, show only proposal */
+  body { background: white !important; margin: 0; padding: 0; overflow: visible; }
+  .topbar, .sidebar, .app-layout, .preview-area { all: unset !important; display: block !important; }
+  #proposal-preview .page {
+    box-shadow: none; margin: 0; border-radius: 0;
+    max-width: 100%; width: 100%;
+    page-break-before: always;
+    background: white;
+  }
+  #proposal-preview .page:first-child { page-break-before: auto; }
+  @media print {
+    @page { size: letter; margin: 0; }
+  }
+</style>
+</head><body>
+<div id="proposal-preview">${previewHtml}</div>
+<script>
+  // Auto-print after images load
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 500);
+  };
+<` + `/script>
+</body></html>`;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(printDoc);
+  printWindow.document.close();
+}
+
+// ============================================================
+// TEMPLATES
+// ============================================================
+const TEMPLATES_KEY = 'pe-templates';
+
+// Built-in templates ship with the app. They start from getDefaultData() and
+// apply the overrides below. They cannot be renamed/deleted/edited.
+const BUILTIN_TEMPLATES = {
+  'Flat Header': {
+    meta: { headerStyle: 'flat-blue' }
+  }
+};
+
+function isBuiltinTemplate(id) {
+  return Object.prototype.hasOwnProperty.call(BUILTIN_TEMPLATES, id);
+}
+
+function getTemplates() {
+  try { return JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || {}; } catch { return {}; }
+}
+
+function refreshTemplateSelector() {
+  const sel = document.getElementById('template-selector');
+  const templates = getTemplates();
+  sel.innerHTML = '<option value="">Default</option>';
+  Object.keys(BUILTIN_TEMPLATES).forEach(k => {
+    sel.innerHTML += `<option value="${escAttr(k)}">${escHtml(k)}</option>`;
+  });
+  Object.keys(templates).forEach(k => {
+    if (isBuiltinTemplate(k)) return;
+    sel.innerHTML += `<option value="${escAttr(k)}">${escHtml(k)}</option>`;
+  });
+}
+
+function saveAsTemplate() {
+  const name = prompt('Template name (e.g., "Conversion Project", "Full Build"):', '');
+  if (!name) return;
+  const templates = getTemplates();
+  const templateData = JSON.parse(JSON.stringify(data));
+  // Clear client-specific fields so it's a clean starting point
+  templateData.meta.clientName = 'Client Name';
+  templateData.meta.intro = templateData.meta.intro;
+  templateData.overview = templateData.overview;
+  templates[name] = templateData;
+  safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+  refreshTemplateSelector();
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = 'Saved!';
+  setTimeout(() => { btn.textContent = orig; }, 1200);
+}
+
+function todayDateString() {
+  return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function newFromTemplate() {
+  const sel = document.getElementById('template-selector');
+  const templateId = sel.value;
+  // Auto-save current work
+  if (currentProposalId) autoSave();
+  if (currentTemplateId) { currentTemplateId = null; updateTemplateEditBanner(); }
+  if (templateId && isBuiltinTemplate(templateId)) {
+    data = getDefaultData();
+    const overrides = BUILTIN_TEMPLATES[templateId];
+    if (overrides.meta) Object.assign(data.meta, overrides.meta);
+  } else if (templateId) {
+    const templates = getTemplates();
+    if (templates[templateId]) {
+      data = JSON.parse(JSON.stringify(templates[templateId]));
+    }
+  } else {
+    data = getDefaultData();
+  }
+  // Always stamp new proposals with today's date
+  if (data.meta) data.meta.date = todayDateString();
+  // Remember which template this proposal was started from, so "Set as default"
+  // can be scoped to that template instead of the global default. '' = Default.
+  if (data.meta) data.meta.sourceTemplate = templateId || '';
+  currentProposalId = null;
+  document.getElementById('proposal-selector').value = '__new__';
+  buildEditor(); render();
+}
+
+function renameTemplate() {
+  const sel = document.getElementById('template-selector');
+  const id = sel.value;
+  if (!id) return;
+  if (isBuiltinTemplate(id)) { alert('Built-in templates cannot be renamed.'); return; }
+  const name = prompt('New template name:', id);
+  if (!name || name === id) return;
+  const templates = getTemplates();
+  templates[name] = templates[id];
+  delete templates[id];
+  safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+  if (currentTemplateId === id) {
+    currentTemplateId = name;
+    updateTemplateEditBanner();
+  }
+  refreshTemplateSelector();
+  sel.value = name;
+}
+
+function deleteTemplate() {
+  const sel = document.getElementById('template-selector');
+  const id = sel.value;
+  if (!id) return;
+  if (isBuiltinTemplate(id)) { alert('Built-in templates cannot be deleted.'); return; }
+  if (!confirm(`Delete template "${id}"?`)) return;
+  const templates = getTemplates();
+  delete templates[id];
+  safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+  if (currentTemplateId === id) exitTemplateEdit();
+  refreshTemplateSelector();
+}
+
+function editTemplate() {
+  const sel = document.getElementById('template-selector');
+  const id = sel.value;
+  if (!id) { alert('Select a template to edit.'); return; }
+  if (isBuiltinTemplate(id)) { alert('Built-in templates cannot be edited. Use "New" to create a proposal from it, or "Save as Template" to make a customized copy.'); return; }
+  const templates = getTemplates();
+  if (!templates[id]) return;
+  if (currentProposalId) autoSave();
+  data = JSON.parse(JSON.stringify(templates[id]));
+  if (data.meta) data.meta.sourceTemplate = id;
+  currentProposalId = null;
+  currentTemplateId = id;
+  document.getElementById('proposal-selector').value = '__new__';
+  updateTemplateEditBanner();
+  buildEditor(); render();
+}
+
+function saveTemplateEdits() {
+  if (!currentTemplateId) return;
+  const templates = getTemplates();
+  templates[currentTemplateId] = JSON.parse(JSON.stringify(data));
+  safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+  const btn = document.querySelector('.tmpl-banner-actions button:first-child');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = 'SAVED!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
+}
+
+function exitTemplateEdit() {
+  currentTemplateId = null;
+  data = getDefaultData();
+  updateTemplateEditBanner();
+  buildEditor(); render();
+}
+
+function updateTemplateEditBanner() {
+  const banner = document.getElementById('template-edit-banner');
+  const nameEl = document.getElementById('template-edit-name');
+  const saveBtn = document.querySelector('.btn-save');
+  if (!banner) return;
+  if (currentTemplateId) {
+    banner.style.display = 'flex';
+    if (nameEl) nameEl.textContent = currentTemplateId;
+    if (saveBtn) saveBtn.textContent = 'Save Template';
+  } else {
+    banner.style.display = 'none';
+    if (saveBtn) saveBtn.textContent = 'Save';
+  }
+}
+
+// ============================================================
+// PER-SECTION DEFAULTS
+// ============================================================
+// Maps section keys to the data paths they control
+const SECTION_DATA_MAP = {
+  cover:        ['meta.preparedBy', 'meta.subtitle', 'meta.intro'],
+  pricing:      ['pricing'],
+  phases:       ['phases'],
+  overview:     ['overview'],
+  contentMigration: ['contentMigration'],
+  process:      ['process'],
+  plugins:      ['plugins', 'pluginCost'],
+  deliverables: ['deliverables'],
+  schedule:     ['schedule'],
+  billing:      ['billing'],
+  ongoingSupport: ['ongoingSupport'],
+  team:         ['team'],
+  references:   ['references']
+};
+
+// Resolve which template's default "Set as default" / "Reset" should modify.
+// Returns a custom-template name, or '' meaning the global Default.
+function currentTemplateContext() {
+  if (currentTemplateId) return currentTemplateId;
+  if (data && data.meta && typeof data.meta.sourceTemplate === 'string') return data.meta.sourceTemplate;
+  return '';
+}
+
+// Path helpers for the one- and two-level keys in SECTION_DATA_MAP.
+function getDataPath(obj, p) {
+  const parts = p.split('.');
+  return parts.length === 1 ? obj[parts[0]] : (obj[parts[0]] || {})[parts[1]];
+}
+function setDataPath(obj, p, val) {
+  const parts = p.split('.');
+  const clone = JSON.parse(JSON.stringify(val));
+  if (parts.length === 1) { obj[parts[0]] = clone; }
+  else { if (!obj[parts[0]]) obj[parts[0]] = {}; obj[parts[0]][parts[1]] = clone; }
+}
+function deleteDataPath(obj, p) {
+  const parts = p.split('.');
+  if (parts.length === 1) delete obj[parts[0]];
+  else if (obj[parts[0]]) delete obj[parts[0]][parts[1]];
+}
+function flashDefaultLink(link, msg, color) {
+  if (!link) return;
+  const orig = link.textContent;
+  link.textContent = msg;
+  if (color) link.style.color = color;
+  setTimeout(() => { link.textContent = orig; link.style.color = ''; }, 1500);
+}
+
+function saveSectionDefault(sectionKey) {
+  const paths = SECTION_DATA_MAP[sectionKey];
+  if (!paths) return;
+  const tid = currentTemplateContext();
+  const templates = getTemplates();
+  if (tid && templates[tid]) {
+    // Scope the default to THIS template only — write the current value into
+    // the template's own stored data. Other templates are unaffected.
+    paths.forEach(p => setDataPath(templates[tid], p, getDataPath(data, p)));
+    safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+    flashDefaultLink(event && event.target, 'Saved to template!', '#2a7d3f');
+  } else {
+    // No custom-template context → this is the Default; keep global behavior.
+    const defaults = getCustomDefaults() || {};
+    paths.forEach(p => setDataPath(defaults, p, getDataPath(data, p)));
+    safeLocalStorageWrite(DEFAULTS_KEY, JSON.stringify(defaults));
+    flashDefaultLink(event && event.target, 'Saved!', '#2a7d3f');
+  }
+}
+
+function resetSectionDefault(sectionKey) {
+  const paths = SECTION_DATA_MAP[sectionKey];
+  if (!paths) return;
+  const tid = currentTemplateContext();
+  const templates = getTemplates();
+  if (tid && templates[tid]) {
+    // Revert this section in the template back to the base default.
+    const base = getDefaultData();
+    paths.forEach(p => setDataPath(templates[tid], p, getDataPath(base, p)));
+    safeLocalStorageWrite(TEMPLATES_KEY, JSON.stringify(templates));
+    flashDefaultLink(event && event.target, 'Reset!');
+  } else {
+    const defaults = getCustomDefaults();
+    if (!defaults) return;
+    paths.forEach(p => deleteDataPath(defaults, p));
+    safeLocalStorageWrite(DEFAULTS_KEY, JSON.stringify(defaults));
+    flashDefaultLink(event && event.target, 'Reset!');
+  }
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  const editorView = document.getElementById('editor-view');
+  const pipelineView = document.getElementById('pipeline-view');
+  const tabEditor = document.getElementById('tab-editor');
+  const tabPipeline = document.getElementById('tab-pipeline');
+  const editorActions = document.getElementById('editor-actions');
+  const pipelineActions = document.getElementById('pipeline-actions');
+
+  if (tab === 'pipeline') {
+    editorView.style.display = 'none';
+    pipelineView.classList.add('active');
+    tabEditor.classList.remove('active');
+    tabPipeline.classList.add('active');
+    editorActions.style.display = 'none';
+    pipelineActions.style.display = 'flex';
+    renderPipeline();
+  } else {
+    editorView.style.display = 'flex';
+    pipelineView.classList.remove('active');
+    tabEditor.classList.add('active');
+    tabPipeline.classList.remove('active');
+    editorActions.style.display = 'flex';
+    pipelineActions.style.display = 'none';
+  }
+}
+
+// ============================================================
+// PIPELINE
+// ============================================================
+const PIPELINE_KEY = 'pe-pipeline';
+
+function getPipeline() {
+  try { return JSON.parse(localStorage.getItem(PIPELINE_KEY)) || []; } catch { return []; }
+}
+function savePipeline(items) {
+  safeLocalStorageWrite(PIPELINE_KEY, JSON.stringify(items), { silent: true });
+}
+
+function addToPipeline(proposalName) {
+  const items = getPipeline();
+  // Check if this proposal already exists
+  const existing = items.find(it => it.name === proposalName);
+  if (existing) {
+    // Update amount and version
+    const proposals = getProposals();
+    const p = proposals[proposalName];
+    if (p) {
+      existing.amount = calcProposalTotal(p);
+      existing.version = p.meta.version || 1;
+      existing.lastModified = new Date().toISOString().split('T')[0];
+    }
+  } else {
+    const proposals = getProposals();
+    const p = proposals[proposalName];
+    const amount = p ? calcProposalTotal(p) : 0;
+    items.push({
+      id: Date.now().toString(36),
+      name: proposalName,
+      amount: amount,
+      version: (p && p.meta.version) || 1,
+      status: 'draft',
+      dateSent: '',
+      followUp: '',
+      notes: '',
+      lastModified: new Date().toISOString().split('T')[0],
+      dateCreated: new Date().toISOString().split('T')[0]
+    });
+  }
+  savePipeline(items);
+}
+
+function calcProposalTotal(p) {
+  if (!p || !p.pricing || !p.pricing.lineItems) return 0;
+  return p.pricing.lineItems
+    .filter(li => li.enabled)
+    .reduce((sum, li) => sum + Number(li.amount || 0), 0);
+}
+
+function calcAltTotal(p) {
+  if (!p || !p.pricing || !p.pricing.lineItems) return 0;
+  return p.pricing.lineItems
+    .filter(li => li.enabled)
+    .reduce((sum, li) => sum + Number(li.altAmount || li.amount || 0), 0);
+}
+
+function updatePipelineField(id, field, value) {
+  const items = getPipeline();
+  const item = items.find(it => it.id === id);
+  if (item) {
+    item[field] = value;
+    savePipeline(items);
+    renderPipeline(); // re-render to update stats
+  }
+}
+
+function removePipelineItem(id) {
+  if (!confirm('Remove this proposal from the pipeline?')) return;
+  const items = getPipeline().filter(it => it.id !== id);
+  savePipeline(items);
+  renderPipeline();
+}
+
+function openProposalFromPipeline(name) {
+  loadProposal(name);
+  switchTab('editor');
+}
+
+function syncAllToPipeline() {
+  const proposals = getProposals();
+  Object.keys(proposals).forEach(name => addToPipeline(name));
+  renderPipeline();
+}
+
+function markComplete() {
+  if (!currentProposalId) {
+    alert('Save the proposal first before marking it complete.');
+    return;
+  }
+  // Save current state
+  saveProposal(true);
+  // Add/update in pipeline with 'sent' status
+  addToPipeline(currentProposalId);
+  const items = getPipeline();
+  const item = items.find(it => it.name === currentProposalId);
+  if (item && item.status === 'draft') {
+    item.status = 'sent';
+    item.dateSent = new Date().toISOString().split('T')[0];
+    savePipeline(items);
+  }
+  // Visual feedback — go solid orange (completed state)
+  const btn = document.getElementById('btn-mark-complete');
+  btn.classList.add('completed');
+  btn.innerHTML = '&#x2714; In Pipeline';
+}
+
+function addManualPipelineEntry() {
+  const name = prompt('Proposal / Client name:');
+  if (!name) return;
+  const amountStr = prompt('Total amount (e.g. 45000):', '0');
+  if (amountStr === null) return;
+  const amount = Number(amountStr.replace(/[^0-9.]/g, '')) || 0;
+
+  const items = getPipeline();
+  items.push({
+    id: Date.now().toString(36),
+    name: name,
+    amount: amount,
+    version: 1,
+    status: 'sent',
+    dateSent: new Date().toISOString().split('T')[0],
+    followUp: '',
+    notes: '',
+    lastModified: new Date().toISOString().split('T')[0],
+    dateCreated: new Date().toISOString().split('T')[0],
+    manual: true
+  });
+  savePipeline(items);
+  renderPipeline();
+}
+
+function fmtCurrency(n) {
+  return '$' + Number(n || 0).toLocaleString('en-US');
+}
+
+function renderPipeline() {
+  const el = document.getElementById('pipeline-view');
+  const items = getPipeline();
+
+  // Calculate stats
+  const totalAll = items.reduce((s, it) => s + Number(it.amount || 0), 0);
+  const wonItems = items.filter(it => it.status === 'won');
+  const lostItems = items.filter(it => it.status === 'lost');
+  const pendingItems = items.filter(it => it.status === 'sent' || it.status === 'draft');
+  const totalWon = wonItems.reduce((s, it) => s + Number(it.amount || 0), 0);
+  const totalLost = lostItems.reduce((s, it) => s + Number(it.amount || 0), 0);
+  const totalPending = pendingItems.reduce((s, it) => s + Number(it.amount || 0), 0);
+
+  let html = `
+    <div class="pipeline-header">
+      <h2>Proposal Pipeline</h2>
+      <div style="display:flex;gap:8px">
+        <button class="topbar-btn btn-load" onclick="addManualPipelineEntry()" style="font-size:10px;padding:6px 12px;color:var(--navy);border-color:var(--border);background:white">+ Add Manual Entry</button>
+        <button class="topbar-btn btn-save" onclick="syncAllToPipeline()" style="font-size:10px;padding:6px 12px">Sync All Proposals</button>
+      </div>
+    </div>
+
+    <div class="pipeline-stats" style="margin-bottom:24px">
+      <div class="pipeline-stat">
+        <div class="stat-value">${items.length}</div>
+        <div class="stat-label">Total Proposals</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="stat-value">${fmtCurrency(totalAll)}</div>
+        <div class="stat-label">Total Value</div>
+      </div>
+      <div class="pipeline-stat won">
+        <div class="stat-value">${fmtCurrency(totalWon)}</div>
+        <div class="stat-label">Won (${wonItems.length})</div>
+      </div>
+      <div class="pipeline-stat pending">
+        <div class="stat-value">${fmtCurrency(totalPending)}</div>
+        <div class="stat-label">Pending (${pendingItems.length})</div>
+      </div>
+      <div class="pipeline-stat lost">
+        <div class="stat-value">${fmtCurrency(totalLost)}</div>
+        <div class="stat-label">Lost (${lostItems.length})</div>
+      </div>
+    </div>`;
+
+  if (items.length === 0) {
+    html += `
+      <div class="pipeline-empty">
+        <p>No proposals in the pipeline yet.</p>
+        <small>Click "Sync All Proposals" to pull in your saved proposals, or proposals are automatically added when you export a JSON.</small>
+      </div>`;
+  } else {
+    // Sort: pending first, then by date
+    const sorted = [...items].sort((a, b) => {
+      const order = { draft: 0, sent: 1, won: 2, lost: 3 };
+      const diff = (order[a.status] || 0) - (order[b.status] || 0);
+      return diff !== 0 ? diff : (b.lastModified || '').localeCompare(a.lastModified || '');
+    });
+
+    html += `
+      <table class="pipeline-table">
+        <thead>
+          <tr>
+            <th>Proposal</th>
+            <th>Amount</th>
+            <th>Version</th>
+            <th>Status</th>
+            <th>Date Sent</th>
+            <th>Follow-up</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    const proposals = getProposals();
+    sorted.forEach(item => {
+      const hasProposal = !item.manual && proposals[item.name];
+      const nameCell = hasProposal
+        ? `<a href="#" onclick="openProposalFromPipeline('${escAttr(item.name)}');return false" style="color:var(--navy);font-weight:600;text-decoration:none">${escHtml(item.name)}</a>`
+        : item.manual
+          ? `<input type="text" value="${escAttr(item.name)}" onchange="updatePipelineField('${item.id}','name',this.value)" style="font-weight:600;color:var(--navy);border:1px solid var(--border)">`
+          : `<span style="font-weight:600;color:var(--navy)">${escHtml(item.name)}</span>`;
+      const amountCell = item.manual
+        ? `<input type="text" value="${item.amount || 0}" onchange="updatePipelineField('${item.id}','amount',Number(this.value.replace(/[^0-9.]/g,''))||0);this.value=Number(this.value.replace(/[^0-9.]/g,''))||0" style="font-weight:700;color:var(--navy);width:90px;text-align:right">`
+        : `${fmtCurrency(item.amount)}`;
+      html += `
+          <tr>
+            <td>${nameCell}</td>
+            <td style="font-weight:700;color:var(--navy);white-space:nowrap">${amountCell}</td>
+            <td style="text-align:center;color:var(--text-light)">${item.manual ? '\u2014' : 'v' + (item.version || 1)}</td>
+            <td>
+              <select value="${item.status || 'draft'}" onchange="updatePipelineField('${item.id}','status',this.value)" style="min-width:80px">
+                <option value="draft" ${item.status === 'draft' ? 'selected' : ''}>Draft</option>
+                <option value="sent" ${item.status === 'sent' ? 'selected' : ''}>Sent</option>
+                <option value="won" ${item.status === 'won' ? 'selected' : ''}>Won</option>
+                <option value="lost" ${item.status === 'lost' ? 'selected' : ''}>Lost</option>
+              </select>
+            </td>
+            <td><input type="date" value="${item.dateSent || ''}" onchange="updatePipelineField('${item.id}','dateSent',this.value)"></td>
+            <td><input type="date" value="${item.followUp || ''}" onchange="updatePipelineField('${item.id}','followUp',this.value)"></td>
+            <td><input type="text" value="${escAttr(item.notes || '')}" placeholder="Notes..." onchange="updatePipelineField('${item.id}','notes',this.value)" style="min-width:120px"></td>
+            <td class="pipeline-actions-cell">
+              <button onclick="removePipelineItem('${item.id}')" title="Remove">\u2716</button>
+            </td>
+          </tr>`;
+    });
+
+    html += `
+        </tbody>
+      </table>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function exportPipelineCSV() {
+  const items = getPipeline();
+  if (!items.length) { alert('No pipeline data to export.'); return; }
+  const headers = ['Proposal', 'Amount', 'Version', 'Status', 'Date Sent', 'Follow-up', 'Notes', 'Created', 'Last Modified'];
+  const rows = items.map(it => [
+    it.name,
+    it.amount || 0,
+    'v' + (it.version || 1),
+    it.status || 'draft',
+    it.dateSent || '',
+    it.followUp || '',
+    '"' + (it.notes || '').replace(/"/g, '""') + '"',
+    it.dateCreated || '',
+    it.lastModified || ''
+  ]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'proposal-pipeline.csv';
+  a.click();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+refreshProposalSelector();
+refreshTemplateSelector();
+// Auto-load last worked-on proposal
+const lastId = localStorage.getItem(STORAGE_KEY + '-last');
+if (lastId) {
+  const proposals = getProposals();
+  if (proposals[lastId]) {
+    data = JSON.parse(JSON.stringify(proposals[lastId]));
+    currentProposalId = lastId;
+    document.getElementById('proposal-selector').value = lastId;
+  }
+}
+buildEditor();
+render();
+updateCompleteButton();
+
+// Open IndexedDB, prime the image cache, and migrate any inline base64 images
+// (in the currently-loaded proposal + all stored proposals/templates/defaults)
+// into IndexedDB. This frees up localStorage and ensures uploads never re-trigger
+// the quota error. Runs in the background; UI is already interactive.
+imgDbOpen()
+  .then(() => imgDbPrimeCache())
+  .then(() => migrateInlineImagesToIdb(data))
+  .then(currentChanged => {
+    if (currentChanged) {
+      // Persist the slimmed-down current proposal back to localStorage.
+      if (currentProposalId) autoSave();
+      render();
+      buildEditor();
+    }
+    return migrateAllStoredImagesToIdb();
+  })
+  .catch(err => console.warn('Image migration error:', err));
+</script>
+<style>
+/* ============================================================
+   CLICK-TO-EDIT
+   Blocks on the rendered proposal carry data-edit="<data path>", or
+   data-edit="sec:<sidebar section title>" when a set of controls rather than a
+   single box drives them. Clicking one opens that sidebar section (and the
+   row's inline editor, if it is a list row), scrolls the control into view and
+   focuses it. Screen only.
+   ============================================================ */
+#proposal-preview [data-edit] { cursor: pointer; transition: background .12s ease; }
+#proposal-preview [data-edit]:hover {
+  outline: 2px solid rgba(224, 122, 45, .45);
+  outline-offset: 2px;
+  background: rgba(224, 122, 45, .06);
+}
+#proposal-preview [data-edit] [data-edit]:hover { outline-color: var(--orange, #E07A2D); }
+.edit-tip {
+  position: fixed; z-index: 9999; display: none; pointer-events: none;
+  background: #1F2A37; color: #fff; padding: 5px 9px; border-radius: 3px;
+  font: 600 10.5px system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: .02em;
+  max-width: 300px; box-shadow: 0 4px 14px rgba(0,0,0,.25);
+}
+.edit-tip i { font-style: normal; color: var(--orange, #E07A2D); margin-right: 5px; }
+.editing-hit { animation: cub-edpulse 1.5s ease-out 1; }
+@keyframes cub-edpulse {
+  0%   { box-shadow: 0 0 0 3px var(--orange, #E07A2D); background: rgba(224,122,45,.15); }
+  100% { box-shadow: 0 0 0 3px rgba(224,122,45,0); background: transparent; }
+}
+.ed-hint {
+  display: block; padding: 8px 14px; font-size: 11px; line-height: 1.4;
+  color: var(--text-light, #7A8592); background: #F7F9FB;
+  border-bottom: 1px solid var(--border, #DDE3EA);
+}
+@media print {
+  .edit-tip { display: none !important; }
+  /* Suppress only the hover affordance. Never reset box-shadow or background
+     here: tagged blocks include the pricing hero and callouts, whose fills have
+     to survive into the PDF and the print window. */
+  #proposal-preview [data-edit] { cursor: auto; outline: none !important; }
+  .editing-hit { animation: none; }
+  .ed-hint { display: none !important; }
+}
+</style>
+<script>
+(() => {
+  /* ---------- 1. give every sidebar control a data-path ----------
+     The sidebar is built by buildEditor() plus a dozen rebuild* functions that
+     rewrite their own rows, and none of them emit a path. Rather than edit them
+     all, read the path back out of the handler each control already carries.
+     Stamping is lazy (on demand) so it always covers rows rebuilt since the
+     last pass. First visible element to claim a path wins, which matters for
+     the rich-text fields that keep a hidden mirror textarea. */
+  function stampEditorPaths() {
+    const host = document.getElementById('editor-sections');
+    if (!host) return;
+    const claimed = new Set();
+    host.querySelectorAll('[data-path]').forEach(el => claimed.add(el.getAttribute('data-path')));
+    host.querySelectorAll('input, textarea, select, [contenteditable="true"]').forEach(el => {
+      if (el.getAttribute('data-path')) return;
+      const h = (el.getAttribute('oninput') || '') + ';' + (el.getAttribute('onchange') || '');
+      let path = null;
+      let m = h.match(/setPath\(\s*data\s*,\s*'([^']+)'/);
+      if (m) path = m[1];
+      if (!path) { m = h.match(/data\.([A-Za-z]+(?:\.[A-Za-z]+)*)\[(\d+)\]\.([A-Za-z]+)\s*=/); if (m) path = m[1] + '.' + m[2] + '.' + m[3]; }
+      if (!path) { m = h.match(/data\.([A-Za-z]+(?:\.[A-Za-z]+)*)\[(\d+)\]\s*=\s*this\./);      if (m) path = m[1] + '.' + m[2]; }
+      if (!path) { m = h.match(/data\.([A-Za-z]+(?:\.[A-Za-z]+)+)\s*=\s*this\./);               if (m) path = m[1]; }
+      if (!path) return;
+      el.setAttribute('data-path', path);
+      claimed.add(path);
+    });
+  }
+
+  /* ---------- 2. tag the rendered proposal ----------
+     Runs after every render. Blocks written from code constants (the Extra
+     Scope copy, the terms page, the standing footnotes) are deliberately left
+     untagged, so they show no hover affordance instead of a dead-end click. */
+  const tag = (el, path) => { if (el) el.setAttribute('data-edit', path); };
+  const pages = () => [...document.querySelectorAll('#proposal-preview .page')];
+  const pageByH2 = t => pages().find(p => {
+    const h = p.querySelector('h2');
+    return h && h.textContent.trim().indexOf(t) === 0;
+  });
+  /* Rendered lists are filtered to enabled entries; map display order back to
+     the real index so the click lands on the right row. */
+  const liveIdx = (arr, key) => (arr || []).map((x, i) => i).filter(i => (arr[i] || {})[key === undefined ? 'enabled' : key] !== false);
+
+  function tagEditable() {
+    const wrap = document.getElementById('proposal-preview');
+    if (!wrap || typeof data === 'undefined') return;
+    wrap.querySelectorAll('[data-edit]').forEach(el => el.removeAttribute('data-edit'));
+    const d = data;
+
+    wrap.querySelectorAll('.header-date').forEach(el => tag(el, 'meta.date'));
+
+    const cover = pages().find(p => p.querySelector('.cover-hero'));
+    if (cover) {
+      tag(cover.querySelector('.cover-title'), 'meta.clientName');
+      tag(cover.querySelector('.cover-subtitle'), 'meta.subtitle');
+      tag(cover.querySelector('.cover-intro'), 'meta.intro');
+      const items = [...cover.querySelectorAll('.cover-meta-item')];
+      tag(items[0], 'sec:Pricing');
+      tag(items[1], 'schedule.title');
+      tag(items[2], 'meta.preparedBy');
+    }
+
+    const fee = pageByH2('Project Fee');
+    if (fee) {
+      tag(fee.querySelector('.pricing-hero'), 'sec:Pricing');
+      const live = liveIdx(d.pricing.lineItems);
+      const rows = [...fee.querySelectorAll('.fee-table tr')];
+      rows.forEach((tr, j) => {
+        if (tr.classList.contains('fee-note')) { tag(tr, 'pricing.hourlyRate'); return; }
+        if (live[j] !== undefined) tag(tr, 'pricing.lineItems.' + live[j] + '.label');
+      });
+      tag(fee.querySelector('.callout'), 'pricing.note');
+    }
+
+    const ph = pageByH2('Project Phases');
+    if (ph) {
+      const live = liveIdx(d.phases);
+      [...ph.querySelectorAll('.phase-item')].forEach((el, j) => {
+        if (live[j] !== undefined) tag(el, 'phases.' + live[j] + '.desc');
+      });
+    }
+
+    /* Overview can run to several pages; each .overview-content is one entry in
+       data.overview, in document order. The migration page reuses the class, so
+       skip that one. */
+    const cmPage = pageByH2('Content Migration');
+    let oi = 0;
+    wrap.querySelectorAll('.overview-content').forEach(el => {
+      if (cmPage && cmPage.contains(el)) return;
+      tag(el, 'overview.' + (oi++));
+    });
+
+    if (cmPage) {
+      const cm = d.contentMigration || {};
+      tag(cmPage.querySelector('.overview-content'), 'contentMigration.intro');
+      const h3 = cmPage.querySelector('.page-body > h3');
+      tag(h3, 'contentMigration.inventoryTitle');
+      if (h3 && h3.nextElementSibling && h3.nextElementSibling.tagName === 'P') tag(h3.nextElementSibling, 'contentMigration.inventoryIntro');
+      const live = liveIdx(cm.items);
+      [...cmPage.querySelectorAll('.inventory-table tbody tr')].forEach((tr, j) => {
+        if (tr.classList.contains('inventory-total')) return;
+        if (live[j] === undefined) return;
+        tag(tr, 'contentMigration.items.' + live[j] + '.label');
+        /* Nested tags win over the row, so the count and note cells land on
+           their own boxes rather than on the content-type name. */
+        const cells = tr.children;
+        if (cells[1]) tag(cells[1], 'contentMigration.items.' + live[j] + '.count');
+        if (cells[2]) tag(cells[2], 'contentMigration.items.' + live[j] + '.note');
+      });
+      tag(cmPage.querySelector('.migration-note'), 'contentMigration.note');
+    }
+
+    const pr = pageByH2('Process Overview');
+    if (pr) {
+      const live = liveIdx(d.process);
+      [...pr.querySelectorAll('.process-card')].forEach((el, j) => {
+        /* Process cards have no per-card editor in the sidebar (only an
+           on/off toggle), so point at the section rather than a field. */
+        if (live[j] !== undefined) tag(el, 'sec:Process');
+      });
+    }
+
+    const pl = pageByH2('Details & Deliverables') || pageByH2('Details &amp; Deliverables');
+    if (pl) {
+      const live = liveIdx(d.plugins);
+      [...pl.querySelectorAll('.page-body > h4')].forEach((h4, j) => {
+        if (live[j] === undefined) return;
+        tag(h4, 'plugins.' + live[j] + '.name');
+        if (h4.nextElementSibling && h4.nextElementSibling.tagName === 'P') tag(h4.nextElementSibling, 'plugins.' + live[j] + '.desc');
+      });
+      /* pluginCost has no sidebar control of its own yet. */
+      tag(pl.querySelector('.callout'), 'sec:Plugins');
+    }
+
+    const dl = pages().find(p => {
+      const h3 = p.querySelector('.page-body > h3');
+      return h3 && h3.textContent.trim() === 'Project Deliverables';
+    });
+    if (dl) {
+      const live = liveIdx(d.deliverables);
+      [...dl.querySelectorAll('.deliverables-list li')].forEach((li, j) => {
+        if (live[j] !== undefined) tag(li, 'deliverables.' + live[j] + '.text');
+      });
+    }
+
+    const sch = pageByH2('Project Schedule');
+    if (sch) {
+      tag(sch.querySelector('h2'), 'schedule.title');
+      const ps = [...sch.querySelectorAll('.page-body > p')];
+      tag(ps[0], 'schedule.intro');
+      tag(ps[1], 'sec:Schedule');   /* schedule.note has no sidebar field yet */
+      [...sch.querySelectorAll('.schedule-table tbody tr')].forEach((tr, j) => tag(tr, 'schedule.phases.' + j + '.milestones'));
+      [...sch.querySelectorAll('.billing-step')].forEach((el, j) => tag(el, 'billing.' + j + '.label'));
+    }
+
+    const os = pageByH2('Ongoing Support');
+    if (os) {
+      const body = os.querySelector('.page-body');
+      let bi = -1;
+      if (body) [...body.children].forEach(el => {
+        if (el.tagName === 'H3') { bi++; tag(el, 'ongoingSupport.blocks.' + bi + '.heading'); return; }
+        if (bi >= 0 && !el.classList.contains('section-number') && !el.classList.contains('section-divider')) tag(el, 'ongoingSupport.blocks.' + bi + '.body');
+      });
+    }
+
+    const tm = pageByH2(data.brand.company + ' Team');
+    if (tm) {
+      const live = liveIdx(d.team);
+      [...tm.querySelectorAll('.team-member')].forEach((el, j) => {
+        /* Team rows are on/off toggles only; no bio editor to jump to. */
+        if (live[j] !== undefined) tag(el, 'sec:Team');
+      });
+    }
+
+    const rf = pageByH2('References');
+    if (rf) {
+      const live = liveIdx(d.references);
+      [...rf.querySelectorAll('.ref-card')].forEach((el, j) => {
+        if (live[j] !== undefined) tag(el, 'references.' + live[j] + '.org');
+      });
+    }
+  }
+
+  /* ---------- 3. the jump ---------- */
+  const isVisible = el => !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+  function edResolve(spec) {
+    if (!spec) return {};
+    const host = document.getElementById('editor-sections');
+    if (!host) return {};
+    if (spec.indexOf('sec:') === 0) {
+      const t = spec.slice(4).trim().toLowerCase();
+      const sec = [...host.querySelectorAll('.editor-section')].find(d => {
+        const h = d.querySelector('.editor-section-header');
+        return h && h.textContent.trim().toLowerCase().indexOf(t) === 0;
+      }) || null;
+      return { sec: sec };
+    }
+    let matches = [...host.querySelectorAll('[data-path="' + spec + '"]')];
+    if (!matches.length) { stampEditorPaths(); matches = [...host.querySelectorAll('[data-path="' + spec + '"]')]; }
+    if (!matches.length) return {};
+    /* A rich-text field keeps a hidden mirror; take whichever is on screen. */
+    const target = matches.find(isVisible) || matches[0];
+    return { target: target, sec: target.closest('.editor-section') };
+  }
+  function edLabel(spec) {
+    const r = edResolve(spec);
+    if (r.target) {
+      const field = r.target.closest('.field');
+      const lab = field && field.querySelector('.field-label');
+      const row = r.target.closest('.toggle-row');
+      const rowName = row && row.querySelector('label');
+      if (lab) return rowName ? rowName.textContent.trim() + ': ' + lab.textContent.trim() : lab.textContent.trim();
+      if (rowName) return rowName.textContent.trim();
+    }
+    if (r.sec) return r.sec.querySelector('.editor-section-header').textContent.replace(/▶/g, '').trim();
+    return 'this text';
+  }
+  function jumpToEdit(spec) {
+    const host = document.getElementById('sidebar');
+    const r = edResolve(spec);
+    if (!r.sec || !host) return;
+    r.sec.classList.add('open');
+    /* List rows keep their editor collapsed behind an Edit button. */
+    if (r.target) {
+      const panel = r.target.closest('.inline-edit');
+      if (panel && !panel.classList.contains('open')) {
+        panel.classList.add('open');
+        const btn = panel.previousElementSibling;
+        if (btn && btn.classList.contains('toggle-edit-btn')) btn.textContent = 'Save';
+      }
+    }
+    /* Reading a rect right after opening forces the layout, so positions are
+       already correct here; no rAF, which never fires in a hidden tab. */
+    const el = r.target || r.sec;
+    const box = el.getBoundingClientRect(), hostBox = host.getBoundingClientRect();
+    host.scrollTop += box.top - hostBox.top - (r.target ? 90 : 12);
+    const hit = r.target ? (r.target.closest('.field') || r.target.closest('.toggle-row') || r.target) : r.sec;
+    hit.classList.remove('editing-hit');
+    void hit.offsetWidth;
+    hit.classList.add('editing-hit');
+    setTimeout(() => hit.classList.remove('editing-hit'), 1600);
+    if (r.target) {
+      r.target.focus({ preventScroll: true });
+      try { const n = r.target.value.length; r.target.setSelectionRange(n, n); } catch (e) {}
+    }
+  }
+
+  let _tip = null;
+  function edTip() {
+    if (!_tip) { _tip = document.createElement('div'); _tip.className = 'edit-tip'; document.body.appendChild(_tip); }
+    return _tip;
+  }
+  const escTip = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function wireClickToEdit() {
+    const wrap = document.getElementById('proposal-preview');
+    if (!wrap || wrap.dataset.clickToEdit) return;
+    wrap.dataset.clickToEdit = 'on';
+    wrap.addEventListener('click', e => {
+      const el = e.target.closest('[data-edit]');
+      if (!el) return;
+      /* Links inside a tagged block keep working. */
+      if (e.target.closest('a')) return;
+      e.preventDefault();
+      jumpToEdit(el.getAttribute('data-edit'));
+    });
+    wrap.addEventListener('mouseover', e => {
+      const el = e.target.closest('[data-edit]');
+      const t = edTip();
+      if (!el) { t.style.display = 'none'; return; }
+      t.innerHTML = '<i>&#9998;</i>' + escTip(edLabel(el.getAttribute('data-edit')));
+      t.style.display = 'block';
+    });
+    wrap.addEventListener('mousemove', e => {
+      if (!_tip || _tip.style.display === 'none') return;
+      _tip.style.left = Math.max(8, Math.min(window.innerWidth - _tip.offsetWidth - 12, e.clientX + 15)) + 'px';
+      _tip.style.top = Math.max(8, e.clientY - 34) + 'px';
+    });
+    wrap.addEventListener('mouseleave', () => { if (_tip) _tip.style.display = 'none'; });
+    window.addEventListener('beforeprint', () => { if (_tip) _tip.style.display = 'none'; });
+  }
+  function addSidebarHint() {
+    const host = document.getElementById('editor-sections');
+    if (!host || document.querySelector('.ed-hint')) return;
+    host.insertAdjacentHTML('beforebegin', '<div class="ed-hint">Click any text on the proposal to jump to the field that writes it.</div>');
+  }
+
+  const priorRender = render;
+  render = function () { priorRender.apply(this, arguments); tagEditable(); };
+  const priorBuildEditor = buildEditor;
+  buildEditor = function () { priorBuildEditor.apply(this, arguments); stampEditorPaths(); addSidebarHint(); };
+
+  stampEditorPaths(); addSidebarHint(); tagEditable(); wireClickToEdit();
+})();
+</script>
+<style>
+/* ============ DEMO LAYER (prototype only) ============ */
+.pe-story-veil{position:fixed;inset:0;background:rgba(12,53,80,.62);z-index:900;display:flex;align-items:center;justify-content:center}
+.pe-story{background:#fff;border-radius:10px;max-width:520px;width:92%;padding:34px 38px 26px;box-shadow:0 18px 60px rgba(0,0,0,.35);font-family:'Mulish',sans-serif}
+.pe-story .k{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--orange)}
+.pe-story h2{font-size:23px;color:var(--navy);margin:8px 0 12px;line-height:1.25}
+.pe-story p{font-size:14.5px;line-height:1.65;color:#3d4652;margin:0 0 12px}
+.pe-story .dots{display:flex;gap:6px;margin:16px 0 18px}
+.pe-story .dots i{width:8px;height:8px;border-radius:50%;background:#D8DEE6}
+.pe-story .dots i.on{background:var(--orange)}
+.pe-story .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pe-btn{border:none;border-radius:5px;cursor:pointer;font-family:'Mulish',sans-serif;font-weight:700;font-size:13px;padding:9px 18px}
+.pe-btn.pri{background:var(--orange);color:#fff}
+.pe-btn.sec{background:#EEF1F5;color:var(--navy)}
+.pe-btn.ghost{background:none;color:#7a8492;text-decoration:underline;padding:9px 4px}
+.pe-tourveil{position:fixed;inset:0;z-index:880;pointer-events:none}
+.pe-spot{position:fixed;border:3px solid var(--orange);border-radius:8px;box-shadow:0 0 0 9999px rgba(12,53,80,.45);z-index:881;pointer-events:none;transition:all .25s}
+.pe-tip{position:fixed;z-index:882;background:#fff;border-radius:8px;padding:16px 18px 12px;max-width:330px;box-shadow:0 10px 40px rgba(0,0,0,.35);font-family:'Mulish',sans-serif}
+.pe-tip h3{font-size:15px;color:var(--navy);margin:0 0 6px}
+.pe-tip p{font-size:13px;line-height:1.55;color:#3d4652;margin:0 0 10px}
+.pe-tip .row{display:flex;justify-content:space-between;align-items:center}
+.pe-tip .step{font-size:11px;color:#8a93a1}
+.pe-head-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:4px;cursor:pointer;font-size:14px;padding:5px 10px}
+.pe-head-btn:hover{background:rgba(255,255,255,.12)}
+</style>
+<script>
+/* ============ PROPOSAL ENGINE DEMO LAYER (prototype only) ============
+   Story intro (once per browsing session; ?story=1 forces, ?story=0 skips),
+   a guided tour, and a seeded sample proposal. The engine code above is
+   untouched; this layer only reads the same globals (data, render). */
+(function(){
+  var qs = new URLSearchParams(location.search);
+
+  /* ---- seed a filled-in sample proposal on a fresh browser ---- */
+  try {
+    if (!localStorage.getItem('pe-proposals') && data && data.meta && data.meta.clientName === 'Client Name') {
+      data.meta.clientName = 'Meridian History Center';
+      data.meta.intro = 'This proposal includes our fee and schedule for the redesign of the Meridian History Center website. Deliverables and project schedule are included below.';
+      data.overview = ['<p>The Meridian History Center’s site has grown for nine years without a rebuild. Content lives in layouts that no longer match how visitors use it, exhibitions are hand-built pages, and the staff needs a developer for routine changes.</p><p>The redesign moves the Center to a modern platform: clear navigation for visitors, structured templates for exhibitions, events, and articles, and a backend the staff can run on their own.</p>'];
+      if (data.contentMigration && data.contentMigration.items) {
+        var counts = { 'Base pages': '214', 'Exhibitions': '36', 'Events': '120', 'News / blog posts': '380' };
+        data.contentMigration.items.forEach(function(it){ if (counts[it.label]) it.count = counts[it.label]; });
+      }
+      render();
+      buildEditor();   // the sidebar was built before the seed; rebuild so fields match
+    }
+  } catch(e){}
+
+  /* ---- header buttons ---- */
+  var acts = document.getElementById('editor-actions');
+  if (acts) {
+    var b1 = document.createElement('button'); b1.className='pe-head-btn'; b1.textContent='📖'; b1.title='Replay the introduction'; b1.onclick=function(){ showStory(0); };
+    var b2 = document.createElement('button'); b2.className='pe-head-btn'; b2.textContent='🎓'; b2.title='Start the guided tour'; b2.onclick=function(){ startTour(); };
+    acts.insertBefore(b2, acts.firstChild); acts.insertBefore(b1, acts.firstChild);
+  }
+
+  /* ---- story ---- */
+  var CARDS = [
+    {k:'The idea', h:'A proposal builder, not a document', p:['Every page on the right is generated from the settings on the left. Prices total themselves, sections number themselves, and the output is a finished, client-ready PDF.','Nothing here is a Word template.']},
+    {k:'Why it exists', h:'Doc templates rot', p:['In a doc, every proposal is a copy of the last one: a stale price, a client name you forgot to change, a layout that breaks when you delete a section.','Here a proposal is data. Turn a section off and the pages renumber. Change a fee and the totals follow. Your standard wording ships from saved defaults, not from whatever you sent last month.']},
+    {k:'The trick', h:'Click the page itself', p:['See something to change? Click it on the proposal. The editor opens the exact field that wrote it, so you never hunt through the sidebar.','Hover any block and a pencil tip names the field.']},
+    {k:'Repeatable', h:'Your brand, set once', p:['The Brand section holds your company name, address, and terms links; every proposal carries them. Save any proposal as a template to capture a whole setup for a repeat project type.','Per-proposal defaults mean you tune wording once, not per deal.']},
+    {k:'The loop', h:'From draft to sent', p:['Save proposals, watch them on the Pipeline tab, and export a print-perfect PDF.','This demo runs entirely in your browser on sample data. Nothing is sent anywhere.']}
+  ];
+  var veil=null, idx=0;
+  function showStory(i){
+    idx=i||0; closeStory();
+    veil=document.createElement('div'); veil.className='pe-story-veil';
+    veil.innerHTML='<div class="pe-story"></div>';
+    document.body.appendChild(veil);
+    paint();
+  }
+  function paint(){
+    var c=CARDS[idx], last=idx===CARDS.length-1;
+    var dots=CARDS.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join('');
+    veil.firstChild.innerHTML='<div class="k">'+c.k+'</div><h2>'+c.h+'</h2>'+c.p.map(function(t){return '<p>'+t+'</p>';}).join('')+
+      '<div class="dots">'+dots+'</div><div class="row">'+
+      '<button class="pe-btn ghost" id="pe-skip">'+(last?'Explore on my own':'Skip')+'</button><span>'+
+      (idx>0?'<button class="pe-btn sec" id="pe-back">Back</button> ':'')+
+      (last?'<button class="pe-btn pri" id="pe-tour">Take the tour</button>':'<button class="pe-btn pri" id="pe-next">Next</button>')+'</span></div>';
+    var g=function(id){return veil.querySelector('#'+id);};
+    if(g('pe-skip')) g('pe-skip').onclick=closeStory;
+    if(g('pe-back')) g('pe-back').onclick=function(){idx--;paint();};
+    if(g('pe-next')) g('pe-next').onclick=function(){idx++;paint();};
+    if(g('pe-tour')) g('pe-tour').onclick=function(){closeStory();startTour();};
+  }
+  function closeStory(){ if(veil){veil.remove();veil=null;} }
+
+  /* ---- tour ---- */
+  var STEPS=[
+    {sel:'.topbar-tabs', h:'Editor and Pipeline', p:'Two views. Editor is where a proposal is built. Pipeline tracks every proposal you have out the door.'},
+    {sel:'#editor-sections', h:'The proposal, as settings', p:'Each section here owns part of the document. Open one, change a field, and the pages update as you type.', pos:'right'},
+    {sel:'#editor-sections .editor-section:nth-of-type(2)', h:'Set your identity once', p:'The Brand section carries your company name, address, and terms links onto every page that needs them.', pos:'right'},
+    {sel:'#proposal-preview .page', h:'A real document, always current', p:'This is the actual output. Click any block to jump to the field that wrote it. A page that runs past US Letter gets flagged in red before a client ever sees it.', pos:'left'},
+    {sel:'#editor-actions', h:'Save, export, PDF', p:'Save keeps versions in this browser. Export JSON moves a proposal between machines. Generate PDF produces the client-ready file.'}
+  ];
+  var spot=null, tip=null, ti=0;
+  function startTour(){ ti=0; place(); }
+  function endTour(){ if(spot){spot.remove();spot=null;} if(tip){tip.remove();tip=null;} }
+  function place(){
+    var st=STEPS[ti]; var el=document.querySelector(st.sel);
+    if(!el){ ti++; if(ti<STEPS.length) return place(); return endTour(); }
+    el.scrollIntoView({block:'nearest'});
+    var r=el.getBoundingClientRect();
+    if(!spot){ spot=document.createElement('div'); spot.className='pe-spot'; document.body.appendChild(spot); }
+    var vh=Math.max(window.innerHeight,400), vw=Math.max(window.innerWidth,600);
+    spot.style.left=(r.left-6)+'px'; spot.style.top=(r.top-6)+'px';
+    spot.style.width=(r.width+12)+'px'; spot.style.height=(Math.max(24,Math.min(r.height,vh-r.top))+12)+'px';
+    if(!tip){ tip=document.createElement('div'); tip.className='pe-tip'; document.body.appendChild(tip); }
+    tip.innerHTML='<h3>'+st.h+'</h3><p>'+st.p+'</p><div class="row"><span class="step">'+(ti+1)+' of '+STEPS.length+'</span><span>'+
+      (ti>0?'<button class="pe-btn sec" id="pe-tb">Back</button> ':'')+
+      (ti<STEPS.length-1?'<button class="pe-btn pri" id="pe-tn">Next</button>':'<button class="pe-btn pri" id="pe-td">Done</button>')+
+      ' <button class="pe-btn ghost" id="pe-tx">End</button></span></div>';
+    var w=340, x, y;
+    if(st.pos==='right'){ x=r.right+16; y=r.top+10; }
+    else if(st.pos==='left'){ x=r.left-w-16; y=r.top+40; }
+    else { x=Math.min(r.left, vw-w-20); y=r.bottom+14; }
+    x=Math.max(10,Math.min(x,vw-w-10)); y=Math.max(10,Math.min(y,vh-190));
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+    var g=function(id){return tip.querySelector('#'+id);};
+    if(g('pe-tb')) g('pe-tb').onclick=function(){ti--;place();};
+    if(g('pe-tn')) g('pe-tn').onclick=function(){ti++;place();};
+    if(g('pe-td')) g('pe-td').onclick=endTour;
+    if(g('pe-tx')) g('pe-tx').onclick=endTour;
+  }
+
+  /* ---- first-run: once per browsing session ---- */
+  var want = qs.get('story');
+  var seen = false;
+  try { seen = sessionStorage.getItem('pe_story_seen') === '1'; } catch(e){}
+  if (want !== '0' && (want === '1' || !seen)) {
+    try { sessionStorage.setItem('pe_story_seen','1'); } catch(e){}
+    showStory(0);
+  }
+})();
+</script>
+
+</body>
+</html>
