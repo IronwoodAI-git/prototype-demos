@@ -1178,7 +1178,8 @@ function getHardcodedDefaults() {
       date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       preparedBy: "Alex Rivera",
       subtitle: "Pricing and Schedule",
-      intro: "This proposal includes our fee and schedule for the redesign of the [Client] website. Deliverables and project schedule are included below.",
+      docLabel: "Marketing Services Proposal",
+      intro: "This proposal includes our fee and schedule for [Client]\u2019s upcoming program. Deliverables and the project schedule are included below.",
       headerStyle: "classic"
     },
     brand: {
@@ -1195,90 +1196,85 @@ function getHardcodedDefaults() {
     pricing: {
       altFee: { enabled: true, label: "With Branding" },
       lineItems: [
-        { label: "Strategy / Discovery / Prototype", amount: 5000, altAmount: 5000, enabled: true },
-        { label: "Design", desc: "", amount: 7500, altAmount: 12500, enabled: true },
-        { label: "Development", desc: "Utilizing the WordPress framework", amount: 30000, altAmount: 30000, enabled: true },
-        { label: "Content Migration", desc: "Migration of existing site content", amount: 5000, altAmount: 5000, enabled: true },
-        { label: "QA / Launch", desc: "", amount: 2500, altAmount: 2500, enabled: true }
+        { label: "Discovery & Strategy", desc: "Goals, audience, positioning, and the measurement plan", amount: 4000, altAmount: 4000, enabled: true },
+        { label: "Brand & Creative", desc: "", amount: 6500, altAmount: 11000, enabled: true },
+        { label: "Website Design & Build", desc: "", amount: 18000, altAmount: 18000, enabled: true },
+        { label: "Content Production", desc: "Copy, photography direction, and launch assets", amount: 4500, altAmount: 4500, enabled: true },
+        { label: "Launch & Handoff", desc: "", amount: 2000, altAmount: 2000, enabled: true }
       ],
       hourlyRate: "$160/hr"
     },
     phases: [
-      { label: "Prototyping", desc: "A browser-based clickable prototype provides a robust demonstration of the site\u2019s content, structure, and functionality.", enabled: true, na: false },
-      { label: "Design", desc: "Homepage, component page, and internal page design mockups express brand standards throughout the site.", enabled: true, na: false },
-      { label: "Beta Development", desc: "We apply designs to the prototype ensuring all templates and components are set with global styling and optimized for mobile responsive views.", enabled: true, na: false },
-      { label: "Content Migration/Creation", desc: "We train you how to use the platform and provide workshops guiding you through the content creation/migration process. We are available to help with this process at our hourly rate.", enabled: true, na: false },
-      { label: "Site Testing & Launch", desc: "As we test backend code, your team follows our front-end checklists and submits bug reports.", enabled: true, na: false },
-      { label: "Post-Launch Support", desc: "We provide monthly proactive updates to WordPress, theme, and plugins, plus requested maintenance as needed.", enabled: true, na: false }
+      { label: "Discovery & Strategy", desc: "Stakeholder interviews, goals, audience definition, and a measurement plan everyone signs off on before creative work starts.", enabled: true, na: false },
+      { label: "Creative Concepts", desc: "Brand and design directions presented as concrete comps, narrowed to one direction with your feedback.", enabled: true, na: false },
+      { label: "Production", desc: "The approved direction is built out: pages, assets, and content, reviewed with you at set milestones.", enabled: true, na: false },
+      { label: "Content", desc: "We produce and place the agreed content; your team supplies source material and approvals. We are available to help beyond the included scope at our hourly rate.", enabled: true, na: false },
+      { label: "Review & Launch", desc: "Final quality pass on every deliverable, your approval, then a coordinated launch.", enabled: true, na: false },
+      { label: "Ongoing Optimization", desc: "After launch we review performance against the measurement plan and recommend the next round of improvements.", enabled: true, na: false }
     ],
     contentMigration: {
-      intro: "<p>We migrate the majority of your existing website content into the new site, matching each page and content type to its new template and components.</p><p>Your team is responsible for providing any new content the redesign calls for: rewritten page copy, new photography, and sections that do not exist on the current site. During the beta phase we train your team on the platform and provide workshops, so you can add and edit content directly on the site.</p><p>Content you create after our migration is complete and before the site goes live is added by your team. We are available to help with that work at our hourly rate.</p>",
-      inventoryTitle: "Current Site Content Inventory",
-      inventoryIntro: "Our initial review of your current site found roughly the content below. These are approximate counts rather than an exact audit, and they set the basis for the content migration included in our fee.",
+      intro: "<p>We produce the content this program calls for and place it where it belongs, matching each piece to its template and channel.</p><p>Your team is responsible for source material we cannot invent: subject matter facts, approvals, existing photography, and anything legal or compliance related. We train your team on the tools during production so you can add and edit content yourselves.</p><p>Content created after our production window closes is added by your team. We are available to help with that work at our hourly rate.</p>",
+      inventoryTitle: "Content Inventory",
+      inventoryIntro: "Our initial review found roughly the content below. These are approximate counts rather than an exact audit, and they set the basis for the content work included in our fee.",
       showTotal: true,
       showNotes: false,
       items: [
-        { label: "Base pages", count: "TBD", note: "", enabled: true },
-        { label: "Exhibitions", count: "TBD", enabled: true },
-        { label: "Events", count: "TBD", enabled: true },
-        { label: "News / blog posts", count: "TBD", enabled: true },
-        { label: "Publications", count: "TBD", enabled: false },
-        { label: "Collection items", count: "TBD", enabled: false },
-        { label: "Staff / people profiles", count: "TBD", enabled: false },
-        { label: "Resources / downloads (PDFs)", count: "TBD", enabled: false }
+        { label: "Website pages", count: "TBD", note: "", enabled: true },
+        { label: "Blog articles", count: "TBD", enabled: true },
+        { label: "Email templates", count: "TBD", enabled: true },
+        { label: "Case studies", count: "TBD", enabled: true },
+        { label: "Social templates", count: "TBD", enabled: false },
+        { label: "Landing pages", count: "TBD", enabled: false },
+        { label: "Sales collateral (PDFs)", count: "TBD", enabled: false }
       ],
-      note: "<p>If the actual content runs well beyond these counts, or content types come to light that are not listed here, we will let you know and quote the additional migration before starting it. See the Extra Scope section for how we handle changes of this kind.</p>"
+      note: "<p>If the actual content runs well beyond these counts, or content types come to light that are not listed here, we will let you know and quote the additional work before starting it. See the Extra Scope section for how we handle changes of this kind.</p>"
     },
     overview: ["<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>"],
     process: [
-      { title: "Prototype Before Design", text: "Our discovery process replaces static wireframes with a live website prototype: a browser-based demonstration of the site\u2019s content, structure, and functionality. Prototypes stay visually plain on purpose, keeping the focus on information architecture, content modeling, and dynamic features, so you react to something real instead of guessing from diagrams.", linkText: "", linkUrl: "", enabled: true },
-      { title: "Low Code / No Code Platform", text: "The WordPress ecosystem offers a vast array of built-in features, extensions, and plugins that let us deploy dynamic websites without costly custom code. This approach reduces your reliance on any one developer\u2019s code and positions your site to benefit from professionally supported products over time.", linkText: "", linkUrl: "", enabled: true },
-      { title: "A Framework Built for Content", text: "Our framework provides the basic theme infrastructure of a site plus a wide set of content presentation options and dynamic features. Serialized content such as events, articles, and collections gets structured templates, so the people who run the site can publish without a developer.", linkText: "", linkUrl: "", enabled: true }
+      { title: "Strategy Before Creative", text: "Every engagement starts with discovery: who you are trying to reach, what they need to hear, and how we will know it worked. Creative built on that foundation gets approved faster and performs better, because everyone agreed on the target before the first comp.", linkText: "", linkUrl: "", enabled: true },
+      { title: "One Team, One Thread", text: "Strategy, design, content, and build sit with one team. You get a single point of contact, decisions do not get lost between vendors, and the brand stays consistent from the website to the last email footer.", linkText: "", linkUrl: "", enabled: true },
+      { title: "Measured, Not Guessed", text: "The measurement plan from discovery follows the work into production: analytics wired in from day one, a reporting cadence you can count on, and recommendations based on what the numbers say rather than what looks busy.", linkText: "", linkUrl: "", enabled: true }
     ],
     plugins: [
-      { name: "Hello Theme", desc: "Hello is a highly efficient and fast loading theme designed to work with the Elementor theme building suite.", enabled: true },
-      { name: "Elementor Pro (plus key Add-ons)", desc: "Elementor is our selected front-end visual editor/theme editor. As an industry leader, many plugin developers provide Elementor support and custom Elementor elements.", enabled: true },
-      { name: "Gravity Forms", desc: "Form transactions are a critical component of any website. Gravity Forms is a leading form plugin provider, with a wide set of additional add-on capabilities and customizations.", enabled: true },
-      { name: "Other Plugins", desc: "We maintain a set of additional plugins that power our websites: Advanced Custom Fields, Yoast (SEO), Updraft (backup), and others.", enabled: true },
-      { name: "WooCommerce", desc: "WooCommerce provides a powerful, customizable e-commerce platform for selling tickets, memberships, or merchandise.", enabled: false },
-      { name: "Modern Events Calendar", desc: "Modern Events Calendar provides a comprehensive event management system with multiple display options and booking capabilities.", enabled: false }
+      { name: "Content Management", desc: "A mainstream, professionally supported CMS (we typically build on WordPress) so your team can edit the site without a developer and hiring help later is easy.", enabled: true },
+      { name: "Email Marketing", desc: "Your campaigns and automations run in a dedicated email platform, connected to the site\u2019s forms and signup points.", enabled: true },
+      { name: "Analytics & Reporting", desc: "GA4 plus a reporting dashboard configured around the measurement plan, so performance is visible without exporting spreadsheets.", enabled: true },
+      { name: "CRM Integration", desc: "Leads flow from forms and campaigns into your CRM with source tracking intact.", enabled: false },
+      { name: "E-commerce", desc: "A store, ticketing, or membership checkout, when the program calls for selling directly.", enabled: false }
     ],
-    pluginCost: "$35 per month",
+    pluginCost: "$45 per month",
     deliverables: [
-      { text: "This site will contain up to 50\u201360 base pages, in addition to unlimited serialized posts such as event pages, exhibition posts, and resource pages.", enabled: true },
-      { text: "Approximately 8\u201310 content components will be provided.", enabled: true },
-      { text: "We will provide a unique custom homepage template, a components-driven page template, a single page and post template, an enriched story template, an events template, and up to three additional custom templates as needed.", enabled: true },
-      { text: "Website will be mobile responsive and provide all necessary SEO elements. It will perform in all modern browsers. (We do not support Internet Explorer since Microsoft has ended support in favor of Edge.)", enabled: true },
-      { text: "Media components will be built for PDF, JPEG, PNG, GIF, MP4 (video), and MP3 (audio) files.", enabled: true },
-      { text: "Website will minimally meet WCAG 2.2 A level accessibility standards. 2.2 AA can also be provided, but may increase costs and may require a third party to perform a full audit.", enabled: true },
-      { text: "We will produce custom training videos using your site\u2019s specific administrative backend.", enabled: true },
-      { text: "We recommend WP Engine for hosting. Prices vary based on their shared or dedicated server platforms.", enabled: true }
+      { text: "A written strategy summary: audience, positioning, messaging, and the measurement plan we will report against.", enabled: true },
+      { text: "Brand and creative assets produced for the program, delivered in source and web-ready formats.", enabled: true },
+      { text: "A redesigned website your team can edit themselves, mobile responsive, with modern accessibility and SEO baselines met.", enabled: true },
+      { text: "The content pieces counted in the Content Inventory, written, designed, and placed.", enabled: true },
+      { text: "Analytics and reporting configured, with a dashboard your team can read without training.", enabled: true },
+      { text: "Training for your team on every tool we hand over, recorded so new hires can watch it later.", enabled: true },
+      { text: "A launch checklist and a 30-day post-launch review against the measurement plan.", enabled: true }
     ],
     schedule: {
-      title: "5\u20137 Months",
-      intro: "While our typical projects range from 5\u20137 months, each party\u2019s responsiveness and availability is needed to stay on schedule and budget.",
+      title: "3\u20134 Months",
+      intro: "Our typical program of this size runs three to four months. Each party\u2019s responsiveness and availability is needed to stay on schedule and budget.",
       note: "This schedule assumes feedback will be received three business days after each initial milestone presentation, two business days after revisions, and one business day for any additional revisions.",
       phases: [
-        { name: "1: Strategy / Discovery", duration: "2 months", milestones: "Page inventory\nInformation Architecture Workshop\nNavigation structure" },
-        { name: "2: Design", duration: "2 months", milestones: "Homepage design\nComponents design\nInterior page designs" },
-        { name: "3: Beta", duration: "1\u00BD months (plus content time)", milestones: "Design application\nSet global styles and responsive states\nContent migration\nContent management training" },
-        { name: "4: Testing / Launch", duration: "2 weeks", milestones: "QA and testing\nClient performs front-end testing\nOur team performs backend testing\nSite launch" }
+        { name: "1: Discovery & Strategy", duration: "3 weeks", milestones: "Stakeholder interviews\nAudience and positioning\nMeasurement plan sign-off" },
+        { name: "2: Creative & Design", duration: "4 weeks", milestones: "Concept directions\nRevisions\nApproved direction" },
+        { name: "3: Production", duration: "6 weeks", milestones: "Build-out\nContent production\nMilestone reviews\nTeam training" },
+        { name: "4: Launch", duration: "2 weeks", milestones: "Final quality pass\nClient approval\nCoordinated launch\n30-day review scheduled" }
       ]
     },
     billing: [
-      { pct: "20%", label: "Deposit\nProject Start" },
-      { pct: "20%", label: "Prototype\nCompletion" },
-      { pct: "20%", label: "Design\nRelease" },
-      { pct: "30%", label: "Beta\nRelease" },
-      { pct: "10%", label: "QA\nCompletion" }
+      { pct: "25%", label: "Deposit\nProject Start" },
+      { pct: "25%", label: "Strategy\nApproval" },
+      { pct: "25%", label: "Production\nMidpoint" },
+      { pct: "25%", label: "Launch" }
     ],
     extraScope: { enabled: true },
     ongoingSupport: {
       blocks: [
-        { heading: "Proactive Support Plan — $100/month", body: "<p>Our proactive support plan keeps your WordPress site healthy and secure. It includes WordPress core updates, plugin updates, and routine security checks. Our support plans are offered on a <strong>month-to-month</strong> basis with no long-term contracts &mdash; you can pause or cancel at any time.</p>" },
-        { heading: "Hourly Support — $160/hr", body: "<p>Beyond proactive maintenance, support plan clients have access to our team for all other support needs at our hourly rate of <strong>$160/hr</strong>. We bill in <strong>15-minute</strong> increments and invoice on a <strong>quarterly</strong> basis.</p>" },
-        { heading: "Plugin License Management — $35/month", body: "<p>As referenced in the Details section, our standard set of premium plugins is provided under our plugin management fee of <strong>$35/month</strong>. Plugins unique to your site for which we do not hold a developer license are not covered by this fee; those license costs are passed through to you directly at the publisher&rsquo;s rate.</p>" },
-        { heading: "Hosting", body: "<p>Hosting is not included in our fees and should be planned as a recurring long-term cost of website ownership. We generally recommend <strong>WP Engine</strong>. Their shared server environments typically run <strong>$75&ndash;$150/month</strong>, with dedicated environments generally falling in the <strong>$750&ndash;$1,500/month</strong> range. Other hosting providers are available; please factor hosting into your long-term cost projections.</p>" }
+        { heading: "Ongoing Partnership \u2014 from $2,500/month", body: "<p>Most clients continue with a monthly retainer after launch: campaign production, site updates, reporting, and a standing planning call. Retainers are offered <strong>month to month</strong> with no long-term contract; you can pause or cancel at any time.</p>" },
+        { heading: "Hourly Work \u2014 $160/hr", body: "<p>Outside a retainer, our team is available for requests at our hourly rate of <strong>$160/hr</strong>, billed in <strong>15-minute</strong> increments and invoiced <strong>monthly</strong>.</p>" },
+        { heading: "Platform Subscriptions", body: "<p>Your CMS hosting, email platform, and any paid tools are subscriptions in your own name. We will recommend specific platforms and typical monthly costs during discovery so there are no surprises in your long-term budget.</p>" }
       ]
     },
     team: [
@@ -1339,7 +1335,7 @@ function render() {
 
   const pageFooter = (num) => `
     <div class="page-footer">
-      <span>${d.meta.clientName} Website Design Proposal</span>
+      <span>${d.meta.clientName} ${d.meta.docLabel || "Proposal"}</span>
       <div class="footer-line"></div>
       <span>Page ${num}</span>
     </div>`;
@@ -1355,7 +1351,7 @@ function render() {
   html += `<div class="page">
     ${headerBar(true)}
     <div class="cover-hero">
-      <span class="cover-label">Website Design Proposal</span>
+      <span class="cover-label">${d.meta.docLabel || "Proposal"}</span>
       <h1 class="cover-title">${d.meta.clientName}</h1>
       <p class="cover-subtitle">${d.meta.subtitle}</p>
       <div class="cover-intro">${d.meta.intro}</div>
@@ -1458,7 +1454,7 @@ function render() {
     sn++; const pn = String(sn).padStart(2,'0');
     pageNum++;
     html += `<div class="page">${headerBar(false)}<div class="page-body">
-      ${sectionHead(pn, 'Content', 'Content Migration')}
+      ${sectionHead(pn, 'Content', 'Content Plan')}
       <div class="overview-content">${cm.intro || ''}</div>
       ${cmItems.length ? `
       <h3>${cm.inventoryTitle || ''}</h3>
@@ -1489,12 +1485,12 @@ function render() {
     sn++; const pn = String(sn).padStart(2,'0');
     pageNum++;
     html += `<div class="page">${headerBar(false)}<div class="page-body">
-      ${sectionHead(pn, 'Details', 'Details & Deliverables')}
-      <p>Your WordPress stack will likely include the following platforms:</p>
+      ${sectionHead(pn, 'Platforms', 'Platforms & Tools')}
+      <p>This engagement is built on the following platforms:</p>
       ${enabledPlugins.map(p => `<h4>${p.name}</h4><p>${p.desc}</p>`).join('')}
       <div class="callout">
-        <h4>Estimated Annual Plugin License Costs</h4>
-        <p>Our standard set of plugins are provided by ${d.brand.company} under our plugin management fee of <strong>${d.pluginCost}</strong>. Any custom plugin license costs will be passed through to the client. Plugins continue to operate when licenses are not renewed, but updates and support become unavailable.</p>
+        <h4>Third Party License Costs</h4>
+        <p>Our standard toolset is provided by ${d.brand.company} under our license management fee of <strong>${d.pluginCost}</strong>. Platform subscriptions unique to your program (email platform, CRM, stock licensing) are billed to you directly at the publisher\u2019s rate.</p>
       </div>
     </div>${pageFooter(pageNum)}</div>`;
   }
@@ -1538,21 +1534,21 @@ function render() {
     pageNum++;
     html += `<div class="page">${headerBar(false)}<div class="page-body">
       ${sectionHead(pn, 'Scope', 'Extra Scope')}
-      <p>The scope of web development projects inevitably changes over the course of a project&rsquo;s schedule. There are aspects to this project&rsquo;s goals which we cannot anticipate until the prototype and design take shape, and the process of content creation and migration begins. Our prototyping process is designed to anticipate and adapt to most necessary changes.</p>
-      <p>However, some requirements and solutions that have not yet been contemplated in this proposal will fall outside the fee provided. For this reason, we recommend that our clients anticipate and set aside <strong>10&ndash;15% of the initial budget</strong> for extra scope additions. All extra scope work is billed on an hourly basis (<strong>${d.pricing.hourlyRate}</strong>).</p>
+      <p>The scope of a marketing program inevitably shifts as the work takes shape. Some needs cannot be seen until strategy and creative are in front of you and content production begins. Our milestone reviews are designed to catch and absorb most of those changes.</p>
+      <p>Even so, some requests that were not contemplated in this proposal will fall outside the fee provided. We recommend that clients set aside <strong>10&ndash;15% of the initial budget</strong> for extra scope. All extra scope work is billed on an hourly basis (<strong>${d.pricing.hourlyRate}</strong>).</p>
       <h3>Our Pledge</h3>
       <p>${d.brand.company} will quickly make known any changes or additions that fall into the extra scope category throughout the planning, design, and development process. We will explain why certain changes fall outside of scope, and whenever possible, offer alternatives to keep the project as close to its original budget as possible.</p>
       <h3>Examples of scope changes:</h3>
       <ul class="scope-list">
-        <li>Addition of content components, features, plugins, or custom templates after the prototyping phase</li>
-        <li>The selection of design concepts that require custom artwork, icons, or original photography</li>
-        <li>Design changes after design approval</li>
-        <li>The addition of low-level design after the design phase</li>
-        <li>The substitution or customization of plugins due to low-level client preferences or requirements</li>
+        <li>New deliverables, channels, or page types added after strategy sign-off</li>
+        <li>Creative directions that call for custom artwork, original photography, or video</li>
+        <li>Revisions requested after a milestone has been approved</li>
+        <li>Additional content beyond the counts in the Content Inventory</li>
+        <li>Integrations or platform work discovered mid-project</li>
       </ul>
       <h3>Expenses, Licenses, Third Party Platforms</h3>
-      <p>Hard costs and expenses (e.g., travel and lodging, if needed) associated with the project will be billed separately. Plugin license fees, artwork and stock photography licensing, font licensing, or third party marketing platform fees will also be billed separately.</p>
-      <p>Whenever possible ${d.brand.company} utilizes plugins that offer unlimited developer licenses. ${d.brand.company} offers the use of our developer licensed plugins under our monthly plugin license management fee. (Note: if, at some future point, you opt out of our proactive support plan, you will need to secure individual licenses to your plugins.)</p>
+      <p>Hard costs and expenses (e.g., travel and lodging, if needed) associated with the project will be billed separately. Platform subscriptions, artwork and stock licensing, font licensing, and paid media budgets are also billed separately.</p>
+      <p>Whenever possible ${d.brand.company} uses tools we hold agency licenses for and passes that saving on under our license management fee. Tools licensed to you directly stay in your name, so nothing breaks if we ever part ways.</p>
     </div>${pageFooter(pageNum)}</div>`;
   }
 
@@ -1662,6 +1658,7 @@ function buildEditor() {
     <div style="font-size:11px;color:var(--text-light);margin-top:-8px;margin-bottom:8px">Version: <strong>v${data.meta.version || 1}</strong></div>
     ${field('Prepared By', 'text', 'meta.preparedBy')}
     ${field('Subtitle', 'text', 'meta.subtitle')}
+    ${field('Document label (cover + footer)', 'text', 'meta.docLabel')}
     <div class="field"><span class="field-label">Intro Text</span>
       <div class="richtext-toolbar">
         <button type="button" onmousedown="event.preventDefault()" onclick="document.execCommand('bold')"><b>B</b></button>
@@ -1697,9 +1694,9 @@ function buildEditor() {
     ${secToggle('pricing','Pricing & Fees')}
     ${secToggle('phases','Project Phases')}
     ${secToggle('overview','Project Overview')}
-    ${secToggle('contentMigration','Content Migration')}
+    ${secToggle('contentMigration','Content Plan')}
     ${secToggle('process','Process Overview')}
-    ${secToggle('plugins','Plugins & Details')}
+    ${secToggle('plugins','Platforms & Tools')}
     ${secToggle('deliverables','Project Deliverables')}
     ${secToggle('schedule','Schedule & Billing')}
     ${secToggle('extraScope','Extra Scope')}
@@ -1849,14 +1846,8 @@ function buildEditor() {
 
 function ensureOngoingSupport() {
   if (!data.ongoingSupport || !Array.isArray(data.ongoingSupport.blocks)) {
-    data.ongoingSupport = {
-      blocks: [
-        { heading: "Proactive Support Plan — $100/month", body: "<p>Our proactive support plan keeps your WordPress site healthy and secure. It includes WordPress core updates, plugin updates, and routine security checks. Our support plans are offered on a <strong>month-to-month</strong> basis with no long-term contracts — you can pause or cancel at any time.</p>" },
-        { heading: "Hourly Support — $160/hr", body: "<p>Beyond proactive maintenance, support plan clients have access to our team for all other support needs at our hourly rate of <strong>$160/hr</strong>. We bill in <strong>15-minute</strong> increments and invoice on a <strong>quarterly</strong> basis.</p>" },
-        { heading: "Plugin License Management — $35/month", body: "<p>As referenced in the Details section, our standard set of premium plugins is provided under our plugin management fee of <strong>$35/month</strong>. Plugins unique to your site for which we do not hold a developer license are not covered by this fee; those license costs are passed through to you directly at the publisher’s rate.</p>" },
-        { heading: "Hosting", body: "<p>Hosting is not included in our fees and should be planned as a recurring long-term cost of website ownership. We generally recommend <strong>WP Engine</strong>. Their shared server environments typically run <strong>$75–$150/month</strong>, with dedicated environments generally falling in the <strong>$750–$1,500/month</strong> range. Other hosting providers are available; please factor hosting into your long-term cost projections.</p>" }
-      ]
-    };
+    // One source of truth: backfill from the hardcoded defaults instead of a second copy.
+    data.ongoingSupport = JSON.parse(JSON.stringify(getHardcodedDefaults().ongoingSupport));
   }
 }
 
@@ -3668,7 +3659,7 @@ imgDbOpen()
     /* Overview can run to several pages; each .overview-content is one entry in
        data.overview, in document order. The migration page reuses the class, so
        skip that one. */
-    const cmPage = pageByH2('Content Migration');
+    const cmPage = pageByH2('Content Plan');
     let oi = 0;
     wrap.querySelectorAll('.overview-content').forEach(el => {
       if (cmPage && cmPage.contains(el)) return;
@@ -3705,7 +3696,7 @@ imgDbOpen()
       });
     }
 
-    const pl = pageByH2('Details & Deliverables') || pageByH2('Details &amp; Deliverables');
+    const pl = pageByH2('Platforms & Tools') || pageByH2('Platforms &amp; Tools');
     if (pl) {
       const live = liveIdx(d.plugins);
       [...pl.querySelectorAll('.page-body > h4')].forEach((h4, j) => {
@@ -3913,11 +3904,11 @@ imgDbOpen()
   /* ---- seed a filled-in sample proposal on a fresh browser ---- */
   try {
     if (!localStorage.getItem('pe-proposals') && data && data.meta && data.meta.clientName === 'Client Name') {
-      data.meta.clientName = 'Meridian History Center';
-      data.meta.intro = 'This proposal includes our fee and schedule for the redesign of the Meridian History Center website. Deliverables and project schedule are included below.';
-      data.overview = ['<p>The Meridian History Center’s site has grown for nine years without a rebuild. Content lives in layouts that no longer match how visitors use it, exhibitions are hand-built pages, and the staff needs a developer for routine changes.</p><p>The redesign moves the Center to a modern platform: clear navigation for visitors, structured templates for exhibitions, events, and articles, and a backend the staff can run on their own.</p>'];
+      data.meta.clientName = 'Meridian Outfitters';
+      data.meta.intro = 'This proposal includes our fee and schedule for Meridian Outfitters’ brand and website program. Deliverables and the project schedule are included below.';
+      data.overview = ['<p>Meridian Outfitters has grown from two stores to six, but the brand and website still belong to the two-store years. Campaigns run ad hoc, the site is hard to update, and there is no reliable way to tell which marketing is working.</p><p>This program resets the foundation: a sharpened brand and message, a website the team can run themselves, the content to launch with, and measurement wired in so next year’s decisions are based on numbers.</p>'];
       if (data.contentMigration && data.contentMigration.items) {
-        var counts = { 'Base pages': '214', 'Exhibitions': '36', 'Events': '120', 'News / blog posts': '380' };
+        var counts = { 'Website pages': '38', 'Blog articles': '24', 'Email templates': '6', 'Case studies': '4' };
         data.contentMigration.items.forEach(function(it){ if (counts[it.label]) it.count = counts[it.label]; });
       }
       render();
