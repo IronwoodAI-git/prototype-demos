@@ -22,9 +22,9 @@ a mid-session reload does not nag them.
 The 📖 button in the header replays it at any time; the 🎓 button toggles the guided tour and
 the ambient "?" hints.
 
-Each `index.html` is a self-contained copy of the corresponding prototype's UI. The full
-build kits (design docs + build contract for producing the real tools) live in separate
-private repositories.
+Each `index.html` is a self-contained copy of the corresponding prototype's UI. These demos
+are presentation layers only. The working tools' code lives in separate private blueprint
+repositories; read-only access is available on request for anyone starting a build from one.
 
 ## Updating a demo
 
