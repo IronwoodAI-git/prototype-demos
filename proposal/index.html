@@ -869,6 +869,11 @@ body {
   width: 90px; height: 90px; border-radius: 50%;
   object-fit: cover; border: 3px solid var(--border);
 }
+#proposal-preview .team-avatar {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-light); color: var(--navy);
+  font-family: 'Ovo', serif; font-size: 30px; letter-spacing: 1px;
+}
 #proposal-preview .team-name {
   font-family: 'Ovo', serif; font-size: 18px; color: var(--navy); margin-bottom: 2px;
 }
@@ -1028,6 +1033,7 @@ body {
   #proposal-preview .team-role { font-size: 9px !important; margin-bottom: 3px !important; }
   #proposal-preview .team-bio { font-size: 13px !important; line-height: 1.55 !important; }
   #proposal-preview .team-photo-img { width: 70px !important; height: 70px !important; }
+  #proposal-preview .team-avatar { font-size: 24px !important; }
   #proposal-preview .compact-top .overview-content > *:first-child { margin-top: 0 !important; }
 
   /* Signature: hairline rules */
@@ -1191,7 +1197,7 @@ function getHardcodedDefaults() {
       website: "acmestudio.com",
       termsUrl: "acmestudio.com/project-terms",
       supportTermsUrl: "acmestudio.com/terms",
-      teamIntro: "Acme Studio is a focused web design practice. We plan, design, and build websites for organizations whose sites carry real programs, collections, and events, and we stay on after launch to keep them healthy."
+      teamIntro: "Acme Studio is an independent marketing agency. We handle brand, campaigns, content, and the websites they run on, for organizations that need one team accountable for the whole program rather than four vendors pointing at each other."
     },
     pricing: {
       altFee: { enabled: true, label: "With Branding" },
@@ -1227,7 +1233,7 @@ function getHardcodedDefaults() {
         { label: "Landing pages", count: "TBD", enabled: false },
         { label: "Sales collateral (PDFs)", count: "TBD", enabled: false }
       ],
-      note: "<p>If the actual content runs well beyond these counts, or content types come to light that are not listed here, we will let you know and quote the additional work before starting it. See the Extra Scope section for how we handle changes of this kind.</p>"
+      note: "<p>If the actual content runs well beyond these counts, or content types come to light that are not listed here, we will let you know and quote the additional work before starting it.</p>"
     },
     overview: ["<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>"],
     process: [
@@ -1269,7 +1275,6 @@ function getHardcodedDefaults() {
       { pct: "25%", label: "Production\nMidpoint" },
       { pct: "25%", label: "Launch" }
     ],
-    extraScope: { enabled: true },
     ongoingSupport: {
       blocks: [
         { heading: "Ongoing Partnership \u2014 from $2,500/month", body: "<p>Most clients continue with a monthly retainer after launch: campaign production, site updates, reporting, and a standing planning call. Retainers are offered <strong>month to month</strong> with no long-term contract; you can pause or cancel at any time.</p>" },
@@ -1278,9 +1283,9 @@ function getHardcodedDefaults() {
       ]
     },
     team: [
-      { name: "Alex Rivera", role: "Principal & Digital Strategist", bio: "Alex has led web projects for twenty years and works directly with every client, shaping each project from initial strategy through information architecture, prototyping, and platform architecture. Replace this bio with your own in the sidebar\u2019s Team section.", image: "", enabled: true },
-      { name: "Jordan Lee", role: "Creative Director", bio: "Jordan directs the design process, starting with a brand workshop that helps clients express their goals by comparing examples and building a common visual vocabulary. Replace this bio with your own.", image: "", enabled: true },
-      { name: "Sam Patel", role: "Lead Developer", bio: "Sam builds the custom integrations a project needs and provides ongoing support for client websites, from new customizations to server, DNS, and third party platform work. Replace this bio with your own.", image: "", enabled: true }
+      { name: "Alex Rivera", role: "Principal & Strategy Director", bio: "Alex leads discovery and strategy on every engagement and stays involved through launch. Twenty years of agency work across retail, healthcare, and nonprofit clients, with a bias for programs that can prove what they returned.", image: "", enabled: true },
+      { name: "Jordan Lee", role: "Creative Director", bio: "Jordan runs brand and creative, starting from a workshop that gets everyone using the same words before anyone designs anything. Their work covers identity, campaign creative, and the design systems that keep it consistent.", image: "", enabled: true },
+      { name: "Sam Patel", role: "Head of Digital", bio: "Sam owns the build and the measurement: websites, marketing automation, analytics, and the integrations that connect them. Also the person who trains your team so you are not dependent on us for routine changes.", image: "", enabled: true }
     ],
     references: [
       { org: "Meridian History Center", url: "meridianhistory.example.org", phone: "(555) 201-4477", contactName: "Dana Whitfield", contactTitle: "Executive Director", contactEmail: "dana@meridianhistory.example.org", image: "", enabled: true },
@@ -1298,7 +1303,6 @@ function getHardcodedDefaults() {
       plugins: true,
       deliverables: true,
       schedule: true,
-      extraScope: true,
       ongoingSupport: true,
       team: true,
       references: true,
@@ -1410,7 +1414,7 @@ function render() {
         }).join('')}
         <tr class="fee-note"><td>Out of scope project changes, alterations, additions*</td><td style="font-style:italic">${d.pricing.hourlyRate}</td></tr>
       </table>
-      <p class="footnote">* We recommend setting aside 10&ndash;15% of a project&rsquo;s initial budget for unforeseen changes and out-of-scope additions.${s('extraScope') ? ' See the &ldquo;Extra Scope&rdquo; section for details.' : ''}</p>
+      <p class="footnote">* We recommend setting aside 10&ndash;15% of a project&rsquo;s initial budget for unforeseen changes and out-of-scope additions.</p>
       ${d.pricing.note ? `<div class="callout">${d.pricing.note}</div>` : ''}
     </div>${pageFooter(pageNum)}</div>`;
 
@@ -1528,30 +1532,6 @@ function render() {
     </div>${pageFooter(pageNum)}</div>`;
   }
 
-  // EXTRA SCOPE
-  if (s('extraScope')) {
-    sn++; const pn = String(sn).padStart(2,'0');
-    pageNum++;
-    html += `<div class="page">${headerBar(false)}<div class="page-body">
-      ${sectionHead(pn, 'Scope', 'Extra Scope')}
-      <p>The scope of a marketing program inevitably shifts as the work takes shape. Some needs cannot be seen until strategy and creative are in front of you and content production begins. Our milestone reviews are designed to catch and absorb most of those changes.</p>
-      <p>Even so, some requests that were not contemplated in this proposal will fall outside the fee provided. We recommend that clients set aside <strong>10&ndash;15% of the initial budget</strong> for extra scope. All extra scope work is billed on an hourly basis (<strong>${d.pricing.hourlyRate}</strong>).</p>
-      <h3>Our Pledge</h3>
-      <p>${d.brand.company} will quickly make known any changes or additions that fall into the extra scope category throughout the planning, design, and development process. We will explain why certain changes fall outside of scope, and whenever possible, offer alternatives to keep the project as close to its original budget as possible.</p>
-      <h3>Examples of scope changes:</h3>
-      <ul class="scope-list">
-        <li>New deliverables, channels, or page types added after strategy sign-off</li>
-        <li>Creative directions that call for custom artwork, original photography, or video</li>
-        <li>Revisions requested after a milestone has been approved</li>
-        <li>Additional content beyond the counts in the Content Inventory</li>
-        <li>Integrations or platform work discovered mid-project</li>
-      </ul>
-      <h3>Expenses, Licenses, Third Party Platforms</h3>
-      <p>Hard costs and expenses (e.g., travel and lodging, if needed) associated with the project will be billed separately. Platform subscriptions, artwork and stock licensing, font licensing, and paid media budgets are also billed separately.</p>
-      <p>Whenever possible ${d.brand.company} uses tools we hold agency licenses for and passes that saving on under our license management fee. Tools licensed to you directly stay in your name, so nothing breaks if we ever part ways.</p>
-    </div>${pageFooter(pageNum)}</div>`;
-  }
-
   // ONGOING SUPPORT
   if (s('ongoingSupport')) {
     sn++; const pn = String(sn).padStart(2,'0');
@@ -1570,7 +1550,7 @@ function render() {
     html += `<div class="page">${headerBar(false)}<div class="page-body">
       ${sectionHead(pn, 'Team', d.brand.company + ' Team')}
       <p style="margin-bottom:30px">${d.brand.teamIntro}</p>
-      ${enabledTeam.map(t => { const ti = resolveImg(t.image); return `<div class="team-member">${ti ? `<img class="team-photo-img" src="${ti}" alt="${t.name}">` : ''}<div class="team-info"><div class="team-name">${t.name}</div><div class="team-role">${t.role}</div><p class="team-bio">${t.bio}</p></div></div>`; }).join('')}
+      ${enabledTeam.map(t => { const ti = resolveImg(t.image); const tIni = String(t.name || '').trim().split(/\s+/).slice(0,2).map(w => w[0] || '').join('').toUpperCase(); return `<div class="team-member">${ti ? `<img class="team-photo-img" src="${ti}" alt="${t.name}">` : `<div class="team-photo-img team-avatar">${tIni}</div>`}<div class="team-info"><div class="team-name">${t.name}</div><div class="team-role">${t.role}</div><p class="team-bio">${t.bio}</p></div></div>`; }).join('')}
     </div>${pageFooter(pageNum)}</div>`;
   }
 
@@ -1699,7 +1679,6 @@ function buildEditor() {
     ${secToggle('plugins','Platforms & Tools')}
     ${secToggle('deliverables','Project Deliverables')}
     ${secToggle('schedule','Schedule & Billing')}
-    ${secToggle('extraScope','Extra Scope')}
     ${secToggle('ongoingSupport','Ongoing Support')}
     ${secToggle('team','Team')}
     ${secToggle('references','References')}
@@ -1807,8 +1786,6 @@ function buildEditor() {
     <div id="billing-editor"></div>
     <button class="add-btn" onclick="addBillingStep()">+ Add Step</button>
   `, 'billing');
-
-  // --- Extra Scope (no editable fields, controlled by Sections toggle) ---
 
   // --- Ongoing Support ---
   ensureOngoingSupport();
