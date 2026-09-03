@@ -3203,7 +3203,7 @@ boot();
    nag. ?story=0 skips it, ?story=1 forces it. */
 (function(){
 "use strict";
-var SKEY = "pe_story_seen";
+var SKEY = "pub_story_seen";
 var q = (function(){try{return new URLSearchParams(location.search);}catch(e){return {get:function(){return null;}};}})();
 var force = q.get("story");
 var at = parseInt(q.get("storyat"), 10);          /* ?storyat=3 deep-links one chapter */
@@ -3445,7 +3445,7 @@ else boot();
      ===== TUTORIAL LAYER (engine + content) =====
      Self-contained onboarding layer per the shared engine spec (TUTORIAL_LAYER_SPEC):
      guided tour + ambient "?" hotspots + tab intro cards + welcome modal.
-     State: localStorage "pe_tutorial" = "on"/"off" (absent = first run -> welcome + on).
+     State: localStorage "pub_tutorial" = "on"/"off" (absent = first run -> welcome + on).
      Zero footprint when off except the header 🎓 pill. Vanilla JS, deterministic.
      ================================================================================ -->
 <style>
@@ -3486,7 +3486,7 @@ var openModal=(typeof window.openModal==="function")?window.openModal:function(h
 /* ===== TUTORIAL LAYER (engine + content) ===== */
 (function(){
 "use strict";
-const LS_KEY="pe_tutorial";
+const LS_KEY="pub_tutorial";
 const N=(t,c,h)=>{const d=document.createElement(t);if(c)d.className=c;if(h!=null)d.innerHTML=h;return d;};
 
 /* ---------------- state ---------------- */
