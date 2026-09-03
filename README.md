@@ -6,6 +6,7 @@ GitHub Pages — no backend, no install, sample data only.
 - **`/outreach/`** — Outreach Engine (cold-email outreach) prototype
 - **`/linkedin/`** — LinkedIn Engine (LinkedIn outreach) prototype
 - **`/proposal/`** — Proposal Engine (proposal builder) prototype
+- **`/publishing/`** — Publishing Engine (content publishing) prototype
 - **`index.html`** — landing page linking to all of them
 
 ## How a demo opens
