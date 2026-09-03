@@ -1,94 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
-<title>Prototype Demos</title>
-<style>
-  :root{
-    --bg:#0f1115; --card:#181b22; --edge:#262b36; --ink:#eef1f6; --muted:#9aa4b2;
-    --accent:#5b8cff; --accent-2:#37d0a0;
-  }
-  @media (prefers-color-scheme: light){
-    :root{ --bg:#f5f7fa; --card:#ffffff; --edge:#e3e8ef; --ink:#131722; --muted:#5b6472; --accent:#2f6bff; --accent-2:#0fae7e; }
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-  .wrap{max-width:920px;margin:0 auto;padding:64px 24px;flex:1;width:100%}
-  .kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
-  h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 14px;font-weight:700}
-  .lede{font-size:18px;line-height:1.55;color:var(--muted);max-width:60ch;margin:0 0 44px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
-  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--edge);
-        border-radius:16px;padding:28px;text-decoration:none;color:inherit;transition:transform .15s ease,border-color .15s ease}
-  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
-  .tag{align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.04em;padding:4px 10px;border-radius:999px;
-       background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);margin-bottom:18px}
-  .card h2{font-size:22px;margin:0 0 8px}
-  .card p{color:var(--muted);line-height:1.5;margin:0 0 22px;flex:1}
-  .go{font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:7px}
-  .card:nth-child(2) .tag{background:color-mix(in srgb,var(--accent-2) 16%,transparent);color:var(--accent-2)}
-  .card:nth-child(2) .go{color:var(--accent-2)}
-  .card:nth-child(3) .tag{background:color-mix(in srgb,#f08c2e 16%,transparent);color:#f08c2e}
-  .card:nth-child(3) .go{color:#f08c2e}
-  .note{margin-top:44px;padding:16px 18px;border:1px dashed var(--edge);border-radius:12px;
-        color:var(--muted);font-size:14px;line-height:1.5}
-  footer{color:var(--muted);font-size:13px;text-align:center;padding:28px 24px;border-top:1px solid var(--edge)}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <meta name="robots" content="noindex">
+  <title>Tool demos</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f6f6;color:#1d2428;font:15px/1.45 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{width:min(880px,calc(100% - 32px));margin:52px auto}h1{font-size:30px;margin:0 0 8px}p{color:#5c686f;margin:0 0 28px}.list{border:1px solid #d7dddf;border-radius:12px;overflow:hidden;background:#fff}.list a{display:grid;grid-template-columns:220px 1fr auto;gap:18px;align-items:center;padding:17px 19px;color:inherit;text-decoration:none;border-bottom:1px solid #e5e9ea}.list a:last-child{border-bottom:0}.list a:hover{background:#f5f8ff}.list strong{font-size:15px}.list span{color:#657178}.list b{color:#246bfd;font-size:13px}@media(max-width:680px){.list a{grid-template-columns:1fr}.list span{margin-top:-12px}}
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <p class="kicker">Interactive Prototypes</p>
-    <h1>Working prototypes to click through</h1>
-    <p class="lede">These are clickable prototypes that run entirely in your browser. No login,
-      no install, nothing to set up. Each one opens with a short story explaining what the tool is and
-      why it exists, then walks you through it. They use sample data, so you can click anything.</p>
-
-    <div class="grid">
-      <a class="card" href="./outreach/">
-        <span class="tag">Outreach Engine</span>
-        <h2>Cold-email outreach</h2>
-        <p>Refine a prospect list, run sequenced email campaigns, and track replies, with the
-           warm-up rules and sending guardrails that keep your domain out of spam built into the tool
-           rather than left to your memory.</p>
-        <span class="go">Open demo &rarr;</span>
-      </a>
-
-      <a class="card" href="./linkedin/">
-        <span class="tag">LinkedIn Engine</span>
-        <h2>LinkedIn outreach</h2>
-        <p>Warm prospects up, send connection requests at a pace that will not get your account
-           restricted, and never leave an accepted connection without a first message.</p>
-        <span class="go">Open demo &rarr;</span>
-      </a>
-
-      <a class="card" href="./proposal/">
-        <span class="tag">Proposal Engine</span>
-        <h2>Proposal builder</h2>
-        <p>Build a client-ready proposal from settings instead of a copied document: fees total
-           themselves, sections renumber themselves, your brand and standard wording carry over,
-           and the output is a print-perfect PDF. Click any block on the page to edit it.</p>
-        <span class="go">Open demo &rarr;</span>
-      </a>
-
-      <a class="card" href="./publishing/">
-        <span class="tag">Publishing Engine</span>
-        <h2>Content publishing</h2>
-        <p>Daily ideas from your own feeds, written in your voice by a separate Voice Studio, then
-           polished for each outlet, approved, scheduled and posted. Blog and LinkedIn come built
-           in; a new outlet is a form, not a project.</p>
-        <span class="go">Open demo &rarr;</span>
-      </a>
-    </div>
-
-    <div class="note">
-      <strong>Note:</strong> These are front-end prototypes running on invented sample data. Buttons simulate
-      actions rather than sending real messages, and nothing here touches a real mailbox or LinkedIn account.
-      They exist to settle the experience before the production tools get built.
-    </div>
-  </div>
-  <footer>Prototype demos &middot; presented for review</footer>
+  <main class="wrap">
+    <h1>Tool demos</h1>
+    <p>Disconnected walkthroughs using sample data. Each link opens one self-contained HTML file.</p>
+    <section class="list">
+      <a href="./toolbox-site/"><strong>Toolbox Site</strong><span>Catalog, skills, teams, and code</span><b>Open</b></a>
+      <a href="./toolbox/"><strong>Toolbox</strong><span>Actions, activity, publishing, and review</span><b>Open</b></a>
+      <a href="./content-engine/"><strong>Content Engine</strong><span>Research, drafting, and publishing</span><b>Open</b></a>
+      <a href="./social-ideation/"><strong>Social Ideation</strong><span>Ideas, media, posts, and calendar</span><b>Open</b></a>
+      <a href="./ad-preview/"><strong>Ad Preview</strong><span>Profiles, briefs, creative, and review</span><b>Open</b></a>
+      <a href="./linkedin/"><strong>LinkedIn Engine</strong><span>Relationships, inbox, replies, and workflow</span><b>Open</b></a>
+      <a href="./outreach/"><strong>Outreach Engine</strong><span>Lists, sequences, replies, and safeguards</span><b>Open</b></a>
+      <a href="./proposal/"><strong>Proposal Engine</strong><span>Drafting, pricing, editing, and PDF output</span><b>Open</b></a>
+      <a href="./list-flow/"><strong>List Flow</strong><span>Filtering, deduplication, and routing</span><b>Open</b></a>
+      <a href="./website-engine/"><strong>Website Engine</strong><span>Sites, templates, editing, and checks</span><b>Open</b></a>
+    </section>
+  </main>
 </body>
 </html>

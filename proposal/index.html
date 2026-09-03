@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proposal Engine Demo</title>
-<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;600;700;800&family=Ovo&display=swap" rel="stylesheet">
+<title>Proposal Engine demo</title>
 <style>
 /* ============================================================
    EDITOR UI STYLES
@@ -3975,7 +3975,7 @@ imgDbOpen()
   var want = qs.get('story');
   var seen = false;
   try { seen = sessionStorage.getItem('pe_story_seen') === '1'; } catch(e){}
-  if (want !== '0' && (want === '1' || !seen)) {
+  if (want === '1') {
     try { sessionStorage.setItem('pe_story_seen','1'); } catch(e){}
     showStory(0);
   }

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LinkedIn Engine — prototype</title>
+<title>LinkedIn Engine demo</title>
 <style>
 :root{
   --bg:#f6f7f9; --panel:#ffffff; --ink:#1c2330; --muted:#5b6675; --line:#e3e7ec;
@@ -590,13 +591,13 @@ tr.resolving .soak.wait{animation:pulse 1.3s ease-in-out infinite}
 
 <script>
 /* ============================ deterministic mock data ============================ */
-/* Seeded PRNG so the prototype looks identical every load — never Math.random / Date.now
+/* Seeded PRNG so the demo looks identical every load — never Math.random / Date.now
    for anything that affects layout (per the prototyping skill). */
 let _s=20260626; const rnd=()=>{_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff;};
 const pick=a=>a[Math.floor(rnd()*a.length)];
 const chance=p=>rnd()<p;
 /* TODAY = the live LOCAL date (matches the user's calendar day). Kept in parity with the
-   production build (linkedin-engine/index.html). Safe here because the prototype's mock data is
+   production build (linkedin-engine/index.html). Safe here because the demo's mock data is
    randomized per load anyway — only the relative "days ago" offsets keyed off this, and pinning it
    to a fixed string made July activity read as "today". Local-date parts, not toISOString(), so it
    doesn't jump a day near UTC midnight. */
@@ -2564,7 +2565,7 @@ function renderBulk(){if(!ST.sel.size)return"";
   <button class="btn sm" onclick="bulkPrincipal()" title="Mark all selected as agency principals">🛡 Principal</button>
   <button class="btn gray sm" onclick="ST.sel.clear();render()">Clear</button>
   <span class="x" onclick="ST.sel.clear();render()">×</span></div>`;}
-/* Bulk actions apply to every selected connection (local state only in the prototype), then clear
+/* Bulk actions apply to every selected connection (local state only in the demo), then clear
    the selection so the rows reflect it immediately. */
 function bulkTag(t,action){const ids=[...ST.sel];if(!ids.length)return;snapshot("bulk "+action+" tag");
   ids.forEach(id=>{const p=personById(id);if(action==="add"){if(!p.tags.includes(t))p.tags.push(t);}else p.tags=p.tags.filter(x=>x!==t);});
@@ -3370,7 +3371,7 @@ function parseNotesSelection(notes,recs){
 
 /* Build the proposal: append each chosen recommendation's rule to its target voice field, diff it.
    (In the real tool an LLM rewrites the field surgically; here we deterministically append the rule
-   line so the prototype shows a clean, honest before/after — see BUILD_NOTES §6.) */
+   line so the demo shows a clean, honest before/after — see BUILD_NOTES §6.) */
 function buildProposal(){
   const notes=$("ln-notes")?$("ln-notes").value:"";
   const {sel,mode}=parseNotesSelection(notes,LEARN_REPORT.recs);
@@ -3599,7 +3600,7 @@ var at = parseInt(q.get("storyat"), 10);          /* ?storyat=3 deep-links one c
 if(!isNaN(at)) force = "1";
 var seen = false;
 try{ seen = sessionStorage.getItem(SKEY) === "1"; }catch(e){}
-var willRun = force === "1" ? true : (force === "0" ? false : !seen);
+var willRun = force === "1";
 
 var STORY_CH = [
 {
@@ -4183,7 +4184,7 @@ if(window.STORY&&window.STORY.willRun){
   seenTabs.add(ST.tab);
   if(isOn())attachSpots();
 }
-else if(mode()===null){setModeVal("on");syncPill();welcome();}      // first run: welcome, layer defaults on
+else if(mode()===null){setModeVal("on");syncPill();}                // open on the tool; walkthrough starts on request
 else if(isOn()){attachSpots();maybeShowTabCard(ST.tab);}
 })();
 </script>

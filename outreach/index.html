@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Outreach Engine — PROTOTYPE (demo data)</title>
+<title>Outreach Engine demo</title>
 <style>
 :root{
   --bg:#f6f7f9; --panel:#ffffff; --ink:#1c2330; --muted:#5b6675; --line:#e3e7ec;
@@ -426,7 +427,7 @@ body.resizing{cursor:col-resize;user-select:none}
    no server behind it. Everything below intercepts window.fetch and answers the
    app's ~10 API endpoints from synthetic data generated in the browser.
 
-   Why it's built this way: the prototype used to be a hand-maintained copy of
+   Why it's built this way: the demo used to be a hand-maintained copy of
    the UI, and it fell eight days behind the real app because every change had
    to be ported by hand. Now the UI file is copied verbatim and only this shim
    is maintained, so a re-sync is a file copy.
@@ -809,7 +810,7 @@ console.info("Outreach Engine PROTOTYPE — mock backend active. All data is syn
 
 <script>
 /* ============================ mock data ============================ */
-// Deterministic PRNG so the prototype looks the same every load.
+// Deterministic PRNG so the demo looks the same every load.
 let _s=20260625; const rnd=()=>{_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff;};
 const pick=a=>a[Math.floor(rnd()*a.length)];
 const chance=p=>rnd()<p;
@@ -1170,7 +1171,7 @@ function saveStages(){try{localStorage.setItem("oe_stages",JSON.stringify(STAGE_
 function loadStages(){try{const s=JSON.parse(localStorage.getItem("oe_stages")||"null");
   if(Array.isArray(s)&&s.length){STAGE_DEFS=s;rebuildStages();}}catch(e){}}
 
-/* ---- dates (deterministic "today" for the prototype; ISO strings sort/compare directly) ---- */
+/* ---- dates (deterministic "today" for the demo; ISO strings sort/compare directly) ---- */
 let TODAY="2026-06-26";  // overwritten from server meta.today at boot
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function fmtDate(d){if(!d)return"—";const[y,m,day]=d.split("-").map(Number);return MONTHS[m-1]+" "+day+(y!==2026?(", "+y):"");}
@@ -3387,7 +3388,7 @@ function setCampaignGroup(id){const existing=[...new Set(campaigns.map(c=>c.grou
   if(g===null)return;campaigns[id].group=g.trim();renderCamp();toast(g.trim()?"Grouped under “"+g.trim()+"”":"Campaign set independent","");}
 
 /* Live SES health. This was a hardcoded array of invented numbers inherited from
-   the prototype — sent24h/bounces/complaints were all made up, and it listed only
+   the demo — sent24h/bounces/complaints were all made up, and it listed only
    two of the five demo addresses. the operator was reading reputation decisions off
    fiction (2026-07-21). It now comes from /api/ses/health.
 
@@ -4247,7 +4248,7 @@ var at = parseInt(q.get("storyat"), 10);          /* ?storyat=3 deep-links one c
 if(!isNaN(at)) force = "1";
 var seen = false;
 try{ seen = sessionStorage.getItem(SKEY) === "1"; }catch(e){}
-var willRun = force === "1" ? true : (force === "0" ? false : !seen);
+var willRun = force === "1";
 
 var STORY_CH = [
 {
@@ -4862,7 +4863,7 @@ function welcome(){
    <div class="mbody">
      <p style="margin:0 0 10px">This is a <b>cold-email outreach engine</b>: one place to keep your master list of companies and people, refine it down to the prospects worth talking to, and run careful email campaigns that <b>protect your sending reputation</b>.</p>
      <p style="margin:0 0 10px">List building and enrichment happen in upstream tools — their output lands here. From here you <b>rank and review</b> the list, send <b>warmed-up</b> campaigns with hard guardrails, log replies, and hand the best prospects to a companion LinkedIn tool.</p>
-     <p class="muted" style="margin:0 0 4px;font-size:12.5px">This prototype runs on sample data — nothing sends real email, so click anything. The guided tour takes ~3 minutes and follows the real workflow in order.</p>
+     <p class="muted" style="margin:0 0 4px;font-size:12.5px">This demo runs on sample data — nothing sends real email, so click anything. The guided tour takes ~3 minutes and follows the real workflow in order.</p>
      <div class="btnrow" style="margin-top:16px">
        <button class="btn" onclick="closeModal();TUT.start()">▶ Take the guided tour</button>
        <button class="btn ghost" onclick="closeModal();TUT.explore()">Explore with hints on</button>
@@ -4928,7 +4929,7 @@ if(on)attachSpots();
    "what is this and why" card, then hands off to this tour. Only fall back to the old
    welcome modal if the story layer is absent or has already been seen this session. */
 if(window.STORY&&window.STORY.willRun){seenTabs.add(ST.tab);}
-else if(firstRun){seenTabs.add(ST.tab);welcome();}   // welcome covers the first tab's intro
+else if(firstRun){seenTabs.add(ST.tab);}             // open on the tool; walkthrough starts on request
 else if(on)showIntro(ST.tab);
 })();
 </script>

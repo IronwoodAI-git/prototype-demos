@@ -1,35 +1,15 @@
-# Prototype Demos
+# Tool demos
 
-Public, click-through demos of two interactive UX prototypes. Served as a static site via
-GitHub Pages — no backend, no install, sample data only.
+Static deployment hub for the `demo/index.html` files in Ironwood's canonical
+collaborative-tool repositories.
 
-- **`/outreach/`** — Outreach Engine (cold-email outreach) prototype
-- **`/linkedin/`** — LinkedIn Engine (LinkedIn outreach) prototype
-- **`/proposal/`** — Proposal Engine (proposal builder) prototype
-- **`/publishing/`** — Publishing Engine (content publishing) prototype
-- **`index.html`** — landing page linking to all of them
+Each demo is one self-contained HTML file. It uses sample data, has a guided
+highlight-and-next walkthrough, loads no remote assets, and cannot call an API
+or perform a live action. The corresponding canonical repository remains the
+source of truth.
 
-## How a demo opens
+`publishing/` is preserved as a legacy alias for `content-engine/`.
 
-Both demos open on the **story layer**: a short narrative that explains what the tool is, why
-it exists, and how it differs from the obvious alternatives (a CRM, a bulk email platform,
-LinkedIn on its own), ending on a card that starts the guided tour. It runs **once per browsing
-session**, not once per browser, so somebody opening the link fresh always gets the context and
-a mid-session reload does not nag them.
-
-- `?story=0` opens straight into the tool
-- `?story=1` forces the story even if it has already been seen this session
-- `?storyat=N` deep-links a single card, for sending one specific argument to someone
-
-The 📖 button in the header replays it at any time; the 🎓 button toggles the guided tour and
-the ambient "?" hints.
-
-Each `index.html` is a self-contained copy of the corresponding prototype's UI. These demos
-are presentation layers only. The working tools' code lives in separate private blueprint
-repositories; read-only access is available on request for anyone starting a build from one.
-
-## Updating a demo
-
-The demo copies are generated from the source prototypes. To refresh after editing a
-prototype, re-copy its `index.html` into the matching folder here and run `push.bat`
-(or `git add -A && git commit && git push`).
+To update this hub, copy each canonical `demo/index.html` into its matching
+folder, open every file directly, complete each walkthrough, confirm no external
+network request occurred, then commit and push.
