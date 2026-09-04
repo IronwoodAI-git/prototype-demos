@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-09-04T16:58:18.374Z",
+  "demos": [
+    {
+      "slug": "toolbox-site",
+      "source": "IronwoodAI-git/toolbox-site",
+      "commit": "855ad4636fd53359d82b846fe144abb4271fd9c6",
+      "sha256": "ace7a386879eb72df6237a31f545f231276d79e7643ff01332bf047453acbaff",
+      "bytes": 438710,
+      "url": "https://ironwoodai.com/demos/toolbox-site/index.html"
+    },
+    {
+      "slug": "toolbox",
+      "source": "IronwoodAI-git/toolbox",
+      "commit": "1a6042934922f8cd0408ee57efc04c4b794fb0de",
+      "sha256": "ace7a386879eb72df6237a31f545f231276d79e7643ff01332bf047453acbaff",
+      "bytes": 438710,
+      "url": "https://ironwoodai.com/demos/toolbox/index.html"
+    },
+    {
+      "slug": "content-engine",
+      "source": "IronwoodAI-git/content-engine",
+      "commit": "61e45b2d1b4baeac5d2ee37fae983453dab18ffe",
+      "sha256": "65bf79ee383ca9993621e4d91829252f6f976e73d714bd468ca3263a8ba1bdd9",
+      "bytes": 418404,
+      "url": "https://ironwoodai.com/demos/content-engine/index.html"
+    },
+    {
+      "slug": "social-ideation",
+      "source": "IronwoodAI-git/social-ideation",
+      "commit": "6a08512a799aee0b08ce9ac1af9af34a3a1791a1",
+      "sha256": "159490396573cd1f004b74415ee9ff0f4c40ca593564dabfb31f6ed7f6283b6a",
+      "bytes": 602511,
+      "url": "https://ironwoodai.com/demos/social-ideation/index.html"
+    },
+    {
+      "slug": "ad-preview",
+      "source": "IronwoodAI-git/ad-preview",
+      "commit": "d43c5fa9f47bd427e5bef6305ff71161b9cd7df7",
+      "sha256": "5327877ddc68c0c57b65742f5077eab92186afa816b508cdc48016e370cb7f49",
+      "bytes": 2082462,
+      "url": "https://ironwoodai.com/demos/ad-preview/index.html"
+    },
+    {
+      "slug": "linkedin",
+      "source": "IronwoodAI-git/linkedin-engine-canonical",
+      "commit": "ce6cd4610900b8b032951bbe883ff49ea4a8d648",
+      "sha256": "4068511781a40796228664be90b5aa23fb3acfc5ba60b6144dfd3b6f9a1cb9e7",
+      "bytes": 400954,
+      "url": "https://ironwoodai.com/demos/linkedin/index.html"
+    },
+    {
+      "slug": "outreach",
+      "source": "IronwoodAI-git/outreach-engine",
+      "commit": "11e0adce463ec4e885d8d237825d9c40320f25b8",
+      "sha256": "a2bf07c6381254eddebc8ddd0b1f5e46c458697ec4c97655d785619453b7816b",
+      "bytes": 416274,
+      "url": "https://ironwoodai.com/demos/outreach/index.html"
+    },
+    {
+      "slug": "proposal",
+      "source": "IronwoodAI-git/proposal-engine",
+      "commit": "f42ca75fcb11e828a16fa7a7b090175c29748f32",
+      "sha256": "c0f9ea18d76436f319532caf7ba6536a25704165979b6adfe308a8e9e4685ef6",
+      "bytes": 894068,
+      "url": "https://ironwoodai.com/demos/proposal/index.html"
+    },
+    {
+      "slug": "list-flow",
+      "source": "IronwoodAI-git/list-flow",
+      "commit": "a4056b441ec1f90b3ffa4e490a23c6b3bd35843a",
+      "sha256": "1d56d0db9e83c8842ff230eee09c6238bf16b050b9d31d90fd224288e4150689",
+      "bytes": 534953,
+      "url": "https://ironwoodai.com/demos/list-flow/index.html"
+    },
+    {
+      "slug": "website-engine",
+      "source": "IronwoodAI-git/website-engine",
+      "commit": "8f2aca982050b80278173a11323bb0275da9a952",
+      "sha256": "e51264859adb5e5f9163d902a13b3b337fcff3f6defb085afb9c26e55b20a323",
+      "bytes": 29619,
+      "url": "https://ironwoodai.com/demos/website-engine/index.html"
+    }
+  ]
+}
