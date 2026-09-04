@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'">
+<head>
+<style id="demo-first-visit-style">html[data-demo-first-visit] :is(#demo-tour-start,#demo-start,#demo-tour-launch,#tutPill){display:none!important}</style>
+<script id="demo-first-visit">
+(function(){
+  const key="demo-walkthrough-seen:outreach";
+  let first=true;
+  try { first=localStorage.getItem(key)!=="1"; } catch {}
+  if(first)document.documentElement.setAttribute("data-demo-first-visit","");
+  
+  function ready(){
+    let attempts=0;
+    const timer=setInterval(()=>{
+      const launch=document.querySelector("#demo-tour-start,#demo-start,#demo-tour-launch,#tutPill");
+      if(!launch){if(++attempts>100)clearInterval(timer);return;}
+      
+      clearInterval(timer);
+      if(!first)return;
+      launch.click();
+      const check=setInterval(()=>{
+        const card=document.querySelector("#demo-tour-card,#demo-tour,.tut-card");
+        if(card&&!card.hidden&&card.getBoundingClientRect().height){
+          try { localStorage.setItem(key,"1"); } catch {}
+          clearInterval(check);
+        }else if(++attempts>100){
+          document.documentElement.removeAttribute("data-demo-first-visit");
+          clearInterval(check);
+        }
+      },100);
+    },100);
+  }
+  if(document.readyState==="complete")setTimeout(ready,500);
+  else window.addEventListener("load",()=>setTimeout(ready,500),{once:true});
+})();
+</script><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Outreach Engine</title>
