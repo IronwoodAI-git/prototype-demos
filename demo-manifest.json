@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T21:41:22.788Z",
+  "generatedAt": "2026-09-07T14:28:13.390Z",
   "demos": [
     {
       "slug": "toolbox-site",
@@ -44,9 +44,9 @@
     {
       "slug": "linkedin",
       "source": "IronwoodAI-git/linkedin-engine-canonical",
-      "commit": "c3cec573d8b1d4e1b9ee932436e37f1874d24709",
-      "sha256": "f31a2acf93234c06b024db5a41e85cf1d18ccef4a19468466d630b70000046a6",
-      "bytes": 402297,
+      "commit": "1b28397d0eac7d1c0932ce92944929e7a9109dd0",
+      "sha256": "823f582b725399616f3c8c0a429a77e76dc47c3d9cf235ba9a7aaeb39ea6224a",
+      "bytes": 1061102,
       "url": "https://ironwoodai.com/demos/linkedin/index.html"
     },
     {
