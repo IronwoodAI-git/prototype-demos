@@ -31,8 +31,8 @@
       "name": "Social Ad Engine",
       "description": "Create and review ad variations using a shared brand profile. Shape the workflow around your campaigns.",
       "url": "https://ironwoodai.com/demos/social-ad-engine/",
-      "sha256": "388506075eea2d41cfcbb5d25d716dbc325c8252f971ccc087c32ab40b1c1f2f",
-      "bytes": 3466679,
+      "sha256": "8b95a72caf0791be63d151d4b5983e813a57fecc2b17ab4b9996dbd11c067a5d",
+      "bytes": 4854145,
       "provenance": {
         "source": "/Users/adam/Projects/ironwood-canonical-migration-2026-09-01/canonical/ad-preview/demo/index.html",
         "changes": "Preserved original UI bundle. Added purpose-first walkthrough, starter title. Social sample adapter includes caption and image."
