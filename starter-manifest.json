@@ -1,0 +1,107 @@
+{
+  "date": "2026-09-09",
+  "demos": [
+    {
+      "slug": "social-media-engine",
+      "name": "Social Media Engine",
+      "description": "Take an idea through copy and image creation in one workflow. Adapt it to your agency\u2019s brands and review process.",
+      "url": "https://ironwoodai.com/demos/social-media-engine/",
+      "sha256": "ed7028538de72e0b0e50ada04133f3469c3796fa62ca104ade7fc290865f121b",
+      "bytes": 604965,
+      "provenance": {
+        "source": "/Users/adam/Projects/ironwood-gallery-demo-rework-2026-09-08/social-ideation/base.html",
+        "changes": "Preserved original UI bundle. Added purpose-first walkthrough, starter title. Social sample adapter includes caption and image."
+      }
+    },
+    {
+      "slug": "creative-concepts-engine",
+      "name": "Creative Concepts Engine",
+      "description": "Explore visual directions, compare alternatives, and refine an idea before committing to a design.",
+      "url": "https://ironwoodai.com/demos/creative-concepts-engine/",
+      "sha256": "07d54275cf23d9c3ddaf7343a9803ed13834bcd45e4ea138e4be8f76875b77fb",
+      "bytes": 2236304,
+      "provenance": {
+        "source": "/Users/adam/Projects/ironwood-gallery-demo-rework-2026-09-08/catalyst/source",
+        "sourceCommit": "d10f4a9a3e58c842e4a677db1278af2911326ce6",
+        "changes": "Original native React components bundled offline. Starter display names changed. Saved fictional Wheelhouse fixture. Ray source and deployment untouched."
+      }
+    },
+    {
+      "slug": "social-ad-engine",
+      "name": "Social Ad Engine",
+      "description": "Create and review ad variations using a shared brand profile. Shape the workflow around your campaigns.",
+      "url": "https://ironwoodai.com/demos/social-ad-engine/",
+      "sha256": "388506075eea2d41cfcbb5d25d716dbc325c8252f971ccc087c32ab40b1c1f2f",
+      "bytes": 3466679,
+      "provenance": {
+        "source": "/Users/adam/Projects/ironwood-canonical-migration-2026-09-01/canonical/ad-preview/demo/index.html",
+        "changes": "Preserved original UI bundle. Added purpose-first walkthrough, starter title. Social sample adapter includes caption and image."
+      }
+    },
+    {
+      "slug": "web-engine",
+      "name": "Web Engine",
+      "description": "Turn a client brief into an editable site plan. This demo shows the planning workflow within the wider Web Engine.",
+      "url": "https://ironwoodai.com/demos/web-engine/",
+      "sha256": "b58fac13d7a1d8b7ca8123366c2bd5856f3354f3c58882fb3e56714375951b86",
+      "bytes": 37749,
+      "provenance": {
+        "source": "/Users/adam/ironwood-leadgen/agency-workflow-tools-site/public/gallery/demos/website-engine.html",
+        "sourceSha256": "2c84ab5993b65da7358b40e65799d4c8a5e19b5b6aff4b44f0dc7ee97bb66353",
+        "outputSha256": "b58fac13d7a1d8b7ca8123366c2bd5856f3354f3c58882fb3e56714375951b86",
+        "scope": "Existing app demo UI preserved; starter title and tour narrative updated. Web demo covers Site Starter planning workflow, not all Web Engine modules."
+      }
+    },
+    {
+      "slug": "proposal-engine",
+      "name": "Proposal Engine",
+      "description": "Build proposals from reusable sections and track them through your agency\u2019s sales stages.",
+      "url": "https://ironwoodai.com/demos/proposal-engine/",
+      "sha256": "3f78ce453b46d0bfd8c13c5194a0e8d0211b35bcb862b0575ca3e72a81f49070",
+      "bytes": 904037,
+      "provenance": {
+        "source": "/Users/adam/ironwood-leadgen/agency-workflow-tools-site/public/gallery/demos/proposal-engine.html",
+        "sourceSha256": "200b11c28f7ebc3028f9ee779df715a426381b67308323aa7ce20d7074b96768",
+        "outputSha256": "3f78ce453b46d0bfd8c13c5194a0e8d0211b35bcb862b0575ca3e72a81f49070",
+        "scope": "Existing app demo UI preserved; story and tour narrative updated. Mobile-only layout fix: wrapped header actions, stacked scrollable editor and scaled document preview, responsive pipeline summary.",
+        "mobileQa": "390x844 full tour, all header controls in viewport, no horizontal overflow, field edit updates preview, no JavaScript errors. 1440 desktop full tour passes; CSS changes restricted to screen max-width 640px."
+      }
+    },
+    {
+      "slug": "linkedin-engine",
+      "name": "LinkedIn Engine",
+      "description": "Keep LinkedIn conversations and follow-ups organized. Use it alone or coordinate it with Outreach CRM.",
+      "url": "https://ironwoodai.com/demos/linkedin-engine/",
+      "sha256": "a068957f5d578ea149f979837fecc5ef84ffee15fd4b9afd00f87cb12f4206e4",
+      "bytes": 1068545,
+      "provenance": {
+        "source": "/Users/adam/ironwood-leadgen/agency-workflow-tools-site/public/gallery/demos/linkedin-engine-canonical.html",
+        "source_sha256": "581512429d9e0f73dab5d46daa66af516fdd119a0f60d4f9af17f5a8a6feb78f",
+        "gallery_repo_commit": "794c6555f89d21c321e745e6fa9feff033896b4c",
+        "changes": "Preserved existing interface and synthetic adapters; revised story and coordination tour copy; CRM starter title; blocked external sample link navigation."
+      }
+    },
+    {
+      "slug": "outreach-crm-engine",
+      "name": "Outreach CRM Engine",
+      "description": "Manage prospects and outreach across channels. Connect it with LinkedIn Engine to coordinate follow-ups.",
+      "url": "https://ironwoodai.com/demos/outreach-crm-engine/",
+      "sha256": "62b139010ee0da3af4bfece7c00eeb4d52683f98dabfc158d7898bf6a3fc8e5c",
+      "bytes": 425195,
+      "provenance": {
+        "source": "/Users/adam/ironwood-leadgen/agency-workflow-tools-site/public/gallery/demos/outreach-engine.html",
+        "source_sha256": "dfd70cabeec512c1fbb67d750d8e92d925dea66a4d43d6d9b284cd0eec4096ab",
+        "gallery_repo_commit": "794c6555f89d21c321e745e6fa9feff033896b4c",
+        "changes": "Preserved existing interface and synthetic adapters; revised story and coordination tour copy; CRM starter title; blocked external sample link navigation. Mobile header wraps with scrollable tabs and tour scroll margin."
+      }
+    }
+  ],
+  "legacyAliases": {
+    "social-media-engine": "social-ideation",
+    "social-ad-engine": "ad-preview",
+    "web-engine": "website-engine",
+    "proposal-engine": "proposal",
+    "linkedin-engine": "linkedin",
+    "outreach-crm-engine": "outreach"
+  }
+}
